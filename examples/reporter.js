@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = {
+export default {
   reporter: function (res) {
     var len = res.length;
     var str = "";
@@ -18,4 +18,4 @@ module.exports = {
         ((len === 1) ? "" : "s") + "\n");
     }
   }
-};
+};;

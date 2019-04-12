@@ -4,12 +4,12 @@
 
 // Identifiers provided by the ECMAScript standard.
 
-exports.reservedVars = {
+export var reservedVars = {
   NaN       : false,
   undefined : false
-};
+};;
 
-exports.ecmaIdentifiers = {
+export var ecmaIdentifiers = {
   3: {
     Array              : false,
     Boolean            : false,
@@ -67,11 +67,11 @@ exports.ecmaIdentifiers = {
     Atomics            : false,
     SharedArrayBuffer  : false
   }
-};
+};;
 
 // Global variables commonly provided by a web browser environment.
 
-exports.browser = {
+export var browser = {
   Audio                : false,
   Blob                 : false,
   addEventListener     : false, // EventTarget
@@ -444,18 +444,18 @@ exports.browser = {
   XPathNamespace       : false,
   XPathNSResolver      : false,
   XPathResult          : false
-};
+};;
 
-exports.devel = {
+export var devel = {
   alert  : false,
   confirm: false,
   console: false,
   Debug  : false,
   opera  : false,
   prompt : false
-};
+};;
 
-exports.worker = {
+export var worker = {
   addEventListener    : true, // EventTarget
   atob                : true, // WindowOrWorkerGlobalScope
   btoa                : true, // WindowOrWorkerGlobalScope
@@ -473,17 +473,17 @@ exports.worker = {
   setInterval         : true, // WindowOrWorkerGlobalScope
   setTimeout          : true, // WindowOrWorkerGlobalScope
   FileReaderSync      : true
-};
+};;
 
 // Widely adopted global names that are not part of ECMAScript standard
-exports.nonstandard = {
+export var nonstandard = {
   escape  : false,
   unescape: false
-};
+};;
 
 // Globals provided by popular JavaScript environments.
 
-exports.couch = {
+export var couch = {
   "require" : false,
   respond   : false,
   getRow    : false,
@@ -495,9 +495,9 @@ exports.couch = {
   exports   : false,
   module    : false,
   provides  : false
-};
+};;
 
-exports.node = {
+export var node = {
   __filename    : false,
   __dirname     : false,
   arguments     : false,
@@ -519,9 +519,9 @@ exports.node = {
   clearInterval : true,
   setImmediate  : true, // v0.9.1+
   clearImmediate: true  // v0.9.1+
-};
+};;
 
-exports.browserify = {
+export var browserify = {
   __filename    : false,
   __dirname     : false,
   global        : false,
@@ -530,17 +530,17 @@ exports.browserify = {
   Buffer        : true,
   exports       : true,
   process       : true
-};
+};;
 
-exports.phantom = {
+export var phantom = {
   phantom      : true,
   require      : true,
   WebPage      : true,
   console      : true, // in examples, but undocumented
   exports      : true  // v1.7+
-};
+};;
 
-exports.qunit = {
+export var qunit = {
   asyncTest      : false,
   deepEqual      : false,
   equal          : false,
@@ -560,9 +560,9 @@ exports.qunit = {
   strictEqual    : false,
   test           : false,
   "throws"       : false
-};
+};;
 
-exports.rhino = {
+export var rhino = {
   arguments    : false,
   defineClass  : false,
   deserialize  : false,
@@ -585,9 +585,9 @@ exports.rhino = {
   sync         : false,
   toint32      : false,
   version      : false
-};
+};;
 
-exports.shelljs = {
+export var shelljs = {
   target       : false,
   echo         : false,
   exit         : false,
@@ -613,9 +613,9 @@ exports.shelljs = {
   config       : false,
   error        : false,
   tempdir      : false
-};
+};;
 
-exports.typed = {
+export var typed = {
   ArrayBuffer         : false,
   ArrayBufferView     : false,
   DataView            : false,
@@ -628,9 +628,9 @@ exports.typed = {
   Uint32Array         : false,
   Uint8Array          : false,
   Uint8ClampedArray   : false
-};
+};;
 
-exports.wsh = {
+export var wsh = {
   ActiveXObject            : true,
   Enumerator               : true,
   GetObject                : true,
@@ -642,24 +642,24 @@ exports.wsh = {
   WSH                      : true,
   WScript                  : true,
   XDomainRequest           : true
-};
+};;
 
 // Globals provided by popular JavaScript libraries.
 
-exports.dojo = {
+export var dojo = {
   dojo     : false,
   dijit    : false,
   dojox    : false,
   define   : false,
   "require": false
-};
+};;
 
-exports.jquery = {
+export var jquery = {
   "$"    : false,
   jQuery : false
-};
+};;
 
-exports.mootools = {
+export var mootools = {
   "$"           : false,
   "$$"          : false,
   Asset         : false,
@@ -705,9 +705,9 @@ exports.mootools = {
   typeOf        : false,
   URI           : false,
   Window        : false
-};
+};;
 
-exports.prototypejs = {
+export var prototypejs = {
   "$"               : false,
   "$$"              : false,
   "$A"              : false,
@@ -746,15 +746,15 @@ exports.prototypejs = {
   SortableObserver  : false,
   Sound             : false,
   Scriptaculous     : false
-};
+};;
 
-exports.yui = {
+export var yui = {
   YUI       : false,
   Y         : false,
   YUI_config: false
-};
+};;
 
-exports.mocha = {
+export var mocha = {
   // Global (for config etc.)
   mocha       : false,
   // BDD
@@ -775,9 +775,9 @@ exports.mocha = {
   teardown      : false,
   suiteSetup    : false,
   suiteTeardown : false
-};
+};;
 
-exports.jasmine = {
+export var jasmine = {
   jasmine     : false,
   describe    : false,
   xdescribe   : false,
@@ -802,4 +802,4 @@ exports.jasmine = {
   pending     : false,
   // Jasmine 2.6
   spyOnProperty: false
-};
+};;

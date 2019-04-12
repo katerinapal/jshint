@@ -1,19 +1,19 @@
+import { state } from "./state.js";
+import _ from "lodash";
+import events from "events";
+import * as reg from "./reg.js";
+import unicodeData from "../data/ascii-identifier-data.js";
+import nonAsciiIdentifierStartTable from "../data/non-ascii-identifier-start.js";
+import nonAsciiIdentifierPartTable from "../data/non-ascii-identifier-part-only.js";
+import dataes5identifiernamesjs_moduleDefault from "../data/es5-identifier-names.js";
 /*
  * Lexical analysis and token construction.
  */
 
 "use strict";
 
-var _      = require("lodash");
-var events = require("events");
-var reg    = require("./reg.js");
-var state  = require("./state.js").state;
-
-var unicodeData = require("../data/ascii-identifier-data.js");
 var asciiIdentifierStartTable = unicodeData.asciiIdentifierStartTable;
 var asciiIdentifierPartTable = unicodeData.asciiIdentifierPartTable;
-var nonAsciiIdentifierStartTable = require("../data/non-ascii-identifier-start.js");
-var nonAsciiIdentifierPartTable = require("../data/non-ascii-identifier-part-only.js");
 // Loading of this module is deferred as an optimization for ES2015 input
 var es5IdentifierNames;
 
@@ -35,7 +35,7 @@ var Token = {
   NoSubstTemplate: 13
 };
 
-var Context = {
+export var Context = {
   Block: 1,
   Template: 2
 };
@@ -95,7 +95,7 @@ function asyncTrigger() {
  * Mozilla's JavaScript Parser API. Eventually, we will move away from
  * JSLint format.
  */
-function Lexer(source) {
+export function Lexer(source) {
   var lines = source;
 
   if (typeof lines === "string") {
@@ -710,7 +710,7 @@ Lexer.prototype = {
     value = removeEscapeSequences(id);
 
     if (!state.inES6(true)) {
-      es5IdentifierNames = require("../data/es5-identifier-names.js");
+      es5IdentifierNames = dataes5identifiernamesjs_moduleDefault;
 
       if (!es5IdentifierNames.test(value)) {
         this.triggerAsync(
@@ -2170,6 +2170,3 @@ Lexer.prototype = {
     }
   }
 };
-
-exports.Lexer = Lexer;
-exports.Context = Context;

@@ -20,7 +20,7 @@
  */
 "use strict";
 
-function NameStack() {
+export default function NameStack() {
   this._stack = [];
 }
 
@@ -90,5 +90,3 @@ NameStack.prototype.infer = function() {
 
   return prefix + nameToken.value;
 };
-
-module.exports = NameStack;

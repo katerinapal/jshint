@@ -1,7 +1,7 @@
+import NameStack from "./name-stack.js";
 "use strict";
-var NameStack = require("./name-stack.js");
 
-var state = {
+export var state = {
   syntax: {},
 
   /**
@@ -179,5 +179,3 @@ var state = {
     this.inClassBody = false;
   }
 };
-
-exports.state = state;

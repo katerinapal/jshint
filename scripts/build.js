@@ -1,14 +1,14 @@
+import browserify from "browserify";
+import path from "path";
 "use strict";
 
-var browserify = require("browserify");
-var path       = require("path");
 var version    = require("../package.json").version;
 
 var srcDir     = path.join(__dirname, "../src");
 
 var targets = ["web", "rhino"];
 
-module.exports = function(target, done) {
+export default function(target, done) {
   var bundle = browserify();
 
   done = done || function() {};
@@ -45,4 +45,4 @@ module.exports = function(target, done) {
 
     done(null, version, wrapped.join("\n"));
   });
-};
+};;

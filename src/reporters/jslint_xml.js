@@ -1,5 +1,4 @@
-module.exports =
-{
+export default {
   reporter: function(results) {
     "use strict";
 
@@ -53,4 +52,4 @@ module.exports =
 
     console.log(out.join("\n") + "\n");
   }
-};
+};;

@@ -1,16 +1,17 @@
+import { JSHINT } from "./jshint.js";
+import _ from "lodash";
+import fs from "fs";
+import cli from "cli";
+import path from "path";
+import shjs from "shelljs";
+import minimatch from "minimatch";
+import htmlparser from "htmlparser2";
+import exit from "exit";
+import stripJsonComments from "strip-json-comments";
+import default_moduleObject from "./reporters/default";
 "use strict";
 
-var _                 = require("lodash");
-var fs                = require("fs");
-var cli               = require("cli");
-var path              = require("path");
-var shjs              = require("shelljs");
-var minimatch         = require("minimatch");
-var htmlparser        = require("htmlparser2");
-var exit              = require("exit");
-var stripJsonComments = require("strip-json-comments");
-var JSHINT            = require("./jshint.js").JSHINT;
-var defReporter       = require("./reporters/default").reporter;
+var defReporter       = default_moduleObject.reporter;
 
 var OPTIONS = {
   "config": ["c", "Custom configuration file", "string", false ],
@@ -768,4 +769,4 @@ var exports = {
   }
 };
 
-module.exports = exports;
+export default exports;

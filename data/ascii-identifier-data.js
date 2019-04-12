@@ -16,7 +16,7 @@ for (var i = 0; i < 128; i++) {
     i >= 48 && i <= 57;        // 0-9
 }
 
-module.exports = {
+export default {
   asciiIdentifierStartTable: identifierStartTable,
   asciiIdentifierPartTable: identifierPartTable
-};
+};;

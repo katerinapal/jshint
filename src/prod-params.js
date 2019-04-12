@@ -11,7 +11,7 @@
  * expressions in the input program, this would have non-negligible impact on
  * the process's memory footprint.
  */
-module.exports = {
+export default {
   /**
    * Enabled when parsing expressions within ES2015 "export" declarations,
    * allowing otherwise-unreferenced bindings to be considered "used".
@@ -40,4 +40,4 @@ module.exports = {
    * TryStatement.
    */
   tryClause: 32
-};
+};;

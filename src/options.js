@@ -1,7 +1,7 @@
 "use strict";
 
 // These are the JSHint boolean options.
-exports.bool = {
+export var bool = {
   enforcing: {
 
     /**
@@ -795,11 +795,11 @@ exports.bool = {
     regexdash   : true  // if unescaped first/last dash (-) inside brackets
                         // should be tolerated
   }
-};
+};;
 
 // These are the JSHint options that can take any value
 // (we use this object to detect invalid options)
-exports.val = {
+export var val = {
 
   /**
    * This option lets you set the maximum length of a line.
@@ -1050,7 +1050,7 @@ exports.val = {
    *    RegExp extensions
    */
   esversion: 5
-};
+};;
 
 /**
  * Unstable options allow control for parsing and linting of proposed additions
@@ -1058,12 +1058,12 @@ exports.val = {
  * the presence and behavior of these options is volatile; JSHint reserves the
  * right to remove or modify them between major version releases.
  */
-exports.unstable = {
-};
+export var unstable = {
+};;
 
 // These are JSHint boolean options which are shared with JSLint
 // where the definition in JSHint is opposite JSLint
-exports.inverted = {
+export var inverted = {
   bitwise : true,
   forin   : true,
   newcap  : true,
@@ -1074,26 +1074,26 @@ exports.inverted = {
   // Inverted and renamed, use JSHint name here
   eqeqeq  : true,
   strict  : true
-};
+};;
 
-exports.validNames = Object.keys(exports.val)
-  .concat(Object.keys(exports.bool.relaxing))
-  .concat(Object.keys(exports.bool.enforcing))
-  .concat(Object.keys(exports.bool.obsolete))
-  .concat(Object.keys(exports.bool.environments))
-  .concat(["unstable"]);
+export var validNames = Object.keys(val)
+  .concat(Object.keys(bool.relaxing))
+  .concat(Object.keys(bool.enforcing))
+  .concat(Object.keys(bool.obsolete))
+  .concat(Object.keys(bool.environments))
+  .concat(["unstable"]);;
 
-exports.unstableNames = Object.keys(exports.unstable);
+export var unstableNames = Object.keys(unstable);;
 
 // These are JSHint boolean options which are shared with JSLint
 // where the name has been changed but the effect is unchanged
-exports.renamed = {
+export var renamed = {
   eqeq   : "eqeqeq",
   windows: "wsh",
   sloppy : "strict"
-};
+};;
 
-exports.removed = {
+export var removed = {
   nomen: true,
   onevar: true,
   passfail: true,
@@ -1101,12 +1101,12 @@ exports.removed = {
   gcl: true,
   smarttabs: true,
   trailing: true
-};
+};;
 
 // Add options here which should not be automatically enforced by
 // `enforceall`.
-exports.noenforceall = {
+export var noenforceall = {
   varstmt: true,
   strict: true,
   regexpu: true
-};
+};;

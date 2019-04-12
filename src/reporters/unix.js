@@ -4,7 +4,7 @@
 // frequently employed by preprocessors and compilers.
 // The format is "FILENAME:LINE:COL: MESSAGE".
 
-module.exports = {
+export default {
   reporter: function(results, data, opts) {
     var len = results.length;
     var str = "";
@@ -34,4 +34,4 @@ module.exports = {
       console.log(str + "\n" + len + " error" + ((len === 1) ? "" : "s"));
     }
   }
-};
+};;
