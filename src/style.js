@@ -1,6 +1,9 @@
 "use strict";
 
-export var register = function(linter) {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var register = exports.register = function register(linter) {
   // Check for properties named __proto__. This special property was
   // deprecated and then re-introduced for ES6.
 
@@ -13,7 +16,7 @@ export var register = function(linter) {
       linter.warn("W103", {
         line: data.line,
         char: data.char,
-        data: [ data.name, "6" ]
+        data: [data.name, "6"]
       });
     }
   });
@@ -31,7 +34,7 @@ export var register = function(linter) {
       linter.warn("W103", {
         line: data.line,
         char: data.char,
-        data: [ data.name ]
+        data: [data.name]
       });
     }
   });
@@ -48,7 +51,7 @@ export var register = function(linter) {
       linter.warn("W106", {
         line: data.line,
         char: data.char,
-        data: [ data.name ]
+        data: [data.name]
       });
     }
   });
@@ -91,7 +94,7 @@ export var register = function(linter) {
     if (code) {
       linter.warn(code, {
         line: data.line,
-        char: data.char,
+        char: data.char
       });
     }
   });
@@ -102,7 +105,7 @@ export var register = function(linter) {
       linter.warn("W008", {
         line: data.line,
         char: data.char,
-        data: [ data.value ]
+        data: [data.value]
       });
     }
 
@@ -111,7 +114,7 @@ export var register = function(linter) {
       linter.warn("W047", {
         line: data.line,
         char: data.char,
-        data: [ data.value ]
+        data: [data.value]
       });
     }
 
@@ -120,7 +123,7 @@ export var register = function(linter) {
       linter.warn("W046", {
         line: data.line,
         char: data.char,
-        data: [ data.value ]
+        data: [data.value]
       });
     }
   });

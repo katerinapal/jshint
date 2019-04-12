@@ -1,4 +1,18 @@
-import _ from "lodash";
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.info = exports.warnings = exports.errors = undefined;
+
+var _lodash = require("lodash");
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
+
 "use strict";
 
 var errors = {
@@ -79,8 +93,7 @@ var errors = {
   E062: "Rest parameter does not a support default value.",
   E063: "Super property may only be used within method bodies.",
   E064: "Super call may only be used within class method bodies.",
-  E065: "Functions defined outside of strict mode with non-simple parameter lists may not " +
-    "enable strict mode.",
+  E065: "Functions defined outside of strict mode with non-simple parameter lists may not " + "enable strict mode.",
   E066: "Asynchronous iteration is only available with for-of loops."
 };
 
@@ -105,8 +118,7 @@ var warnings = {
   W018: "Confusing use of '{a}'.",
   W019: "Use the isNaN function to compare with NaN.",
   W020: "Read only.",
-  W021: "Reassignment of '{a}', which is a {b}. " +
-    "Use 'var' or 'let' to declare bindings that may change.",
+  W021: "Reassignment of '{a}', which is a {b}. " + "Use 'var' or 'let' to declare bindings that may change.",
   W022: "Do not assign to the exception parameter.",
   W023: null,
   W024: "Expected an identifier and instead saw '{a}' (a reserved word).",
@@ -124,8 +136,7 @@ var warnings = {
   W037: "'{a}' is a statement label.",
   W038: "'{a}' used out of scope.",
   W039: null,
-  W040: "If a strict mode function is executed using function invocation, " +
-    "its 'this' value will be undefined.",
+  W040: "If a strict mode function is executed using function invocation, " + "its 'this' value will be undefined.",
   W041: null,
   W042: "Avoid EOL escaping.",
   W043: "Bad escaping of EOL. Use option multistr if needed.",
@@ -147,9 +158,7 @@ var warnings = {
   W059: "Avoid arguments.{a}.",
   W060: "document.write can be a form of eval.",
   W061: "eval can be harmful.",
-  W062: "Wrap an immediate function invocation in parens " +
-    "to assist the reader in understanding that the expression " +
-    "is the result of a function, and not the function itself.",
+  W062: "Wrap an immediate function invocation in parens " + "to assist the reader in understanding that the expression " + "is the result of a function, and not the function itself.",
   W063: "Math is not a function.",
   W064: "Missing 'new' prefix when invoking a constructor.",
   W065: "Missing radix parameter.",
@@ -169,18 +178,14 @@ var warnings = {
   W079: "Redefinition of '{a}'.",
   W080: "It's not necessary to initialize '{a}' to 'undefined'.",
   W081: null,
-  W082: "Function declarations should not be placed in blocks. " +
-    "Use a function expression or move the statement to the top of " +
-    "the outer function.",
-  W083: "Functions declared within loops referencing an outer scoped " +
-    "variable may lead to confusing semantics. ({a})",
+  W082: "Function declarations should not be placed in blocks. " + "Use a function expression or move the statement to the top of " + "the outer function.",
+  W083: "Functions declared within loops referencing an outer scoped " + "variable may lead to confusing semantics. ({a})",
   W084: "Expected a conditional expression and instead saw an assignment.",
   W085: "Don't use 'with'.",
   W086: "Expected a 'break' statement before '{a}'.",
   W087: "Forgotten 'debugger' statement?",
   W088: "Creating global 'for' variable. Should be 'for (var {a} ...'.",
-  W089: "The body of a for in should be wrapped in an if statement to filter " +
-    "unwanted properties from the prototype.",
+  W089: "The body of a for in should be wrapped in an if statement to filter " + "unwanted properties from the prototype.",
   W090: "'{a}' is not a statement label.",
   W091: null,
   W093: "Did you mean to return a conditional instead of an assignment?",
@@ -218,8 +223,7 @@ var warnings = {
   W126: "Unnecessary grouping operator.",
   W127: "Unexpected use of a comma operator.",
   W128: "Empty array elements require elision=true.",
-  W129: "'{a}' is defined in a future version of JavaScript. Use a " +
-    "different variable name to avoid migration issues.",
+  W129: "'{a}' is defined in a future version of JavaScript. Use a " + "different variable name to avoid migration issues.",
   W130: "Invalid element after rest element.",
   W131: "Invalid parameter after rest parameter.",
   W132: "`var` declarations are forbidden. Use `let` or `const` instead.",
@@ -233,8 +237,7 @@ var warnings = {
   W140: "Missing comma.",
   W141: "Empty {a}: this is unnecessary and can be removed.",
   W142: "Empty {a}: consider replacing with `import '{b}';`.",
-  W143: "Assignment to properties of a mapped arguments object may cause " +
-    "unexpected changes to formal parameters.",
+  W143: "Assignment to properties of a mapped arguments object may cause " + "unexpected changes to formal parameters.",
   W144: "'{a}' is a non-standard language feature. Enable it using the '{b}' unstable option.",
   W145: "Superfluous 'case' clause.",
   W146: "Unnecessary `await` expression.",
@@ -252,17 +255,17 @@ var errors_exportedObject = {};;
 var warnings_exportedObject = {};;
 var info_exportedObject = {};;
 
-_.each(errors, function(desc, code) {
+_lodash2.default.each(errors, function (desc, code) {
   errors_exportedObject[code] = { code: code, desc: desc };
 });
 
-_.each(warnings, function(desc, code) {
+_lodash2.default.each(warnings, function (desc, code) {
   warnings_exportedObject[code] = { code: code, desc: desc };
 });
 
-_.each(info, function(desc, code) {
+_lodash2.default.each(info, function (desc, code) {
   info_exportedObject[code] = { code: code, desc: desc };
 });
-export { errors_exportedObject as errors };
-export { warnings_exportedObject as warnings };
-export { info_exportedObject as info };
+exports.errors = errors_exportedObject;
+exports.warnings = warnings_exportedObject;
+exports.info = info_exportedObject;

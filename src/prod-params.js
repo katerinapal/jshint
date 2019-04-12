@@ -1,3 +1,6 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 /**
  * This module defines a set of enum-like values intended for use as bit
  * "flags" during parsing. The ECMAScript grammar defines a number of such
@@ -11,7 +14,7 @@
  * expressions in the input program, this would have non-negligible impact on
  * the process's memory footprint.
  */
-export default {
+exports.default = {
   /**
    * Enabled when parsing expressions within ES2015 "export" declarations,
    * allowing otherwise-unreferenced bindings to be considered "used".
@@ -40,4 +43,6 @@ export default {
    * TryStatement.
    */
   tryClause: 32
-};;
+};
+;
+module.exports = exports.default;

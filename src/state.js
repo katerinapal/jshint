@@ -1,7 +1,19 @@
-import NameStack from "./name-stack.js";
 "use strict";
 
-export var state = {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.state = undefined;
+
+var _nameStack = require("./name-stack.js");
+
+var _nameStack2 = _interopRequireDefault(_nameStack);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+"use strict";
+
+var state = exports.state = {
   syntax: {},
 
   /**
@@ -9,9 +21,8 @@ export var state = {
    *
    * @returns {boolean}
    */
-  isStrict: function() {
-    return this.directive["use strict"] || this.inClassBody ||
-      this.option.module || this.option.strict === "implied";
+  isStrict: function isStrict() {
+    return this.directive["use strict"] || this.inClassBody || this.option.module || this.option.strict === "implied";
   },
 
   /**
@@ -28,7 +39,7 @@ export var state = {
    * function interprets `strict` option values `true` and `undefined` as
    * equivalent.
    */
-  stmtMissingStrict: function() {
+  stmtMissingStrict: function stmtMissingStrict() {
     if (this.option.strict === "global") {
       return true;
     }
@@ -44,9 +55,8 @@ export var state = {
     return false;
   },
 
-  allowsGlobalUsd: function() {
-    return this.option.strict === "global" || this.option.globalstrict ||
-      this.option.module || this.impliedClosure();
+  allowsGlobalUsd: function allowsGlobalUsd() {
+    return this.option.strict === "global" || this.option.globalstrict || this.option.module || this.impliedClosure();
   },
 
   /**
@@ -55,13 +65,13 @@ export var state = {
    *
    * @returns {boolean}
    */
-  impliedClosure: function() {
+  impliedClosure: function impliedClosure() {
     return this.option.node || this.option.phantom || this.option.browserify;
   },
 
   // Assumption: chronologically ES3 < ES5 < ES6 < Moz
 
-  inMoz: function() {
+  inMoz: function inMoz() {
     return this.option.moz;
   },
 
@@ -70,7 +80,7 @@ export var state = {
    *
    * @returns {boolean}
    */
-  inES9: function() {
+  inES9: function inES9() {
     return this.esVersion >= 9;
   },
 
@@ -79,7 +89,7 @@ export var state = {
    *
    * @returns {boolean}
    */
-  inES8: function() {
+  inES8: function inES8() {
     return this.esVersion >= 8;
   },
 
@@ -88,7 +98,7 @@ export var state = {
    *
    * @returns {boolean}
    */
-  inES7: function() {
+  inES7: function inES7() {
     return this.esVersion >= 7;
   },
 
@@ -100,7 +110,7 @@ export var state = {
    *
    * @returns {boolean}
    */
-  inES6: function(strict) {
+  inES6: function inES6(strict) {
     if (!strict && this.option.moz) {
       return true;
     }
@@ -113,7 +123,7 @@ export var state = {
    *
    * @returns {boolean}
    */
-  inES5: function() {
+  inES5: function inES5() {
     return !this.esVersion || this.esVersion >= 5 || this.option.moz;
   },
 
@@ -127,7 +137,7 @@ export var state = {
    * @returns {string|null} - the name of any incompatible option detected,
    *                          `null` otherwise
    */
-  inferEsVersion: function() {
+  inferEsVersion: function inferEsVersion() {
     var badOpt = null;
 
     if (this.option.esversion) {
@@ -157,7 +167,7 @@ export var state = {
     return null;
   },
 
-  reset: function() {
+  reset: function reset() {
     this.tokens = {
       prev: null,
       next: null,
@@ -175,7 +185,7 @@ export var state = {
     this.cache = {}; // Node.JS doesn't have Map. Sniff.
     this.ignoredLines = {};
     this.forinifcheckneeded = false;
-    this.nameStack = new NameStack();
+    this.nameStack = new _nameStack2.default();
     this.inClassBody = false;
   }
 };

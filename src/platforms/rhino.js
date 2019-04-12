@@ -1,20 +1,22 @@
+"use strict";
+
 /*jshint boss: true, rhino: true, unused: true, undef: true, quotmark: double */
 /*global JSHINT, readFully */
 
-(function(args) {
+(function (args) {
   "use strict";
 
   var filenames = [];
-  var flags     = {};
-  var opts      = {};
-  var globals   = {};
-  var retval    = 0;
-  var readf     = (typeof readFully === "function" ? readFully : readFile);
+  var flags = {};
+  var opts = {};
+  var globals = {};
+  var retval = 0;
+  var readf = typeof readFully === "function" ? readFully : readFile;
 
   var optstr; // arg1=val1,arg2=val2,...
   var predef; // global1=true,global2,global3,...
 
-  args.forEach(function(arg) {
+  args.forEach(function (arg) {
     if (arg.indexOf("--") === 0) {
       // Configuration Flags might be boolean or will be split into name and value
       if (arg.indexOf("=") > -1) {
@@ -64,36 +66,36 @@
   }
 
   if (optstr) {
-    optstr.split(",").forEach(function(arg) {
+    optstr.split(",").forEach(function (arg) {
       var o = arg.split("=");
       if (o[0] === "indent") {
         opts[o[0]] = parseInt(o[1], 10);
       } else {
-        opts[o[0]] = (function(ov) {
+        opts[o[0]] = function (ov) {
           switch (ov) {
-          case "true":
-            return true;
-          case "false":
-            return false;
-          default:
-            return ov;
+            case "true":
+              return true;
+            case "false":
+              return false;
+            default:
+              return ov;
           }
-        }(o[1]));
+        }(o[1]);
       }
     });
   }
 
   globals = opts.globals || {};
-  delete(opts.globals);
+  delete opts.globals;
 
   if (predef) {
-    predef.split(",").forEach(function(arg) {
+    predef.split(",").forEach(function (arg) {
       var global = arg.split("=");
       globals[global[0]] = global[1] === "true" ? true : false;
     });
   }
 
-  filenames.forEach(function(name) {
+  filenames.forEach(function (name) {
     var input = readf(name);
 
     if (!input) {
@@ -112,4 +114,4 @@
   });
 
   quit(retval);
-}(arguments));
+})(arguments);

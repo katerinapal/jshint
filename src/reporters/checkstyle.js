@@ -1,32 +1,40 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 // Author: Boy Baukema
 // http://github.com/relaxnow
-export default {
-  reporter: function(results, data, opts) {
+exports.default = {
+  reporter: function reporter(results, data, opts) {
     "use strict";
 
     var files = {},
-      out = [],
-      pairs = {
-        "&": "&amp;",
-        '"': "&quot;",
-        "'": "&apos;",
-        "<": "&lt;",
-        ">": "&gt;"
-      },
-      fileName, i, issue, errorMessage;
+        out = [],
+        pairs = {
+      "&": "&amp;",
+      '"': "&quot;",
+      "'": "&apos;",
+      "<": "&lt;",
+      ">": "&gt;"
+    },
+        fileName,
+        i,
+        issue,
+        errorMessage;
 
     opts = opts || {};
 
     function encode(s) {
       for (var r in pairs) {
-        if (typeof(s) !== "undefined") {
+        if (typeof s !== "undefined") {
           s = s.replace(new RegExp(r, "g"), pairs[r]);
         }
       }
       return s || "";
     }
 
-    results.forEach(function(result) {
+    results.forEach(function (result) {
       // Register the file
       result.file = result.file.replace(/^\.\//, '');
       if (!files[result.file]) {
@@ -63,7 +71,6 @@ export default {
       });
     });
 
-
     out.push("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
     out.push("<checkstyle version=\"4.3\">");
 
@@ -72,15 +79,7 @@ export default {
         out.push("\t<file name=\"" + fileName + "\">");
         for (i = 0; i < files[fileName].length; i++) {
           issue = files[fileName][i];
-          out.push(
-            "\t\t<error " +
-              "line=\"" + issue.line + "\" " +
-              "column=\"" + issue.column + "\" " +
-              "severity=\"" + issue.severity + "\" " +
-              "message=\"" + encode(issue.message) + "\" " +
-              "source=\"" + encode(issue.source) + "\" " +
-              "/>"
-          );
+          out.push("\t\t<error " + "line=\"" + issue.line + "\" " + "column=\"" + issue.column + "\" " + "severity=\"" + issue.severity + "\" " + "message=\"" + encode(issue.message) + "\" " + "source=\"" + encode(issue.source) + "\" " + "/>");
         }
         out.push("\t</file>");
       }
@@ -90,4 +89,6 @@ export default {
 
     console.log(out.join("\n"));
   }
-};;
+};
+;
+module.exports = exports.default;

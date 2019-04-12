@@ -7,28 +7,32 @@
 "use strict";
 
 // Unsafe comment or string (ax)
-export var unsafeString = /@cc|<\/?|script|\]\s*\]|<\s*!|&lt/i;;
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var unsafeString = exports.unsafeString = /@cc|<\/?|script|\]\s*\]|<\s*!|&lt/i;;
 
 // Characters in strings that need escaping (nx and nxg)
-export var needEsc = /[\u0000-\u001f&<"\/\\\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/;;
+var needEsc = exports.needEsc = /[\u0000-\u001f&<"\/\\\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/;;
 
-export var needEscGlobal = /[\u0000-\u001f&<"\/\\\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;;
+var needEscGlobal = exports.needEscGlobal = /[\u0000-\u001f&<"\/\\\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;;
 
 // Star slash (lx)
-export var starSlash = /\*\//;;
+var starSlash = exports.starSlash = /\*\//;;
 
 // Identifier (ix)
-export var identifier = /^([a-zA-Z_$][a-zA-Z0-9_$]*)$/;;
+var identifier = exports.identifier = /^([a-zA-Z_$][a-zA-Z0-9_$]*)$/;;
 
 // JavaScript URL (jx)
-export var javascriptURL = /^(?:javascript|jscript|ecmascript|vbscript|livescript)\s*:/i;;
+var javascriptURL = exports.javascriptURL = /^(?:javascript|jscript|ecmascript|vbscript|livescript)\s*:/i;;
 
 // Catches /* falls through */ comments (ft)
-export var fallsThrough = /^\s*falls?\sthrough\s*$/;;
+var fallsThrough = exports.fallsThrough = /^\s*falls?\sthrough\s*$/;;
 
 // very conservative rule (eg: only one space between the start of the comment and the first character)
 // to relax the maxlen option
-export var maxlenException = /^(?:(?:\/\/|\/\*|\*) ?)?[^ ]+$/;;
+var maxlenException = exports.maxlenException = /^(?:(?:\/\/|\/\*|\*) ?)?[^ ]+$/;;
 
 // Node.js releases prior to version 8 include a version of the V8 engine which
 // incorrectly interprets the character class escape `\s`. The following
@@ -36,17 +40,17 @@ export var maxlenException = /^(?:(?:\/\/|\/\*|\*) ?)?[^ ]+$/;;
 // for Node.js versions prior to 8.
 // Source:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
-export var whitespace = /[ \f\n\r\t\v\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]/;;
+var whitespace = exports.whitespace = /[ \f\n\r\t\v\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]/;;
 
-export var nonzeroDigit = /^[1-9]$/;;
+var nonzeroDigit = exports.nonzeroDigit = /^[1-9]$/;;
 
-export var decimalDigit = /^[0-9]$/;;
+var decimalDigit = exports.decimalDigit = /^[0-9]$/;;
 
-export var regexpSyntaxChars = /[\^$\\.*+?()[\]{}|]/;;
+var regexpSyntaxChars = exports.regexpSyntaxChars = /[\^$\\.*+?()[\]{}|]/;;
 
-export var regexpQuantifiers = /[*+?{]/;;
+var regexpQuantifiers = exports.regexpQuantifiers = /[*+?{]/;;
 
-export var regexpCharClasses = /[dDsSwW]/;;
+var regexpCharClasses = exports.regexpCharClasses = /[dDsSwW]/;;
 
 // Identifies the "dot" atom in regular expressions
-export var regexpDot = /(^|[^\\])(\\\\)*\./;;
+var regexpDot = exports.regexpDot = /(^|[^\\])(\\\\)*\./;;

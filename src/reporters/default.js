@@ -1,14 +1,17 @@
 "use strict";
 
-export default {
-  reporter: function(results, data, opts) {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = {
+  reporter: function reporter(results, data, opts) {
     var len = results.length;
     var str = '';
     var prevfile;
 
     opts = opts || {};
 
-    results.forEach(function(result) {
+    results.forEach(function (result) {
       var file = result.file;
       var error = result.error;
 
@@ -17,8 +20,7 @@ export default {
       }
       prevfile = file;
 
-      str += file  + ': line ' + error.line + ', col ' +
-        error.character + ', ' + error.reason;
+      str += file + ': line ' + error.line + ', col ' + error.character + ', ' + error.reason;
 
       if (opts.verbose) {
         str += ' (' + error.code + ')';
@@ -28,7 +30,9 @@ export default {
     });
 
     if (str) {
-      console.log(str + "\n" + len + ' error' + ((len === 1) ? '' : 's'));
+      console.log(str + "\n" + len + ' error' + (len === 1 ? '' : 's'));
     }
   }
-};;
+};
+;
+module.exports = exports.default;
