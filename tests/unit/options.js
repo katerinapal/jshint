@@ -1,3 +1,7 @@
+import { fixture } from "../helpers/fixture";
+import { JSHINT } from "../..";
+import fs from "fs";
+import * as testhelper_moduleObject from "../helpers/testhelper";
 /**
  * Tests for all non-environmental options. Non-environmental options are
  * options that change how JSHint behaves instead of just pre-defining a set
@@ -6,10 +10,7 @@
 
 "use strict";
 
-var JSHINT = require("../..").JSHINT;
-var fs = require('fs');
-var TestRun = require('../helpers/testhelper').setup.testRun;
-var fixture = require('../helpers/fixture').fixture;
+var TestRun = testhelper_moduleObject.setup.testRun;
 
 /**
  * Option `shadow` allows you to re-define variables later in code.

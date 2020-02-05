@@ -91,4 +91,5 @@ NameStack.prototype.infer = function() {
   return prefix + nameToken.value;
 };
 
-module.exports = NameStack;
+var exported_NameStack = NameStack;
+export { exported_NameStack as NameStack };

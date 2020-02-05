@@ -1,34 +1,12 @@
+import _ from "lodash";
+import events from "events";
 "use strict";
-
-var _      = require("lodash");
-var events = require("events");
 
 // Used to denote membership in lookup tables (a primitive value such as `true`
 // would be silently rejected for the property name "__proto__" in some
 // environments)
 var marker = {};
 
-/**
- * A factory function for creating scope managers. A scope manager tracks
- * variables and JSHint "labels", detecting when variables are referenced
- * (through "usages").
- *
- * Note that in this context, the term "label" describes an implementation
- * detail of JSHint and is not related to the ECMAScript language construct of
- * the same name. Where possible, the former is referred to as a "JSHint label"
- * to avoid confusion.
- *
- * @param {object} state - the global state object (see `state.js`)
- * @param {Array} predefined - a set of JSHint label names for built-in
- *                             bindings provided by the environment
- * @param {object} exported - a hash for JSHint label names that are intended
- *                            to be referenced in contexts beyond the current
- *                            program code
- * @param {object} declared - a hash for JSHint label names that were defined
- *                            as global bindings via linting configuration
- *
- * @returns {object} - a scope manager
- */
 var scopeManager = function(state, predefined, exported, declared) {
 
   var _current;
@@ -1037,4 +1015,5 @@ var scopeManager = function(state, predefined, exported, declared) {
   return scopeManagerInst;
 };
 
-module.exports = scopeManager;
+let exported_scopeManager = scopeManager;
+export { exported_scopeManager as scopeManager };

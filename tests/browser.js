@@ -1,9 +1,12 @@
+import phantom_moduleDefault from "phantom";
+import phantomjsprebuilt_moduleDefault from "phantomjs-prebuilt";
+import { serverjs as createTestServer } from "./helpers/browser/server";
 "use strict";
 
 var phantom, phantomJsPrebuilt;
 try {
-  phantom = require("phantom");
-  phantomJsPrebuilt = require("phantomjs-prebuilt");
+  phantom = phantom_moduleDefault;
+  phantomJsPrebuilt = phantomjsprebuilt_moduleDefault;
 } catch (err) {
   throw new Error(
     "Unable to run tests in PhantomJS because the required dependencies are " +
@@ -12,7 +15,6 @@ try {
   );
 }
 
-var createTestServer = require("./helpers/browser/server");
 var options = {
   /**
    * The `phantom` module provides a Node.js API for the PhantomJS binary,
