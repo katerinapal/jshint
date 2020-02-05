@@ -1,7 +1,20 @@
-import { JSHINT as JSHint } from "../../";
-import lodash_moduleObject from "lodash";
 "use strict";
-var find = lodash_moduleObject.find;
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.testjs = undefined;
+
+var _ = require("../../");
+
+var _lodash = require("lodash");
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+"use strict";
+var find = _lodash2.default.find;
 
 /**
  * JSHint "error" messages generally indicate a parsing failure and "warning"
@@ -37,7 +50,7 @@ var incorrectSeverity = {
 };
 
 function isFailure(errors) {
-  return errors && !!find(errors, function(msg) {
+  return errors && !!find(errors, function (msg) {
     if (msg.code[0] === "W") {
       return msg.code in incorrectSeverity;
     }
@@ -46,16 +59,17 @@ function isFailure(errors) {
   });
 }
 
-var exportedObject = function(test) {
+var exportedObject = function exportedObject(test) {
   var isModule = !!test.attrs.flags.module;
 
   try {
-    JSHint(test.contents, { esversion: 9, maxerr: Infinity, module: isModule });
+    (0, _.JSHINT)(test.contents, { esversion: 9, maxerr: Infinity, module: isModule });
   } catch (e) {
     return false;
   }
 
-  return !isFailure(JSHint.data().errors);
+  return !isFailure(_.JSHINT.data().errors);
 };
 
-export { exportedObject as testjs };;
+exports.testjs = exportedObject;
+;

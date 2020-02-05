@@ -1,14 +1,17 @@
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 var exported_defaultjs = {
-  reporter: function(results, data, opts) {
+  reporter: function reporter(results, data, opts) {
     var len = results.length;
     var str = '';
     var prevfile;
 
     opts = opts || {};
 
-    results.forEach(function(result) {
+    results.forEach(function (result) {
       var file = result.file;
       var error = result.error;
 
@@ -17,8 +20,7 @@ var exported_defaultjs = {
       }
       prevfile = file;
 
-      str += file  + ': line ' + error.line + ', col ' +
-        error.character + ', ' + error.reason;
+      str += file + ': line ' + error.line + ', col ' + error.character + ', ' + error.reason;
 
       if (opts.verbose) {
         str += ' (' + error.code + ')';
@@ -28,19 +30,19 @@ var exported_defaultjs = {
     });
 
     if (str) {
-      console.log(str + "\n" + len + ' error' + ((len === 1) ? '' : 's'));
+      console.log(str + "\n" + len + ' error' + (len === 1 ? '' : 's'));
     }
   }
 };
 
-var exported_defaultjs_reporter = function(results, data, opts) {
+var exported_defaultjs_reporter = function exported_defaultjs_reporter(results, data, opts) {
   var len = results.length;
   var str = "";
   var prevfile;
 
   opts = opts || {};
 
-  results.forEach(function(result) {
+  results.forEach(function (result) {
     var file = result.file;
     var error = result.error;
 
@@ -63,4 +65,4 @@ var exported_defaultjs_reporter = function(results, data, opts) {
   }
 };
 
-export { exported_defaultjs_reporter as reporter };
+exports.reporter = exported_defaultjs_reporter;

@@ -1,3 +1,6 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 var exported_prodparamsjs = {
   /**
    * Enabled when parsing expressions within ES2015 "export" declarations,
@@ -35,4 +38,9 @@ var exported_prodparamsjs_initial = 4;
 var exported_prodparamsjs_preAsync = 8;
 var exported_prodparamsjs_async = 16;
 var exported_prodparamsjs_tryClause = 32;
-export { exported_prodparamsjs_export as export, exported_prodparamsjs_noin as noin, exported_prodparamsjs_initial as initial, exported_prodparamsjs_preAsync as preAsync, exported_prodparamsjs_async as async, exported_prodparamsjs_tryClause as tryClause };
+exports.export = exported_prodparamsjs_export;
+exports.noin = exported_prodparamsjs_noin;
+exports.initial = exported_prodparamsjs_initial;
+exports.preAsync = exported_prodparamsjs_preAsync;
+exports.async = exported_prodparamsjs_async;
+exports.tryClause = exported_prodparamsjs_tryClause;

@@ -1,27 +1,52 @@
-import fs from "fs";
-import http from "http";
-import Stream from "stream";
-import path from "path";
-import url from "url";
-import browserify from "browserify";
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.serverjs = undefined;
+
+var _fs = require("fs");
+
+var _fs2 = _interopRequireDefault(_fs);
+
+var _http = require("http");
+
+var _http2 = _interopRequireDefault(_http);
+
+var _stream = require("stream");
+
+var _stream2 = _interopRequireDefault(_stream);
+
+var _path = require("path");
+
+var _path2 = _interopRequireDefault(_path);
+
+var _url = require("url");
+
+var _url2 = _interopRequireDefault(_url);
+
+var _browserify = require("browserify");
+
+var _browserify2 = _interopRequireDefault(_browserify);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 "use strict";
 var buildJSHint = require(__dirname + "/../../../scripts/build");
 
-var mainPath = path.resolve(
-  __dirname + "/../../../" + require("../../../package.json").main
-);
+var mainPath = _path2.default.resolve(__dirname + "/../../../" + require("../../../package.json").main);
 var contentTypes = {
   ".html": "text/html",
   ".js": "application/javascript"
 };
 
 var streams = {
-  fixtures: function() {
+  fixtures: function fixtures() {
     var fixtureDir = __dirname + "/../../unit/fixtures";
-    var fixtureStream = new Stream.Readable();
-    fixtureStream._read = fixtureStream.write = function() {};
+    var fixtureStream = new _stream2.default.Readable();
+    fixtureStream._read = fixtureStream.write = function () {};
 
-    fs.readdir(fixtureDir, function(err, files) {
+    _fs2.default.readdir(fixtureDir, function (err, files) {
       var src = "";
       var fsCache = {};
 
@@ -30,19 +55,13 @@ var streams = {
         return;
       }
 
-      files.forEach(function(fileName) {
+      files.forEach(function (fileName) {
         var relativeName = "/tests/unit/fixtures/" + fileName;
 
-        fsCache[relativeName] = fs.readFileSync(
-          fixtureDir + "/" + fileName, { encoding: "utf-8" }
-        );
+        fsCache[relativeName] = _fs2.default.readFileSync(fixtureDir + "/" + fileName, { encoding: "utf-8" });
       });
 
-      src += [
-        "(function() {",
-        "  window.JSHintTestFixtures = " + JSON.stringify(fsCache) + ";",
-        "}());"
-      ].join("\n");
+      src += ["(function() {", "  window.JSHintTestFixtures = " + JSON.stringify(fsCache) + ";", "}());"].join("\n");
       fixtureStream.push(src);
       fixtureStream.push(null);
     });
@@ -61,22 +80,21 @@ var streams = {
    * that passively including the modules will not result in test
    * execution--some code generation is required.
    */
-  runAllScript: function() {
+  runAllScript: function runAllScript() {
     var testDir = "../../unit";
-    var stream = new Stream.Readable();
-    stream._read = stream.write = function() {};
+    var stream = new _stream2.default.Readable();
+    stream._read = stream.write = function () {};
 
-    fs.readdir(__dirname + "/" + testDir, function(err, allFiles) {
-      var testIncludes = allFiles.filter(function(file) {
-          return /\.js$/i.test(file);
-        }).map(function(file) {
-          return "\"" + file + "\": require(\"" + testDir + "/" + file + "\")";
-        }).join(",\n");
-
-      fs.readFile(__dirname + "/run-all.js.tmpl", function(err, src) {
-        stream.push(
-          String(src).replace(/{{\s*INJECT_TEST_INCLUDES\s*}}/, testIncludes)
+    _fs2.default.readdir(__dirname + "/" + testDir, function (err, allFiles) {
+      var testIncludes = allFiles.filter(function (file) {
+        return (/\.js$/i.test(file)
         );
+      }).map(function (file) {
+        return "\"" + file + "\": require(\"" + testDir + "/" + file + "\")";
+      }).join(",\n");
+
+      _fs2.default.readFile(__dirname + "/run-all.js.tmpl", function (err, src) {
+        stream.push(String(src).replace(/{{\s*INJECT_TEST_INCLUDES\s*}}/, testIncludes));
         stream.push(null);
       });
     });
@@ -86,18 +104,18 @@ var streams = {
 };
 
 var build = {
-  "index.html": function(done) {
-    fs.readFile(__dirname + "/index.html", done);
+  "index.html": function indexHtml(done) {
+    _fs2.default.readFile(__dirname + "/index.html", done);
   },
 
-  "jshint.js": function(done) {
-    buildJSHint("web", function(err, version, src) {
+  "jshint.js": function jshintJs(done) {
+    buildJSHint("web", function (err, version, src) {
       done(err, src);
     });
   },
 
-  "tests.js": function(done) {
-    var bundle = browserify({
+  "tests.js": function testsJs(done) {
+    var bundle = (0, _browserify2.default)({
       insertGlobalVars: {
         /**
          * Ensure that the value of `__dirname` uses Unix path separator across
@@ -111,17 +129,14 @@ var build = {
          * the case in `fixture-fs.js`), the separator character must be
          * consistent.
          */
-        __dirname: function() {
+        __dirname: function __dirname() {
           return "'/tests/unit'";
         }
       }
     });
     var includedFaker = false;
 
-    bundle.require(
-      fs.createReadStream(__dirname + "/fixture-fs.js"),
-      { expose: "fs" }
-    );
+    bundle.require(_fs2.default.createReadStream(__dirname + "/fixture-fs.js"), { expose: "fs" });
     bundle.add(streams.fixtures());
     bundle.add(streams.runAllScript(), { basedir: __dirname });
 
@@ -133,31 +148,29 @@ var build = {
      * above) and not a version dynamically included in the current bundle for
      * test files.
      */
-    bundle.transform(function(filename) {
+    bundle.transform(function (filename) {
       var faker;
 
       if (filename === mainPath) {
         includedFaker = true;
-        faker = new Stream.Readable();
-        faker._read = faker.write = function() {};
+        faker = new _stream2.default.Readable();
+        faker._read = faker.write = function () {};
         faker.push("exports.JSHINT = window.JSHINT;");
         faker.push(null);
         return faker;
       }
 
-      return new Stream.PassThrough();
+      return new _stream2.default.PassThrough();
     });
 
-    bundle.bundle(function(err, src) {
+    bundle.bundle(function (err, src) {
       if (err) {
         done(err);
         return;
       }
 
       if (!includedFaker) {
-        done(new Error(
-          "JSHint extraction module not included in bundled test build."
-        ));
+        done(new Error("JSHint extraction module not included in bundled test build."));
         return;
       }
 
@@ -166,17 +179,17 @@ var build = {
   }
 };
 
-var exportedObject = function(port, done) {
-  var server = http.createServer(function(req, res) {
-    var pathname = url.parse(req.url).pathname.slice(1) || "index.html";
-    var contentType = contentTypes[path.extname(pathname)];
+var exportedObject = function exportedObject(port, done) {
+  var server = _http2.default.createServer(function (req, res) {
+    var pathname = _url2.default.parse(req.url).pathname.slice(1) || "index.html";
+    var contentType = contentTypes[_path2.default.extname(pathname)];
 
     if (!Object.hasOwnProperty.call(build, pathname)) {
       res.statusCode = 404;
       res.end("not found");
     }
 
-    build[pathname](function(err, src) {
+    build[pathname](function (err, src) {
       if (err) {
         res.statusCode = 500;
         res.end(err.message);
@@ -184,9 +197,7 @@ var exportedObject = function(port, done) {
       }
 
       res.setHeader("content-type", contentType);
-      res.setHeader(
-        "Cache-Control", "private, no-cache, no-store, must-revalidate"
-      );
+      res.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
       res.setHeader("Expires", "-1");
       res.setHeader("Pragma", "no-cache");
 
@@ -194,21 +205,19 @@ var exportedObject = function(port, done) {
     });
   });
 
-  server.listen(port, function() {
+  server.listen(port, function () {
     done(server);
   });
 };
 
-export { exportedObject as serverjs };;
-
+exports.serverjs = exportedObject;
+;
 
 if (require.main === module) {
   console.log("Starting JSHint browser build testing server.");
-  console.log(
-    "(override default port via the NODE_PORT environmental variable)"
-  );
+  console.log("(override default port via the NODE_PORT environmental variable)");
 
-  module.exports(process.env.NODE_PORT || 8045, function(server) {
+  module.exports(process.env.NODE_PORT || 8045, function (server) {
     console.log("Server now listening on port " + server.address().port);
   });
 }

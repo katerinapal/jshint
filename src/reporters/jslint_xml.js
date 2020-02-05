@@ -1,29 +1,35 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 var exported_jslint_xmljs = {
-  reporter: function(results) {
+  reporter: function reporter(results) {
     "use strict";
 
     var files = {},
-    out = [],
-    pairs = {
+        out = [],
+        pairs = {
       "&": "&amp;",
       '"': "&quot;",
       "'": "&apos;",
       "<": "&lt;",
       ">": "&gt;"
     },
-    file, i, issue;
+        file,
+        i,
+        issue;
 
     function encode(s) {
       for (var r in pairs) {
-        if (typeof(s) !== "undefined") {
+        if (typeof s !== "undefined") {
           s = s.replace(new RegExp(r, "g"), pairs[r]);
         }
       }
       return s || "";
     }
 
-
-    results.forEach(function(result) {
+    results.forEach(function (result) {
       result.file = result.file.replace(/^\.\//, '');
       if (!files[result.file]) {
         files[result.file] = [];
@@ -38,12 +44,7 @@ var exported_jslint_xmljs = {
       out.push("\t<file name=\"" + file + "\">");
       for (i = 0; i < files[file].length; i++) {
         issue = files[file][i];
-        out.push("\t\t<issue line=\"" + issue.line +
-          "\" char=\"" + issue.character +
-          "\" reason=\"" + encode(issue.reason) +
-          "\" evidence=\"" + encode(issue.evidence) +
-          (issue.code ? "\" severity=\"" + encode(issue.code.charAt(0)) : "") +
-          "\" />");
+        out.push("\t\t<issue line=\"" + issue.line + "\" char=\"" + issue.character + "\" reason=\"" + encode(issue.reason) + "\" evidence=\"" + encode(issue.evidence) + (issue.code ? "\" severity=\"" + encode(issue.code.charAt(0)) : "") + "\" />");
       }
       out.push("\t</file>");
     }
@@ -54,18 +55,18 @@ var exported_jslint_xmljs = {
   }
 };
 
-var exported_jslint_xmljs_reporter = function(results) {
+var exported_jslint_xmljs_reporter = function exported_jslint_xmljs_reporter(results) {
   "use strict";
 
   var files = {},
       out = [],
       pairs = {
-        "&": "&amp;",
-        "\"": "&quot;",
-        "'": "&apos;",
-        "<": "&lt;",
-        ">": "&gt;"
-      },
+    "&": "&amp;",
+    "\"": "&quot;",
+    "'": "&apos;",
+    "<": "&lt;",
+    ">": "&gt;"
+  },
       file,
       i,
       issue;
@@ -79,8 +80,7 @@ var exported_jslint_xmljs_reporter = function(results) {
     return s || "";
   }
 
-
-  results.forEach(function(result) {
+  results.forEach(function (result) {
     result.file = result.file.replace(/^\.\//, "");
     if (!files[result.file]) {
       files[result.file] = [];
@@ -95,9 +95,7 @@ var exported_jslint_xmljs_reporter = function(results) {
     out.push("\t<file name=\"" + file + "\">");
     for (i = 0; i < files[file].length; i++) {
       issue = files[file][i];
-      out.push(
-        "\t\t<issue line=\"" + issue.line + "\" char=\"" + issue.character + "\" reason=\"" + encode(issue.reason) + "\" evidence=\"" + encode(issue.evidence) + (issue.code ? "\" severity=\"" + encode(issue.code.charAt(0)) : "") + "\" />"
-      );
+      out.push("\t\t<issue line=\"" + issue.line + "\" char=\"" + issue.character + "\" reason=\"" + encode(issue.reason) + "\" evidence=\"" + encode(issue.evidence) + (issue.code ? "\" severity=\"" + encode(issue.code.charAt(0)) : "") + "\" />");
     }
     out.push("\t</file>");
   }
@@ -107,4 +105,4 @@ var exported_jslint_xmljs_reporter = function(results) {
   console.log(out.join("\n") + "\n");
 };
 
-export { exported_jslint_xmljs_reporter as reporter };
+exports.reporter = exported_jslint_xmljs_reporter;

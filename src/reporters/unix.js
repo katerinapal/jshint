@@ -5,14 +5,14 @@
 // The format is "FILENAME:LINE:COL: MESSAGE".
 
 module.exports = {
-  reporter: function(results, data, opts) {
+  reporter: function reporter(results, data, opts) {
     var len = results.length;
     var str = "";
     var prevfile;
 
     opts = opts || {};
 
-    results.forEach(function(result) {
+    results.forEach(function (result) {
       var file = result.file;
       var error = result.error;
 
@@ -31,7 +31,7 @@ module.exports = {
     });
 
     if (str) {
-      console.log(str + "\n" + len + " error" + ((len === 1) ? "" : "s"));
+      console.log(str + "\n" + len + " error" + (len === 1 ? "" : "s"));
     }
   }
 };

@@ -1,8 +1,15 @@
-import path_moduleObject from "path";
 "use strict";
 
-var resolve = path_moduleObject.resolve;
+var _path = require("path");
 
-exports.readFileSync = function(path) {
+var _path2 = _interopRequireDefault(_path);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+"use strict";
+
+var resolve = _path2.default.resolve;
+
+exports.readFileSync = function (path) {
   return window.JSHintTestFixtures[resolve(path)];
 };
