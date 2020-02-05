@@ -1,11 +1,10 @@
+import fs from "fs";
+import http from "http";
+import Stream from "stream";
+import path from "path";
+import url from "url";
+import browserify from "browserify";
 "use strict";
-var fs = require("fs");
-var http = require("http");
-var Stream = require("stream");
-var path = require("path");
-var url = require("url");
-
-var browserify = require("browserify");
 var buildJSHint = require(__dirname + "/../../../scripts/build");
 
 var mainPath = path.resolve(
@@ -167,7 +166,7 @@ var build = {
   }
 };
 
-module.exports = function(port, done) {
+var exportedObject = function(port, done) {
   var server = http.createServer(function(req, res) {
     var pathname = url.parse(req.url).pathname.slice(1) || "index.html";
     var contentType = contentTypes[path.extname(pathname)];
@@ -199,6 +198,8 @@ module.exports = function(port, done) {
     done(server);
   });
 };
+
+export { exportedObject as serverjs };;
 
 
 if (require.main === module) {

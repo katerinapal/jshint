@@ -1,8 +1,8 @@
+import regenerate from "regenerate";
+import fs from "fs";
 // Based on https://gist.github.com/mathiasbynens/6334847 by @mathias
 
 'use strict';
-
-var regenerate = require('regenerate');
 
 var unicodeVersion = 'unicode-11.0.0';
 var oldUnicodeVersion = 'unicode-5.2.0';
@@ -67,7 +67,6 @@ var generateES5Regex = function() { // ES 5.1 + Unicode v5.2.0
     '(?:' + identifierPart.toString() + ')*$/';
 };
 
-var fs = require('fs');
 var writeFile = function(fileName, data) {
   fs.writeFileSync(
     fileName,

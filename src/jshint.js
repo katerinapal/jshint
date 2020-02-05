@@ -1,56 +1,17 @@
-/*!
- * JSHint, by JSHint Community.
- *
- * This file (and this file only) is licensed under the same slightly modified
- * MIT license that JSLint is. It stops evil-doers everywhere:
- *
- *   Copyright (c) 2002 Douglas Crockford  (www.JSLint.com)
- *
- *   Permission is hereby granted, free of charge, to any person obtaining
- *   a copy of this software and associated documentation files (the "Software"),
- *   to deal in the Software without restriction, including without limitation
- *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *   and/or sell copies of the Software, and to permit persons to whom
- *   the Software is furnished to do so, subject to the following conditions:
- *
- *   The above copyright notice and this permission notice shall be included
- *   in all copies or substantial portions of the Software.
- *
- *   The Software shall be used for Good, not Evil.
- *
- *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- *   DEALINGS IN THE SOFTWARE.
- *
- */
-
-/*jshint quotmark:double */
-/*exported console */
-
-var _            = require("lodash");
-var events       = require("events");
-var vars         = require("./vars.js");
-var messages     = require("./messages.js");
-var Lexer        = require("./lex.js").Lexer;
-var reg          = require("./reg.js");
-var state        = require("./state.js").state;
-var style        = require("./style.js");
-var options      = require("./options.js");
-var scopeManager = require("./scope-manager.js");
-var prodParams   = require("./prod-params.js");
-
-// We need this module here because environments such as IE and Rhino
-// don't necessarilly expose the 'console' API and browserify uses
-// it to log things. It's a sad state of affair, really.
-var console = require("console-browserify");
-
-// We build the application inside a function so that we produce only a singleton
-// variable. That function will be invoked immediately, and its return value is
-// the JSHINT function itself.
+var optionsBinding = options;
+var stateBinding = state;
+import { Lexer } from "./lex.js";
+import { state } from "./state.js";
+import _ from "lodash";
+import events from "events";
+import * as vars from "./vars.js";
+import * as messages from "./messages.js";
+import * as reg from "./reg.js";
+import * as style from "./style.js";
+import * as options from "./options.js";
+import { scopeManager } from "./scope-manager.js";
+import * as prodParams from "./prod-params.js";
+import console from "console-browserify";
 
 var JSHINT = (function() {
   "use strict";
@@ -96,10 +57,10 @@ var JSHINT = (function() {
 
     if (isStable) {
       type = "";
-      validNames = options.validNames;
+      validNames = optionsBinding.validNames;
     } else {
       type = "unstable ";
-      validNames = options.unstableNames;
+      validNames = optionsBinding.unstableNames;
     }
 
     name = name.trim();
@@ -109,7 +70,7 @@ var JSHINT = (function() {
     }
 
     if (validNames.indexOf(name) === -1) {
-      if (t.type !== "jslint" && !_.has(options.removed, name)) {
+      if (t.type !== "jslint" && !_.has(optionsBinding.removed, name)) {
         error("E001", t, type, name);
         return false;
       }
@@ -156,7 +117,7 @@ var JSHINT = (function() {
     var meta = token.meta;
 
     if (meta && meta.isFutureReservedWord) {
-      if (state.inES5()) {
+      if (stateBinding.inES5()) {
         // ES3 FutureReservedWord in an ES5 environment.
         if (!meta.es5) {
           return false;
@@ -166,18 +127,18 @@ var JSHINT = (function() {
           return false;
         }
       }
-    } else if (meta && meta.es5 && !state.inES5()) {
+    } else if (meta && meta.es5 && !stateBinding.inES5()) {
       return false;
     }
 
     // Some identifiers are reserved only within a strict mode environment.
-    if (meta && meta.strictOnly && state.inES5()) {
-      if (!state.option.strict && !state.isStrict()) {
+    if (meta && meta.strictOnly && stateBinding.inES5()) {
+      if (!stateBinding.option.strict && !stateBinding.isStrict()) {
         return false;
       }
     }
 
-    if (token.id === "await" && (!(context & prodParams.async) && !state.option.module)) {
+    if (token.id === "await" && (!(context & prodParams.async) && !stateBinding.option.module)) {
       return false;
     }
 
@@ -199,16 +160,16 @@ var JSHINT = (function() {
   }
 
   function processenforceall() {
-    if (state.option.enforceall) {
-      for (var enforceopt in options.bool.enforcing) {
-        if (state.option[enforceopt] === undefined &&
-            !options.noenforceall[enforceopt]) {
-          state.option[enforceopt] = true;
+    if (stateBinding.option.enforceall) {
+      for (var enforceopt in optionsBinding.bool.enforcing) {
+        if (stateBinding.option[enforceopt] === undefined &&
+            !optionsBinding.noenforceall[enforceopt]) {
+          stateBinding.option[enforceopt] = true;
         }
       }
-      for (var relaxopt in options.bool.relaxing) {
-        if (state.option[relaxopt] === undefined) {
-          state.option[relaxopt] = false;
+      for (var relaxopt in optionsBinding.bool.relaxing) {
+        if (stateBinding.option[relaxopt] === undefined) {
+          stateBinding.option[relaxopt] = false;
         }
       }
     }
@@ -224,20 +185,20 @@ var JSHINT = (function() {
     /**
      * TODO: Remove in JSHint 3
      */
-    badESOpt = state.inferEsVersion();
+    badESOpt = stateBinding.inferEsVersion();
     if (badESOpt) {
-      quit("E059", state.tokens.next, "esversion", badESOpt);
+      quit("E059", stateBinding.tokens.next, "esversion", badESOpt);
     }
 
-    if (state.inES5()) {
+    if (stateBinding.inES5()) {
       combine(predefined, vars.ecmaIdentifiers[5]);
     }
 
-    if (state.inES6()) {
+    if (stateBinding.inES6()) {
       combine(predefined, vars.ecmaIdentifiers[6]);
     }
 
-    if (state.inES8()) {
+    if (stateBinding.inES8()) {
       combine(predefined, vars.ecmaIdentifiers[8]);
     }
 
@@ -245,116 +206,116 @@ var JSHINT = (function() {
      * Use `in` to check for the presence of any explicitly-specified value for
      * `globalstrict` because both `true` and `false` should trigger an error.
      */
-    if (state.option.strict === "global" && "globalstrict" in state.option) {
-      quit("E059", state.tokens.next, "strict", "globalstrict");
+    if (stateBinding.option.strict === "global" && "globalstrict" in stateBinding.option) {
+      quit("E059", stateBinding.tokens.next, "strict", "globalstrict");
     }
 
-    if (state.option.module) {
+    if (stateBinding.option.module) {
       /**
        * TODO: Extend this restriction to *all* ES6-specific options.
        */
-      if (!state.inES6()) {
-        warning("W134", state.tokens.next, "module", 6);
+      if (!stateBinding.inES6()) {
+        warning("W134", stateBinding.tokens.next, "module", 6);
       }
     }
 
-    if (state.option.regexpu) {
+    if (stateBinding.option.regexpu) {
       /**
        * TODO: Extend this restriction to *all* ES6-specific options.
        */
-      if (!state.inES6()) {
-        warning("W134", state.tokens.next, "regexpu", 6);
+      if (!stateBinding.inES6()) {
+        warning("W134", stateBinding.tokens.next, "regexpu", 6);
       }
     }
 
-    if (state.option.couch) {
+    if (stateBinding.option.couch) {
       combine(predefined, vars.couch);
     }
 
-    if (state.option.qunit) {
+    if (stateBinding.option.qunit) {
       combine(predefined, vars.qunit);
     }
 
-    if (state.option.rhino) {
+    if (stateBinding.option.rhino) {
       combine(predefined, vars.rhino);
     }
 
-    if (state.option.shelljs) {
+    if (stateBinding.option.shelljs) {
       combine(predefined, vars.shelljs);
       combine(predefined, vars.node);
     }
-    if (state.option.typed) {
+    if (stateBinding.option.typed) {
       combine(predefined, vars.typed);
     }
 
-    if (state.option.phantom) {
+    if (stateBinding.option.phantom) {
       combine(predefined, vars.phantom);
     }
 
-    if (state.option.prototypejs) {
+    if (stateBinding.option.prototypejs) {
       combine(predefined, vars.prototypejs);
     }
 
-    if (state.option.node) {
+    if (stateBinding.option.node) {
       combine(predefined, vars.node);
       combine(predefined, vars.typed);
     }
 
-    if (state.option.devel) {
+    if (stateBinding.option.devel) {
       combine(predefined, vars.devel);
     }
 
-    if (state.option.dojo) {
+    if (stateBinding.option.dojo) {
       combine(predefined, vars.dojo);
     }
 
-    if (state.option.browser) {
+    if (stateBinding.option.browser) {
       combine(predefined, vars.browser);
       combine(predefined, vars.typed);
     }
 
-    if (state.option.browserify) {
+    if (stateBinding.option.browserify) {
       combine(predefined, vars.browser);
       combine(predefined, vars.typed);
       combine(predefined, vars.browserify);
     }
 
-    if (state.option.nonstandard) {
+    if (stateBinding.option.nonstandard) {
       combine(predefined, vars.nonstandard);
     }
 
-    if (state.option.jasmine) {
+    if (stateBinding.option.jasmine) {
       combine(predefined, vars.jasmine);
     }
 
-    if (state.option.jquery) {
+    if (stateBinding.option.jquery) {
       combine(predefined, vars.jquery);
     }
 
-    if (state.option.mootools) {
+    if (stateBinding.option.mootools) {
       combine(predefined, vars.mootools);
     }
 
-    if (state.option.worker) {
+    if (stateBinding.option.worker) {
       combine(predefined, vars.worker);
     }
 
-    if (state.option.wsh) {
+    if (stateBinding.option.wsh) {
       combine(predefined, vars.wsh);
     }
 
-    if (state.option.yui) {
+    if (stateBinding.option.yui) {
       combine(predefined, vars.yui);
     }
 
-    if (state.option.mocha) {
+    if (stateBinding.option.mocha) {
       combine(predefined, vars.mocha);
     }
   }
 
   // Produce an error warning.
   function quit(code, token, a, b) {
-    var percentage = Math.floor((token.line / state.lines.length) * 100);
+    var percentage = Math.floor((token.line / stateBinding.lines.length) * 100);
     var message = messages.errors[code].desc;
 
     var exception = {
@@ -375,7 +336,7 @@ var JSHINT = (function() {
   }
 
   function removeIgnoredMessages() {
-    var ignored = state.ignoredLines;
+    var ignored = stateBinding.ignoredLines;
 
     if (_.isEmpty(ignored)) return;
     JSHINT.errors = _.reject(JSHINT.errors, function(err) { return ignored[err.line] });
@@ -385,7 +346,7 @@ var JSHINT = (function() {
     var ch, l, w, msg;
 
     if (/^W\d{3}$/.test(code)) {
-      if (state.ignored[code])
+      if (stateBinding.ignored[code])
         return;
 
       msg = messages.warnings[code];
@@ -395,9 +356,9 @@ var JSHINT = (function() {
       msg = messages.info[code];
     }
 
-    t = t || state.tokens.next || {};
+    t = t || stateBinding.tokens.next || {};
     if (t.id === "(end)") {  // `~
-      t = state.tokens.curr;
+      t = stateBinding.tokens.curr;
     }
 
     l = t.line;
@@ -407,7 +368,7 @@ var JSHINT = (function() {
       id: "(error)",
       raw: msg.desc,
       code: msg.code,
-      evidence: state.lines[l - 1] || "",
+      evidence: stateBinding.lines[l - 1] || "",
       line: l,
       character: ch,
       scope: JSHINT.scope,
@@ -422,7 +383,7 @@ var JSHINT = (function() {
 
     removeIgnoredMessages();
 
-    if (JSHINT.errors.length >= state.option.maxerr)
+    if (JSHINT.errors.length >= stateBinding.option.maxerr)
       quit("E043", t);
 
     return w;
@@ -518,7 +479,7 @@ var JSHINT = (function() {
           return;
         }
 
-        state.funct["(scope)"].addExported(e);
+        stateBinding.funct["(scope)"].addExported(e);
       });
     }
 
@@ -570,9 +531,9 @@ var JSHINT = (function() {
               return;
             }
 
-            state.option[key] = val;
+            stateBinding.option[key] = val;
           } else {
-            state.option[key] = key === "indent" ? 4 : false;
+            stateBinding.option[key] = key === "indent" ? 4 : false;
           }
 
           return;
@@ -581,13 +542,13 @@ var JSHINT = (function() {
         if (key === "validthis") {
           // `validthis` is valid only within a function scope.
 
-          if (state.funct["(global)"])
+          if (stateBinding.funct["(global)"])
             return void error("E009");
 
           if (val !== "true" && val !== "false")
             return void error("E002", directiveToken);
 
-          state.option.validthis = (val === "true");
+          stateBinding.option.validthis = (val === "true");
           return;
         }
 
@@ -595,11 +556,11 @@ var JSHINT = (function() {
           switch (val) {
           case "true":
           case "false":
-            state.option.quotmark = (val === "true");
+            stateBinding.option.quotmark = (val === "true");
             break;
           case "double":
           case "single":
-            state.option.quotmark = val;
+            stateBinding.option.quotmark = val;
             break;
           default:
             error("E002", directiveToken);
@@ -610,14 +571,14 @@ var JSHINT = (function() {
         if (key === "shadow") {
           switch (val) {
           case "true":
-            state.option.shadow = true;
+            stateBinding.option.shadow = true;
             break;
           case "outer":
-            state.option.shadow = "outer";
+            stateBinding.option.shadow = "outer";
             break;
           case "false":
           case "inner":
-            state.option.shadow = "inner";
+            stateBinding.option.shadow = "inner";
             break;
           default:
             error("E002", directiveToken);
@@ -628,14 +589,14 @@ var JSHINT = (function() {
         if (key === "unused") {
           switch (val) {
           case "true":
-            state.option.unused = true;
+            stateBinding.option.unused = true;
             break;
           case "false":
-            state.option.unused = false;
+            stateBinding.option.unused = false;
             break;
           case "vars":
           case "strict":
-            state.option.unused = val;
+            stateBinding.option.unused = val;
             break;
           default:
             error("E002", directiveToken);
@@ -646,13 +607,13 @@ var JSHINT = (function() {
         if (key === "latedef") {
           switch (val) {
           case "true":
-            state.option.latedef = true;
+            stateBinding.option.latedef = true;
             break;
           case "false":
-            state.option.latedef = false;
+            stateBinding.option.latedef = false;
             break;
           case "nofunc":
-            state.option.latedef = "nofunc";
+            stateBinding.option.latedef = "nofunc";
             break;
           default:
             error("E002", directiveToken);
@@ -663,7 +624,7 @@ var JSHINT = (function() {
         if (key === "ignore") {
           switch (val) {
           case "line":
-            state.ignoredLines[directiveToken.line] = true;
+            stateBinding.ignoredLines[directiveToken.line] = true;
             removeIgnoredMessages();
             break;
           default:
@@ -675,14 +636,14 @@ var JSHINT = (function() {
         if (key === "strict") {
           switch (val) {
           case "true":
-            state.option.strict = true;
+            stateBinding.option.strict = true;
             break;
           case "false":
-            state.option.strict = false;
+            stateBinding.option.strict = false;
             break;
           case "global":
           case "implied":
-            state.option.strict = val;
+            stateBinding.option.strict = val;
             break;
           default:
             error("E002", directiveToken);
@@ -694,7 +655,7 @@ var JSHINT = (function() {
           /**
            * TODO: Extend this restriction to *all* "environmental" options.
            */
-          if (!hasParsedCode(state.funct)) {
+          if (!hasParsedCode(stateBinding.funct)) {
             error("E055", directiveToken, "module");
           }
         }
@@ -707,21 +668,21 @@ var JSHINT = (function() {
           case "7":
           case "8":
           case "9":
-            state.option.moz = false;
-            state.option.esversion = +val;
+            stateBinding.option.moz = false;
+            stateBinding.option.esversion = +val;
             break;
           case "2015":
           case "2016":
           case "2017":
           case "2018":
-            state.option.moz = false;
+            stateBinding.option.moz = false;
             // Translate specification publication year to version number.
-            state.option.esversion = +val - 2009;
+            stateBinding.option.esversion = +val - 2009;
             break;
           default:
             error("E002", directiveToken);
           }
-          if (!hasParsedCode(state.funct)) {
+          if (!hasParsedCode(stateBinding.funct)) {
             error("E055", directiveToken, "esversion");
           }
           return;
@@ -730,23 +691,23 @@ var JSHINT = (function() {
         var match = /^([+-])(W\d{3})$/g.exec(key);
         if (match) {
           // ignore for -W..., unignore for +W...
-          state.ignored[match[2]] = (match[1] === "-");
+          stateBinding.ignored[match[2]] = (match[1] === "-");
           return;
         }
 
         var tn;
         if (val === "true" || val === "false") {
           if (directiveToken.type === "jslint") {
-            tn = options.renamed[key] || key;
-            state.option[tn] = (val === "true");
+            tn = optionsBinding.renamed[key] || key;
+            stateBinding.option[tn] = (val === "true");
 
-            if (options.inverted[tn] !== undefined) {
-              state.option[tn] = !state.option[tn];
+            if (optionsBinding.inverted[tn] !== undefined) {
+              stateBinding.option[tn] = !stateBinding.option[tn];
             }
           } else if (directiveToken.type === "jshint.unstable") {
-            state.option.unstable[key] = (val === "true");
+            stateBinding.option.unstable[key] = (val === "true");
           } else {
-            state.option[key] = (val === "true");
+            stateBinding.option[key] = (val === "true");
           }
 
           return;
@@ -794,7 +755,7 @@ var JSHINT = (function() {
         // already emitted by the most recent invocation of `advance` and is
         // available as the next token.
         if (!lookahead.length) {
-          return state.tokens.next;
+          return stateBinding.tokens.next;
         }
 
         return lookahead[j - 1];
@@ -830,12 +791,12 @@ var JSHINT = (function() {
    *                                  used to produce more meaningful errors
    */
   function advance(expected, relatedToken) {
-    var nextToken = state.tokens.next;
+    var nextToken = stateBinding.tokens.next;
 
-    switch (state.tokens.curr.id) {
+    switch (stateBinding.tokens.curr.id) {
     case "(number)":
       if (nextToken.id === ".") {
-        warning("W005", state.tokens.curr);
+        warning("W005", stateBinding.tokens.curr);
       }
       break;
     case "-":
@@ -863,27 +824,27 @@ var JSHINT = (function() {
       }
     }
 
-    state.tokens.prev = state.tokens.curr;
-    state.tokens.curr = state.tokens.next;
+    stateBinding.tokens.prev = stateBinding.tokens.curr;
+    stateBinding.tokens.curr = stateBinding.tokens.next;
     for (;;) {
-      state.tokens.next = lookahead.shift() || lex.token();
+      stateBinding.tokens.next = lookahead.shift() || lex.token();
 
-      if (!state.tokens.next) { // No more tokens left, give up
-        quit("E041", state.tokens.curr);
+      if (!stateBinding.tokens.next) { // No more tokens left, give up
+        quit("E041", stateBinding.tokens.curr);
       }
 
-      if (state.tokens.next.id === "(end)" || state.tokens.next.id === "(error)") {
+      if (stateBinding.tokens.next.id === "(end)" || stateBinding.tokens.next.id === "(error)") {
         return;
       }
 
-      if (state.tokens.next.check) {
-        state.tokens.next.check();
+      if (stateBinding.tokens.next.check) {
+        stateBinding.tokens.next.check();
       }
 
-      if (state.tokens.next.isSpecial) {
-        lintingDirective(state.tokens.next, state.tokens.curr);
+      if (stateBinding.tokens.next.isSpecial) {
+        lintingDirective(stateBinding.tokens.next, stateBinding.tokens.curr);
       } else {
-        if (state.tokens.next.id !== "(endline)") {
+        if (stateBinding.tokens.next.id !== "(endline)") {
           break;
         }
       }
@@ -903,8 +864,8 @@ var JSHINT = (function() {
 
   function isEndOfExpr(context, curr, next) {
     if (arguments.length <= 1) {
-      curr = state.tokens.curr;
-      next = state.tokens.next;
+      curr = stateBinding.tokens.curr;
+      next = stateBinding.tokens.next;
     }
 
     if (next.id === "in" && context & prodParams.noin) {
@@ -952,32 +913,32 @@ var JSHINT = (function() {
 
     context &= ~prodParams.initial;
 
-    state.nameStack.push();
+    stateBinding.nameStack.push();
 
-    if (state.tokens.next.id === "(end)")
-      error("E006", state.tokens.curr);
+    if (stateBinding.tokens.next.id === "(end)")
+      error("E006", stateBinding.tokens.curr);
 
     advance();
 
     if (initial) {
-      state.funct["(verb)"] = state.tokens.curr.value;
-      state.tokens.curr.beginsStmt = true;
+      stateBinding.funct["(verb)"] = stateBinding.tokens.curr.value;
+      stateBinding.tokens.curr.beginsStmt = true;
     }
 
-    curr = state.tokens.curr;
+    curr = stateBinding.tokens.curr;
 
     if (initial && curr.fud && (!curr.useFud || curr.useFud(context))) {
-      left = state.tokens.curr.fud(context);
+      left = stateBinding.tokens.curr.fud(context);
     } else {
-      if (state.tokens.curr.nud) {
-        left = state.tokens.curr.nud(context, rbp);
+      if (stateBinding.tokens.curr.nud) {
+        left = stateBinding.tokens.curr.nud(context, rbp);
       } else {
-        error("E030", state.tokens.curr, state.tokens.curr.id);
+        error("E030", stateBinding.tokens.curr, stateBinding.tokens.curr.id);
       }
 
-      while (rbp < state.tokens.next.lbp && !isEndOfExpr(context)) {
-        isArray = state.tokens.curr.value === "Array";
-        isObject = state.tokens.curr.value === "Object";
+      while (rbp < stateBinding.tokens.next.lbp && !isEndOfExpr(context)) {
+        isArray = stateBinding.tokens.curr.value === "Array";
+        isObject = stateBinding.tokens.curr.value === "Object";
 
         // #527, new Foo.Array(), Foo.Array(), new Foo.Object(), Foo.Object()
         // Line breaks in IfStatement heads exist to satisfy the checkJSHint
@@ -991,7 +952,7 @@ var JSHINT = (function() {
             isArray = false;
             // ...In the case of Object, if the left.value and state.tokens.curr.value
             // are not equal, then safely assume that this not "new Object()"
-            if (left.value !== state.tokens.curr.value) {
+            if (left.value !== stateBinding.tokens.curr.value) {
               isObject = false;
             }
           }
@@ -999,23 +960,23 @@ var JSHINT = (function() {
 
         advance();
 
-        if (isArray && state.tokens.curr.id === "(" && state.tokens.next.id === ")") {
-          warning("W009", state.tokens.curr);
+        if (isArray && stateBinding.tokens.curr.id === "(" && stateBinding.tokens.next.id === ")") {
+          warning("W009", stateBinding.tokens.curr);
         }
 
-        if (isObject && state.tokens.curr.id === "(" && state.tokens.next.id === ")") {
-          warning("W010", state.tokens.curr);
+        if (isObject && stateBinding.tokens.curr.id === "(" && stateBinding.tokens.next.id === ")") {
+          warning("W010", stateBinding.tokens.curr);
         }
 
-        if (left && state.tokens.curr.led) {
-          left = state.tokens.curr.led(context, left);
+        if (left && stateBinding.tokens.curr.led) {
+          left = stateBinding.tokens.curr.led(context, left);
         } else {
-          error("E033", state.tokens.curr, state.tokens.curr.id);
+          error("E033", stateBinding.tokens.curr, stateBinding.tokens.curr.id);
         }
       }
     }
 
-    state.nameStack.pop();
+    stateBinding.nameStack.pop();
 
     return left;
   }
@@ -1028,21 +989,21 @@ var JSHINT = (function() {
   }
 
   function nobreaknonadjacent(left, right) {
-    if (!state.option.laxbreak && left.line !== startLine(right)) {
+    if (!stateBinding.option.laxbreak && left.line !== startLine(right)) {
       warning("W014", right, right.value);
     }
   }
 
   function nolinebreak(t) {
     t = t;
-    if (t.line !== startLine(state.tokens.next)) {
+    if (t.line !== startLine(stateBinding.tokens.next)) {
       warning("E022", t, t.value);
     }
   }
 
   function nobreakcomma(left, right) {
     if (left.line !== startLine(right)) {
-      if (!state.option.laxcomma) {
+      if (!stateBinding.option.laxcomma) {
         if (parseComma.first) {
           warning("I001");
           parseComma.first = false;
@@ -1056,15 +1017,15 @@ var JSHINT = (function() {
     opts = opts || {};
 
     if (!opts.peek) {
-      nobreakcomma(state.tokens.curr, state.tokens.next);
+      nobreakcomma(stateBinding.tokens.curr, stateBinding.tokens.next);
       advance(",");
     } else {
-      nobreakcomma(state.tokens.prev, state.tokens.curr);
+      nobreakcomma(stateBinding.tokens.prev, stateBinding.tokens.curr);
     }
 
-    if (state.tokens.next.identifier && !(opts.property && state.inES5())) {
+    if (stateBinding.tokens.next.identifier && !(opts.property && stateBinding.inES5())) {
       // Keywords that cannot follow a comma operator.
-      switch (state.tokens.next.value) {
+      switch (stateBinding.tokens.next.value) {
       case "break":
       case "case":
       case "catch":
@@ -1085,13 +1046,13 @@ var JSHINT = (function() {
       case "let":
       case "while":
       case "with":
-        error("E024", state.tokens.next, state.tokens.next.value);
+        error("E024", stateBinding.tokens.next, stateBinding.tokens.next.value);
         return false;
       }
     }
 
-    if (state.tokens.next.type === "(punctuator)") {
-      switch (state.tokens.next.value) {
+    if (stateBinding.tokens.next.type === "(punctuator)") {
+      switch (stateBinding.tokens.next.value) {
       case "}":
       case "]":
       case ",":
@@ -1100,7 +1061,7 @@ var JSHINT = (function() {
           return true;
         }
 
-        error("E024", state.tokens.next, state.tokens.next.value);
+        error("E024", stateBinding.tokens.next, stateBinding.tokens.next.value);
         return false;
       }
     }
@@ -1128,9 +1089,9 @@ var JSHINT = (function() {
    *                     support cases where further refinement is necessary)
    */
   function symbol(s, p) {
-    var x = state.syntax[s];
+    var x = stateBinding.syntax[s];
     if (!x || typeof x !== "object") {
-      state.syntax[s] = x = {
+      stateBinding.syntax[s] = x = {
         id: s,
         lbp: p,
         // Symbols that accept a right-hand side do so with a binding power
@@ -1230,7 +1191,7 @@ var JSHINT = (function() {
       this.right = expression(context, 150);
 
       if (this.id === "++" || this.id === "--") {
-        if (state.option.plusplus) {
+        if (stateBinding.option.plusplus) {
           warning("W016", this, this.id);
         }
 
@@ -1300,7 +1261,7 @@ var JSHINT = (function() {
    *                     support cases where further refinement is necessary)
    */
   function FutureReservedWord(name, meta) {
-    var x = type(name, (meta && meta.nud) || state.syntax["(identifier)"].nud);
+    var x = type(name, (meta && meta.nud) || stateBinding.syntax["(identifier)"].nud);
 
     meta = meta || {};
     meta.isFutureReservedWord = true;
@@ -1353,7 +1314,7 @@ var JSHINT = (function() {
     x.infix = true;
     x.led = function(context, left) {
       if (!w) {
-        nobreaknonadjacent(state.tokens.prev, state.tokens.curr);
+        nobreaknonadjacent(stateBinding.tokens.prev, stateBinding.tokens.curr);
       }
       if ((s === "in" || s === "instanceof") && left.id === "!") {
         warning("W018", left, "!");
@@ -1383,7 +1344,7 @@ var JSHINT = (function() {
 
     x.infix = true;
     x.led = function(context, left) {
-      nobreaknonadjacent(state.tokens.prev, state.tokens.curr);
+      nobreaknonadjacent(stateBinding.tokens.prev, stateBinding.tokens.curr);
 
       this.left = left;
       this.right = doFunction(context, { type: "arrow", loneArg: left });
@@ -1407,7 +1368,7 @@ var JSHINT = (function() {
 
     x.infix = true;
     x.led = function(context, left) {
-      nobreaknonadjacent(state.tokens.prev, state.tokens.curr);
+      nobreaknonadjacent(stateBinding.tokens.prev, stateBinding.tokens.curr);
       this.left = left;
       var right = this.right = expression(context, 100);
 
@@ -1418,7 +1379,7 @@ var JSHINT = (function() {
       }
 
       if (!left || !right) {
-        quit("E041", state.tokens.curr);
+        quit("E041", stateBinding.tokens.curr);
       }
 
       if (left.id === "!") {
@@ -1480,13 +1441,13 @@ var JSHINT = (function() {
   function isTypoTypeof(left, right, state) {
     var values;
 
-    if (state.option.notypeof)
+    if (stateBinding.option.notypeof)
       return false;
 
     if (!left || !right)
       return false;
 
-    values = state.inES6() ? typeofValues.es6 : typeofValues.es3;
+    values = stateBinding.inES6() ? typeofValues.es6 : typeofValues.es3;
 
     if (right.type === "(identifier)" && right.value === "typeof" && left.type === "(string)")
       return !_.includes(values, left.value);
@@ -1506,16 +1467,16 @@ var JSHINT = (function() {
     var isGlobal = false;
 
     // permit methods to refer to an "eval" key in their own context
-    if (left.type === "this" && state.funct["(context)"] === null) {
+    if (left.type === "this" && stateBinding.funct["(context)"] === null) {
       isGlobal = true;
     }
     // permit use of "eval" members of objects
     else if (left.type === "(identifier)") {
-      if (state.option.node && left.value === "global") {
+      if (stateBinding.option.node && left.value === "global") {
         isGlobal = true;
       }
 
-      else if (state.option.browser && (left.value === "window" || left.value === "document")) {
+      else if (stateBinding.option.browser && (left.value === "window" || left.value === "document")) {
         isGlobal = true;
       }
     }
@@ -1551,7 +1512,7 @@ var JSHINT = (function() {
         obj = obj.left;
 
       if (obj.identifier && natives.indexOf(obj.value) >= 0 &&
-          state.funct["(scope)"].isPredefined(obj.value)) {
+          stateBinding.funct["(scope)"].isPredefined(obj.value)) {
         return obj.value;
       }
     }
@@ -1577,11 +1538,11 @@ var JSHINT = (function() {
    */
   function checkLeftSideAssign(context, left, assignToken, options) {
 
-    var allowDestructuring = options && options.allowDestructuring;
+    var allowDestructuring = optionsBinding && optionsBinding.allowDestructuring;
 
     assignToken = assignToken || left;
 
-    if (state.option.freeze) {
+    if (stateBinding.option.freeze) {
       var nativeObject = findNativePrototype(left);
       if (nativeObject)
         warning("W121", left, nativeObject);
@@ -1593,36 +1554,36 @@ var JSHINT = (function() {
     if (left.identifier && !left.isMetaProperty) {
       // The `reassign` method also calls `modify`, but we are specific in
       // order to catch function re-assignment and globals re-assignment
-      state.funct["(scope)"].block.reassign(left.value, left);
+      stateBinding.funct["(scope)"].block.reassign(left.value, left);
     }
 
     if (left.id === ".") {
-      if (!left.left || left.left.value === "arguments" && !state.isStrict()) {
+      if (!left.left || left.left.value === "arguments" && !stateBinding.isStrict()) {
         warning("W143", assignToken);
       }
 
-      state.nameStack.set(state.tokens.prev);
+      stateBinding.nameStack.set(stateBinding.tokens.prev);
       return true;
     } else if (left.id === "{" || left.id === "[") {
       if (!allowDestructuring || !left.destructAssign) {
         if (left.id === "{" || !left.left) {
           warning("E031", assignToken);
-        } else if (left.left.value === "arguments" && !state.isStrict()) {
+        } else if (left.left.value === "arguments" && !stateBinding.isStrict()) {
           warning("W143", assignToken);
         }
       }
 
       if (left.id === "[") {
-        state.nameStack.set(left.right);
+        stateBinding.nameStack.set(left.right);
       }
 
       return true;
     } else if (left.identifier && !isReserved(context, left) && !left.isMetaProperty &&
       left.value !== "eval" && left.value !== "arguments") {
-      if (state.funct["(scope)"].labeltype(left.value) === "exception") {
+      if (stateBinding.funct["(scope)"].labeltype(left.value) === "exception") {
         warning("W022", left);
       }
-      state.nameStack.set(left);
+      stateBinding.nameStack.set(left);
       return true;
     }
 
@@ -1677,7 +1638,7 @@ var JSHINT = (function() {
     reserveName(x);
     x.infix = true;
     x.led = (typeof f === "function") ? f : function(context, left) {
-      if (state.option.bitwise) {
+      if (stateBinding.option.bitwise) {
         warning("W016", this, this.id);
       }
       this.left = left;
@@ -1698,7 +1659,7 @@ var JSHINT = (function() {
    */
   function bitwiseassignop(s) {
     return assignop(s, function(context, left, that) {
-      if (state.option.bitwise) {
+      if (stateBinding.option.bitwise) {
         warning("W016", that, that.id);
       }
 
@@ -1725,7 +1686,7 @@ var JSHINT = (function() {
     x.led = function(context, left) {
       // this = suffix e.g. "++" punctuator
       // left = symbol operated e.g. "a" identifier or "a.b" punctuator
-      if (state.option.plusplus) {
+      if (stateBinding.option.plusplus) {
         warning("W016", this, this.id);
       }
 
@@ -1750,7 +1711,7 @@ var JSHINT = (function() {
    * @returns {string|undefined} - the value of the identifier, if present
    */
   function optionalidentifier(context, prop, preserve) {
-    if (!state.tokens.next.identifier) {
+    if (!stateBinding.tokens.next.identifier) {
       return;
     }
 
@@ -1758,15 +1719,15 @@ var JSHINT = (function() {
       advance();
     }
 
-    var curr = state.tokens.curr;
-    var val  = state.tokens.curr.value;
+    var curr = stateBinding.tokens.curr;
+    var val  = stateBinding.tokens.curr.value;
 
     if (!isReserved(context, curr)) {
       return val;
     }
 
     if (prop) {
-      if (state.inES5()) {
+      if (stateBinding.inES5()) {
         return val;
       }
     }
@@ -1775,7 +1736,7 @@ var JSHINT = (function() {
       return val;
     }
 
-    warning("W024", state.tokens.curr, state.tokens.curr.id);
+    warning("W024", stateBinding.tokens.curr, stateBinding.tokens.curr.id);
     return val;
   }
 
@@ -1790,18 +1751,18 @@ var JSHINT = (function() {
    *                    consumed in this way
    */
   function spreadrest(operation) {
-    if (!checkPunctuator(state.tokens.next, "...")) {
+    if (!checkPunctuator(stateBinding.tokens.next, "...")) {
       return false;
     }
 
-    if (!state.inES6(true)) {
-      warning("W119", state.tokens.next, operation + " operator", "6");
+    if (!stateBinding.inES6(true)) {
+      warning("W119", stateBinding.tokens.next, operation + " operator", "6");
     }
     advance();
 
-    if (checkPunctuator(state.tokens.next, "...")) {
-      warning("E024", state.tokens.next, "...");
-      while (checkPunctuator(state.tokens.next, "...")) {
+    if (checkPunctuator(stateBinding.tokens.next, "...")) {
+      warning("E024", stateBinding.tokens.next, "...");
+      while (checkPunctuator(stateBinding.tokens.next, "...")) {
         advance();
       }
     }
@@ -1825,13 +1786,13 @@ var JSHINT = (function() {
       return i;
     }
 
-    error("E030", state.tokens.next, state.tokens.next.value);
+    error("E030", stateBinding.tokens.next, stateBinding.tokens.next.value);
 
     // The token should be consumed after a warning is issued so the parser
     // can continue as though an identifier were found. The semicolon token
     // should not be consumed in this way so that the parser interprets it as
     // a statement delimeter;
-    if (state.tokens.next.id !== ";") {
+    if (stateBinding.tokens.next.id !== ";") {
       advance();
     }
   }
@@ -1845,7 +1806,7 @@ var JSHINT = (function() {
    */
   function reachable(controlToken) {
     var i = 0, t;
-    if (state.tokens.next.id !== ";" || controlToken.inBracelessBlock) {
+    if (stateBinding.tokens.next.id !== ";" || controlToken.inBracelessBlock) {
       return;
     }
     for (;;) {
@@ -1859,7 +1820,7 @@ var JSHINT = (function() {
       }
       if (t.id !== "(endline)") {
         if (t.id === "function") {
-          if (state.option.latedef === true) {
+          if (stateBinding.option.latedef === true) {
             warning("W026", t);
           }
           break;
@@ -1878,23 +1839,23 @@ var JSHINT = (function() {
    * @param {token} stmt - token describing the statement under consideration
    */
   function parseFinalSemicolon(stmt) {
-    if (state.tokens.next.id !== ";") {
+    if (stateBinding.tokens.next.id !== ";") {
       // don't complain about unclosed templates / strings
-      if (state.tokens.next.isUnclosed) return advance();
+      if (stateBinding.tokens.next.isUnclosed) return advance();
 
-      var sameLine = startLine(state.tokens.next) === state.tokens.curr.line &&
-                     state.tokens.next.id !== "(end)";
-      var blockEnd = checkPunctuator(state.tokens.next, "}");
+      var sameLine = startLine(stateBinding.tokens.next) === stateBinding.tokens.curr.line &&
+                     stateBinding.tokens.next.id !== "(end)";
+      var blockEnd = checkPunctuator(stateBinding.tokens.next, "}");
 
-      if (sameLine && !blockEnd && !(stmt.id === "do" && state.inES6(true))) {
-        errorAt("E058", state.tokens.curr.line, state.tokens.curr.character);
-      } else if (!state.option.asi) {
+      if (sameLine && !blockEnd && !(stmt.id === "do" && stateBinding.inES6(true))) {
+        errorAt("E058", stateBinding.tokens.curr.line, stateBinding.tokens.curr.character);
+      } else if (!stateBinding.option.asi) {
 
         // If this is the last statement in a block that ends on the same line
         // *and* option lastsemic is on, ignore the warning.  Otherwise, issue
         // a warning about missing semicolon.
-        if (!(blockEnd && sameLine && state.option.lastsemic)) {
-          warningAt("W033", state.tokens.curr.line, state.tokens.curr.character);
+        if (!(blockEnd && sameLine && stateBinding.option.lastsemic)) {
+          warningAt("W033", stateBinding.tokens.curr.line, stateBinding.tokens.curr.character);
         }
       }
     } else {
@@ -1911,7 +1872,7 @@ var JSHINT = (function() {
    * @returns {token} - the token describing the statement
    */
   function statement(context) {
-    var i = indent, r, t = state.tokens.next, hasOwnScope = false;
+    var i = indent, r, t = stateBinding.tokens.next, hasOwnScope = false;
 
     context |= prodParams.initial;
 
@@ -1937,14 +1898,14 @@ var JSHINT = (function() {
       advance(":");
 
       hasOwnScope = true;
-      state.funct["(scope)"].stack();
-      state.funct["(scope)"].block.addBreakLabel(t.value, { token: state.tokens.curr });
+      stateBinding.funct["(scope)"].stack();
+      stateBinding.funct["(scope)"].block.addBreakLabel(t.value, { token: stateBinding.tokens.curr });
 
-      if (!state.tokens.next.labelled && state.tokens.next.value !== "{") {
-        warning("W028", state.tokens.next, t.value, state.tokens.next.value);
+      if (!stateBinding.tokens.next.labelled && stateBinding.tokens.next.value !== "{") {
+        warning("W028", stateBinding.tokens.next, t.value, stateBinding.tokens.next.value);
       }
 
-      t = state.tokens.next;
+      t = stateBinding.tokens.next;
     }
 
     // Is it a lonely block?
@@ -1957,11 +1918,11 @@ var JSHINT = (function() {
       //      ...
       //    }
       //  }
-      var iscase = (state.funct["(verb)"] === "case" && state.tokens.curr.value === ":");
+      var iscase = (stateBinding.funct["(verb)"] === "case" && stateBinding.tokens.curr.value === ":");
       block(context, true, true, false, false, iscase);
 
       if (hasOwnScope) {
-        state.funct["(scope)"].unstack();
+        stateBinding.funct["(scope)"].unstack();
       }
 
       return;
@@ -1974,7 +1935,7 @@ var JSHINT = (function() {
     if (r && !(r.identifier && r.value === "function") &&
         !(r.type === "(punctuator)" && r.left &&
           r.left.identifier && r.left.value === "function")) {
-      if (!state.isStrict() && state.stmtMissingStrict()) {
+      if (!stateBinding.isStrict() && stateBinding.stmtMissingStrict()) {
         warning("E007");
       }
     }
@@ -1982,9 +1943,9 @@ var JSHINT = (function() {
     // Look for the final semicolon.
 
     if (!t.block) {
-      if (!state.option.expr && (!r || !r.exps)) {
-        warning("W030", state.tokens.curr);
-      } else if (state.option.nonew && r && r.left && r.id === "(" && r.left.id === "new") {
+      if (!stateBinding.option.expr && (!r || !r.exps)) {
+        warning("W030", stateBinding.tokens.curr);
+      } else if (stateBinding.option.nonew && r && r.left && r.id === "(" && r.left.id === "new") {
         warning("W031", t);
       }
       parseFinalSemicolon(t);
@@ -1995,7 +1956,7 @@ var JSHINT = (function() {
 
     indent = i;
     if (hasOwnScope) {
-      state.funct["(scope)"].unstack();
+      stateBinding.funct["(scope)"].unstack();
     }
     return r;
   }
@@ -2012,8 +1973,8 @@ var JSHINT = (function() {
   function statements(context) {
     var a = [], p;
 
-    while (!state.tokens.next.reach && state.tokens.next.id !== "(end)") {
-      if (state.tokens.next.id === ";") {
+    while (!stateBinding.tokens.next.reach && stateBinding.tokens.next.id !== "(end)") {
+      if (stateBinding.tokens.next.id === ";") {
         p = peek();
 
         if (!p || (p.id !== "(" && p.id !== "[")) {
@@ -2033,8 +1994,8 @@ var JSHINT = (function() {
    * Parse any directives in a directive prologue.
    */
   function directives() {
-    var current = state.tokens.next;
-    while (state.tokens.next.id === "(string)") {
+    var current = stateBinding.tokens.next;
+    while (stateBinding.tokens.next.id === "(string)") {
       var next = peekIgnoreEOL();
       if (!isEndOfExpr(0, current, next)) {
         break;
@@ -2042,10 +2003,10 @@ var JSHINT = (function() {
       current = next;
 
       advance();
-      var directive = state.tokens.curr.value;
-      if (state.directive[directive] ||
-          (directive === "use strict" && state.option.strict === "implied")) {
-        warning("W034", state.tokens.curr, directive);
+      var directive = stateBinding.tokens.curr.value;
+      if (stateBinding.directive[directive] ||
+          (directive === "use strict" && stateBinding.option.strict === "implied")) {
+        warning("W034", stateBinding.tokens.curr, directive);
       }
 
       // From ECMAScript 2016:
@@ -2055,19 +2016,19 @@ var JSHINT = (function() {
       // > [...]
       // > - It is a Syntax Error if ContainsUseStrict of FunctionBody is true
       // >   and IsSimpleParameterList of FormalParameters is false.
-      if (directive === "use strict" && state.inES7() &&
-        !state.funct["(global)"] && state.funct["(hasSimpleParams)"] === false) {
-        error("E065", state.tokens.curr);
+      if (directive === "use strict" && stateBinding.inES7() &&
+        !stateBinding.funct["(global)"] && stateBinding.funct["(hasSimpleParams)"] === false) {
+        error("E065", stateBinding.tokens.curr);
       }
 
       // there's no directive negation, so always set to true
-      state.directive[directive] = true;
+      stateBinding.directive[directive] = true;
 
       parseFinalSemicolon(current);
     }
 
-    if (state.isStrict()) {
-      state.option.undef = true;
+    if (stateBinding.isStrict()) {
+      stateBinding.option.undef = true;
     }
   }
 
@@ -2097,35 +2058,35 @@ var JSHINT = (function() {
 
     inblock = ordinary;
 
-    t = state.tokens.next;
+    t = stateBinding.tokens.next;
 
-    var metrics = state.funct["(metrics)"];
+    var metrics = stateBinding.funct["(metrics)"];
     metrics.nestedBlockDepth += 1;
     metrics.verifyMaxNestedBlockDepthPerFunction();
 
-    if (state.tokens.next.id === "{") {
+    if (stateBinding.tokens.next.id === "{") {
       advance("{");
 
       // create a new block scope
-      state.funct["(scope)"].stack();
+      stateBinding.funct["(scope)"].stack();
 
-      if (state.tokens.next.id !== "}") {
-        indent += state.option.indent;
-        while (!ordinary && state.tokens.next.from > indent) {
-          indent += state.option.indent;
+      if (stateBinding.tokens.next.id !== "}") {
+        indent += stateBinding.option.indent;
+        while (!ordinary && stateBinding.tokens.next.from > indent) {
+          indent += stateBinding.option.indent;
         }
 
         if (isfunc) {
           m = {};
-          for (d in state.directive) {
-            m[d] = state.directive[d];
+          for (d in stateBinding.directive) {
+            m[d] = stateBinding.directive[d];
           }
           directives();
 
-          state.funct["(isStrict)"] = state.isStrict();
+          stateBinding.funct["(isStrict)"] = stateBinding.isStrict();
 
-          if (state.option.strict && state.funct["(context)"]["(global)"]) {
-            if (!m["use strict"] && !state.isStrict()) {
+          if (stateBinding.option.strict && stateBinding.funct["(context)"]["(global)"]) {
+            if (!m["use strict"] && !stateBinding.isStrict()) {
               warning("E007");
             }
           }
@@ -2135,84 +2096,84 @@ var JSHINT = (function() {
 
         metrics.statementCount += a.length;
 
-        indent -= state.option.indent;
+        indent -= stateBinding.option.indent;
       } else if (isfunc) {
         // Ensure property is set for functions with empty bodies.
-        state.funct["(isStrict)"] = state.isStrict();
+        stateBinding.funct["(isStrict)"] = stateBinding.isStrict();
       }
 
       advance("}", t);
 
       if (isfunc) {
-        state.funct["(scope)"].validateParams(isfatarrow);
+        stateBinding.funct["(scope)"].validateParams(isfatarrow);
         if (m) {
-          state.directive = m;
+          stateBinding.directive = m;
         }
       }
 
-      state.funct["(scope)"].unstack();
+      stateBinding.funct["(scope)"].unstack();
 
       indent = old_indent;
     } else if (!ordinary) {
       if (isfunc) {
-        state.funct["(scope)"].stack();
+        stateBinding.funct["(scope)"].stack();
 
-        if (stmt && !isfatarrow && !state.inMoz()) {
-          error("W118", state.tokens.curr, "function closure expressions");
+        if (stmt && !isfatarrow && !stateBinding.inMoz()) {
+          error("W118", stateBinding.tokens.curr, "function closure expressions");
         }
 
         if (isfatarrow) {
-          state.funct["(scope)"].validateParams(true);
+          stateBinding.funct["(scope)"].validateParams(true);
         }
 
         var expr = expression(context, 10);
 
-        if (state.option.noreturnawait && context & prodParams.async &&
+        if (stateBinding.option.noreturnawait && context & prodParams.async &&
             expr.identifier && expr.value === "await") {
           warning("W146", expr);
         }
 
-        if (state.option.strict && state.funct["(context)"]["(global)"]) {
-          if (!state.isStrict()) {
+        if (stateBinding.option.strict && stateBinding.funct["(context)"]["(global)"]) {
+          if (!stateBinding.isStrict()) {
             warning("E007");
           }
         }
 
-        state.funct["(scope)"].unstack();
+        stateBinding.funct["(scope)"].unstack();
       } else {
-        error("E021", state.tokens.next, "{", state.tokens.next.value);
+        error("E021", stateBinding.tokens.next, "{", stateBinding.tokens.next.value);
       }
     } else {
 
-      state.funct["(scope)"].stack();
+      stateBinding.funct["(scope)"].stack();
 
-      if (!stmt || state.option.curly) {
-        warning("W116", state.tokens.next, "{", state.tokens.next.value);
+      if (!stmt || stateBinding.option.curly) {
+        warning("W116", stateBinding.tokens.next, "{", stateBinding.tokens.next.value);
       }
 
       // JSHint observes Annex B of the ECMAScript specification by default,
       // where function declarations are permitted in the statement positions
       // of IfStatements.
-      var supportsFnDecl = state.funct["(verb)"] === "if" ||
-        state.tokens.curr.id === "else";
+      var supportsFnDecl = stateBinding.funct["(verb)"] === "if" ||
+        stateBinding.tokens.curr.id === "else";
 
-      state.tokens.next.inBracelessBlock = true;
-      indent += state.option.indent;
+      stateBinding.tokens.next.inBracelessBlock = true;
+      indent += stateBinding.option.indent;
       // test indentation only if statement is in new line
       a = [statement(context)];
-      indent -= state.option.indent;
+      indent -= stateBinding.option.indent;
 
       if (a[0] && a[0].declaration &&
         !(supportsFnDecl && a[0].id === "function")) {
         error("E048", a[0], a[0].id[0].toUpperCase() + a[0].id.slice(1));
       }
 
-      state.funct["(scope)"].unstack();
+      stateBinding.funct["(scope)"].unstack();
     }
 
     // Don't clear and let it propagate out if it is "break", "return" or
     // similar in switch case
-    switch (state.funct["(verb)"]) {
+    switch (stateBinding.funct["(verb)"]) {
     case "break":
     case "continue":
     case "return":
@@ -2223,12 +2184,12 @@ var JSHINT = (function() {
 
       /* falls through */
     default:
-      state.funct["(verb)"] = null;
+      stateBinding.funct["(verb)"] = null;
     }
 
     inblock = b;
-    if (ordinary && state.option.noempty && (!a || a.length === 0)) {
-      warning("W035", state.tokens.prev);
+    if (ordinary && stateBinding.option.noempty && (!a || a.length === 0)) {
+      warning("W035", stateBinding.tokens.prev);
     }
     metrics.nestedBlockDepth -= 1;
     return a;
@@ -2244,7 +2205,7 @@ var JSHINT = (function() {
    */
   function countMember(m) {
     if (membersOnly && typeof membersOnly[m] !== "boolean") {
-      warning("W036", state.tokens.curr, m);
+      warning("W036", stateBinding.tokens.curr, m);
     }
     if (typeof member[m] === "number") {
       member[m] += 1;
@@ -2263,7 +2224,7 @@ var JSHINT = (function() {
     return this;
   });
 
-  state.syntax["(identifier)"] = {
+  stateBinding.syntax["(identifier)"] = {
     type: "(identifier)",
     lbp: 0,
     identifier: true,
@@ -2279,20 +2240,20 @@ var JSHINT = (function() {
       // ...it should not be considered as a variable in the current scope. It
       // will be added to the scope of the new function when the next token is
       // parsed, so it can be safely ignored for now.
-      if (state.tokens.next.id === "=>") {
+      if (stateBinding.tokens.next.id === "=>") {
         return this;
       }
 
       if (isReserved(context, this)) {
         warning("W024", this, v);
-      } else if (!state.funct["(comparray)"].check(v)) {
-        state.funct["(scope)"].block.use(v, state.tokens.curr);
+      } else if (!stateBinding.funct["(comparray)"].check(v)) {
+        stateBinding.funct["(scope)"].block.use(v, stateBinding.tokens.curr);
       }
       return this;
     },
 
     led: function() {
-      error("E033", state.tokens.next, state.tokens.next.value);
+      error("E033", stateBinding.tokens.next, stateBinding.tokens.next.value);
     }
   };
 
@@ -2300,7 +2261,7 @@ var JSHINT = (function() {
     identifier: false,
     template: true,
   };
-  state.syntax["(template)"] = _.extend({
+  stateBinding.syntax["(template)"] = _.extend({
     lbp: 155,
     type: "(template)",
     nud: doTemplateLiteral,
@@ -2308,20 +2269,20 @@ var JSHINT = (function() {
     noSubst: false
   }, baseTemplateSyntax);
 
-  state.syntax["(template middle)"] = _.extend({
+  stateBinding.syntax["(template middle)"] = _.extend({
     lbp: 0,
     type: "(template middle)",
     noSubst: false
   }, baseTemplateSyntax);
 
-  state.syntax["(template tail)"] = _.extend({
+  stateBinding.syntax["(template tail)"] = _.extend({
     lbp: 0,
     type: "(template tail)",
     tail: true,
     noSubst: false
   }, baseTemplateSyntax);
 
-  state.syntax["(no subst template)"] = _.extend({
+  stateBinding.syntax["(no subst template)"] = _.extend({
     lbp: 155,
     type: "(template)",
     nud: doTemplateLiteral,
@@ -2360,14 +2321,14 @@ var JSHINT = (function() {
   reserve("false", function() { return this; });
   reservevar("null");
   reservevar("this", function(x) {
-    if (state.isStrict() && !isMethod() &&
-        !state.option.validthis && ((state.funct["(statement)"] &&
-        state.funct["(name)"].charAt(0) > "Z") || state.funct["(global)"])) {
+    if (stateBinding.isStrict() && !isMethod() &&
+        !stateBinding.option.validthis && ((stateBinding.funct["(statement)"] &&
+        stateBinding.funct["(name)"].charAt(0) > "Z") || stateBinding.funct["(global)"])) {
       warning("W040", x);
     }
   });
   reservevar("super", function(x) {
-    superNud.call(state.tokens.curr, x);
+    superNud.call(stateBinding.tokens.curr, x);
   });
 
   assignop("=", "assign", 20);
@@ -2379,7 +2340,7 @@ var JSHINT = (function() {
   };
   assignop("%=", "assignmod", 20);
   assignop("**=", function(context, left, that) {
-    if (!state.inES7()) {
+    if (!stateBinding.inES7()) {
       warning("W119", that, "Exponentiation operator", "7");
     }
 
@@ -2402,7 +2363,7 @@ var JSHINT = (function() {
     var expr;
     that.exprs = [left];
 
-    if (state.option.nocomma) {
+    if (stateBinding.option.nocomma) {
       warning("W127");
     }
 
@@ -2414,7 +2375,7 @@ var JSHINT = (function() {
         break;
       }
       that.exprs.push(expr);
-      if (state.tokens.next.value !== "," || !parseComma()) {
+      if (stateBinding.tokens.next.value !== "," || !parseComma()) {
         break;
       }
     }
@@ -2444,7 +2405,7 @@ var JSHINT = (function() {
   //   UnaryExpression[?Yield]
   //   UpdateExpression[?Yield] ** ExponentiationExpression[?Yield]
   infix("**", function(context, left, that) {
-    if (!state.inES7()) {
+    if (!stateBinding.inES7()) {
       warning("W119", that, "Exponentiation operator", "7");
     }
 
@@ -2457,23 +2418,23 @@ var JSHINT = (function() {
     that.right = expression(context, that.rbp);
     return that;
   }, 150);
-  state.syntax["**"].rbp = 140;
+  stateBinding.syntax["**"].rbp = 140;
   bitwise("|", "bitor", 70);
   bitwise("^", "bitxor", 80);
   bitwise("&", "bitand", 90);
   relation("==", function(context, left, right) {
-    var eqnull = state.option.eqnull &&
+    var eqnull = stateBinding.option.eqnull &&
       ((left && left.value) === "null" || (right && right.value) === "null");
 
     switch (true) {
-      case !eqnull && state.option.eqeqeq:
+      case !eqnull && stateBinding.option.eqeqeq:
         this.from = this.character;
         warning("W116", this, "===", "==");
         break;
-      case isTypoTypeof(right, left, state):
+      case isTypoTypeof(right, left, stateBinding):
         warning("W122", this, right.value);
         break;
-      case isTypoTypeof(left, right, state):
+      case isTypoTypeof(left, right, stateBinding):
         warning("W122", this, left.value);
         break;
     }
@@ -2481,31 +2442,31 @@ var JSHINT = (function() {
     return this;
   });
   relation("===", function(context, left, right) {
-    if (isTypoTypeof(right, left, state)) {
+    if (isTypoTypeof(right, left, stateBinding)) {
       warning("W122", this, right.value);
-    } else if (isTypoTypeof(left, right, state)) {
+    } else if (isTypoTypeof(left, right, stateBinding)) {
       warning("W122", this, left.value);
     }
     return this;
   });
   relation("!=", function(context, left, right) {
-    var eqnull = state.option.eqnull &&
+    var eqnull = stateBinding.option.eqnull &&
         ((left && left.value) === "null" || (right && right.value) === "null");
 
-    if (!eqnull && state.option.eqeqeq) {
+    if (!eqnull && stateBinding.option.eqeqeq) {
       this.from = this.character;
       warning("W116", this, "!==", "!=");
-    } else if (isTypoTypeof(right, left, state)) {
+    } else if (isTypoTypeof(right, left, stateBinding)) {
       warning("W122", this, right.value);
-    } else if (isTypoTypeof(left, right, state)) {
+    } else if (isTypoTypeof(left, right, stateBinding)) {
       warning("W122", this, left.value);
     }
     return this;
   });
   relation("!==", function(context, left, right) {
-    if (isTypoTypeof(right, left, state)) {
+    if (isTypoTypeof(right, left, stateBinding)) {
       warning("W122", this, right.value);
-    } else if (isTypoTypeof(left, right, state)) {
+    } else if (isTypoTypeof(left, right, stateBinding)) {
       warning("W122", this, left.value);
     }
     return this;
@@ -2520,7 +2481,7 @@ var JSHINT = (function() {
   infix("in", "in", 120);
   infix("instanceof", function(context, left, token) {
     var right;
-    var scope = state.funct["(scope)"];
+    var scope = stateBinding.funct["(scope)"];
     token.left = left;
     token.right = right = expression(context, 120);
 
@@ -2556,7 +2517,7 @@ var JSHINT = (function() {
     if (left && right && left.id === "(string)" && right.id === "(string)") {
       left.value += right.value;
       left.character = right.character;
-      if (!state.option.scripturl && reg.javascriptURL.test(left.value)) {
+      if (!stateBinding.option.scripturl && reg.javascriptURL.test(left.value)) {
         warning("W050", left);
       }
       return left;
@@ -2573,13 +2534,13 @@ var JSHINT = (function() {
 
   suffix("++");
   prefix("++", "preinc");
-  state.syntax["++"].exps = true;
-  state.syntax["++"].ltBoundary = "before";
+  stateBinding.syntax["++"].exps = true;
+  stateBinding.syntax["++"].ltBoundary = "before";
 
   suffix("--");
   prefix("--", "predec");
-  state.syntax["--"].exps = true;
-  state.syntax["--"].ltBoundary = "before";
+  stateBinding.syntax["--"].exps = true;
+  stateBinding.syntax["--"].ltBoundary = "before";
 
   prefix("delete", function(context) {
     this.arity = "unary";
@@ -2595,14 +2556,14 @@ var JSHINT = (function() {
 
     // The `delete` operator accepts unresolvable references when not in strict
     // mode, so the operand may be undefined.
-    if (p.identifier && !state.isStrict()) {
+    if (p.identifier && !stateBinding.isStrict()) {
       p.forgiveUndef = true;
     }
     return this;
   }).exps = true;
 
   prefix("~", function(context) {
-    if (state.option.bitwise) {
+    if (stateBinding.option.bitwise) {
       warning("W016", this, "~");
     }
     this.arity = "unary";
@@ -2644,17 +2605,17 @@ var JSHINT = (function() {
   });
   prefix("new", function(context) {
     var mp = metaProperty(context, "target", function() {
-      if (!state.inES6(true)) {
-        warning("W119", state.tokens.prev, "new.target", "6");
+      if (!stateBinding.inES6(true)) {
+        warning("W119", stateBinding.tokens.prev, "new.target", "6");
       }
-      var inFunction, c = state.funct;
+      var inFunction, c = stateBinding.funct;
       while (c) {
         inFunction = !c["(global)"];
         if (!c["(arrow)"]) { break; }
         c = c["(context)"];
       }
       if (!inFunction) {
-        warning("W136", state.tokens.prev, "new.target");
+        warning("W136", stateBinding.tokens.prev, "new.target");
       }
     });
     if (mp) { return mp; }
@@ -2668,15 +2629,15 @@ var JSHINT = (function() {
         case "Boolean":
         case "Math":
         case "JSON":
-          warning("W053", state.tokens.prev, c.value);
+          warning("W053", stateBinding.tokens.prev, c.value);
           break;
         case "Symbol":
-          if (state.inES6()) {
-            warning("W053", state.tokens.prev, c.value);
+          if (stateBinding.inES6()) {
+            warning("W053", stateBinding.tokens.prev, c.value);
           }
           break;
         case "Function":
-          if (!state.option.evil) {
+          if (!stateBinding.option.evil) {
             warning("W054");
           }
           break;
@@ -2687,28 +2648,28 @@ var JSHINT = (function() {
         default:
           if (c.id !== "function") {
             i = c.value.substr(0, 1);
-            if (state.option.newcap && (i < "A" || i > "Z") &&
-              !state.funct["(scope)"].isPredefined(c.value)) {
-              warning("W055", state.tokens.curr);
+            if (stateBinding.option.newcap && (i < "A" || i > "Z") &&
+              !stateBinding.funct["(scope)"].isPredefined(c.value)) {
+              warning("W055", stateBinding.tokens.curr);
             }
           }
         }
       } else {
         if (c.id !== "." && c.id !== "[" && c.id !== "(") {
-          warning("W056", state.tokens.curr);
+          warning("W056", stateBinding.tokens.curr);
         }
       }
     } else {
-      if (!state.option.supernew)
+      if (!stateBinding.option.supernew)
         warning("W057", this);
     }
-    if (state.tokens.next.id !== "(" && !state.option.supernew) {
-      warning("W058", state.tokens.curr, state.tokens.curr.value);
+    if (stateBinding.tokens.next.id !== "(" && !stateBinding.option.supernew) {
+      warning("W058", stateBinding.tokens.curr, stateBinding.tokens.curr.value);
     }
     this.first = this.right = c;
     return this;
   });
-  state.syntax["new"].exps = true;
+  stateBinding.syntax["new"].exps = true;
 
 
   // Class statement
@@ -2716,18 +2677,18 @@ var JSHINT = (function() {
     var className, classNameToken;
     var inexport = context & prodParams.export;
 
-    if (!state.inES6()) {
-      warning("W104", state.tokens.curr, "class", "6");
+    if (!stateBinding.inES6()) {
+      warning("W104", stateBinding.tokens.curr, "class", "6");
     }
-    state.inClassBody = true;
+    stateBinding.inClassBody = true;
 
     // Class Declaration: 'class <Classname>'
-    if (state.tokens.next.identifier && state.tokens.next.value !== "extends") {
-      classNameToken = state.tokens.next;
+    if (stateBinding.tokens.next.identifier && stateBinding.tokens.next.value !== "extends") {
+      classNameToken = stateBinding.tokens.next;
       className = classNameToken.value;
       identifier(context);
       // unintialized, so that the 'extends' clause is parsed while the class is in TDZ
-      state.funct["(scope)"].addlabel(className, {
+      stateBinding.funct["(scope)"].addlabel(className, {
         type: "class",
         initialized: false,
         token: classNameToken
@@ -2735,19 +2696,19 @@ var JSHINT = (function() {
     }
 
     // Class Declaration: 'class <Classname> extends <Superclass>'
-    if (state.tokens.next.value === "extends") {
+    if (stateBinding.tokens.next.value === "extends") {
       advance("extends");
       expression(context, 0);
     }
 
     if (classNameToken) {
       this.name = className;
-      state.funct["(scope)"].initialize(className);
+      stateBinding.funct["(scope)"].initialize(className);
       if (inexport) {
-        state.funct["(scope)"].setExported(className, classNameToken);
+        stateBinding.funct["(scope)"].setExported(className, classNameToken);
       }
     }
-    state.funct["(scope)"].stack();
+    stateBinding.funct["(scope)"].stack();
     classBody(this, context);
     return this;
   }).exps = true;
@@ -2761,33 +2722,33 @@ var JSHINT = (function() {
   prefix("class", function(context) {
     var className, classNameToken;
 
-    if (!state.inES6()) {
-      warning("W104", state.tokens.curr, "class", "6");
+    if (!stateBinding.inES6()) {
+      warning("W104", stateBinding.tokens.curr, "class", "6");
     }
-    state.inClassBody = true;
+    stateBinding.inClassBody = true;
 
     // Class Declaration: 'class <Classname>'
-    if (state.tokens.next.identifier && state.tokens.next.value !== "extends") {
-      classNameToken = state.tokens.next;
+    if (stateBinding.tokens.next.identifier && stateBinding.tokens.next.value !== "extends") {
+      classNameToken = stateBinding.tokens.next;
       className = classNameToken.value;
       identifier(context);
     }
 
     // Class Declaration: 'class <Classname> extends <Superclass>'
-    if (state.tokens.next.value === "extends") {
+    if (stateBinding.tokens.next.value === "extends") {
       advance("extends");
       expression(context, 0);
     }
 
-    state.funct["(scope)"].stack();
+    stateBinding.funct["(scope)"].stack();
     if (classNameToken) {
       this.name = className;
-      state.funct["(scope)"].addlabel(className, {
+      stateBinding.funct["(scope)"].addlabel(className, {
         type: "class",
         initialized: true,
         token: classNameToken
       });
-      state.funct["(scope)"].block.use(className, classNameToken);
+      stateBinding.funct["(scope)"].block.use(className, classNameToken);
     }
 
     classBody(this, context);
@@ -2798,51 +2759,51 @@ var JSHINT = (function() {
     var props = Object.create(null);
     var name, accessorType, token, isStatic, inGenerator, hasConstructor;
 
-    if (state.tokens.next.value === "{") {
+    if (stateBinding.tokens.next.value === "{") {
       advance("{");
     } else {
-      warning("W116", state.tokens.curr, "identifier", state.tokens.next.type); //?
+      warning("W116", stateBinding.tokens.curr, "identifier", stateBinding.tokens.next.type); //?
       advance();
     }
 
-    while (state.tokens.next.value !== "}") {
+    while (stateBinding.tokens.next.value !== "}") {
       isStatic = false;
       inGenerator = false;
       context &= ~prodParams.preAsync;
 
-      if (state.tokens.next.value === "static") {
+      if (stateBinding.tokens.next.value === "static") {
         isStatic = true;
         advance();
       }
 
-      if (state.tokens.next.value === "async") {
+      if (stateBinding.tokens.next.value === "async") {
         if (!checkPunctuator(peek(), "(")) {
           context |= prodParams.preAsync;
           advance();
 
-          nolinebreak(state.tokens.curr);
+          nolinebreak(stateBinding.tokens.curr);
 
-          if (checkPunctuator(state.tokens.next, "*")) {
+          if (checkPunctuator(stateBinding.tokens.next, "*")) {
             inGenerator = true;
             advance("*");
 
-            if (!state.inES9()) {
-              warning("W119", state.tokens.next, "async generators", "9");
+            if (!stateBinding.inES9()) {
+              warning("W119", stateBinding.tokens.next, "async generators", "9");
             }
           }
 
-          if (!state.inES8()) {
-            warning("W119", state.tokens.curr, "async functions", "8");
+          if (!stateBinding.inES8()) {
+            warning("W119", stateBinding.tokens.curr, "async functions", "8");
           }
         }
       }
 
-      if (state.tokens.next.value === "*") {
+      if (stateBinding.tokens.next.value === "*") {
         inGenerator = true;
         advance();
       }
 
-      token = state.tokens.next;
+      token = stateBinding.tokens.next;
       switch (token.value) {
         case ";":
           warning("W032", token);
@@ -2862,7 +2823,7 @@ var JSHINT = (function() {
               error("E024", token, token.value);
             }
             advance();
-            doMethod(classToken, context, state.nameStack.infer());
+            doMethod(classToken, context, stateBinding.nameStack.infer());
             hasConstructor = true;
           }
           break;
@@ -2874,16 +2835,16 @@ var JSHINT = (function() {
           accessorType = token.value;
           advance();
 
-          if (state.tokens.next.value === "[") {
+          if (stateBinding.tokens.next.value === "[") {
             name = computedPropertyName(context);
             doMethod(classToken, context, name, false);
           } else {
             name = propertyName(context);
             if (name === "prototype" || name === "constructor") {
-              error("E049", state.tokens.curr, "class " + accessorType + "ter method", name);
+              error("E049", stateBinding.tokens.curr, "class " + accessorType + "ter method", name);
             }
-            saveAccessor(accessorType, props, name, state.tokens.curr, true, isStatic);
-            doMethod(classToken, context, state.nameStack.infer(), false);
+            saveAccessor(accessorType, props, name, stateBinding.tokens.curr, true, isStatic);
+            doMethod(classToken, context, stateBinding.nameStack.infer(), false);
           }
 
           break;
@@ -2910,32 +2871,32 @@ var JSHINT = (function() {
     advance("}");
     checkProperties(props);
 
-    state.inClassBody = false;
-    state.funct["(scope)"].unstack();
+    stateBinding.inClassBody = false;
+    stateBinding.funct["(scope)"].unstack();
   }
 
   function doMethod(classToken, context, name, generator) {
     if (generator) {
-      if (!state.inES6()) {
-        warning("W119", state.tokens.curr, "function*", "6");
+      if (!stateBinding.inES6()) {
+        warning("W119", stateBinding.tokens.curr, "function*", "6");
       }
     }
 
-    if (state.tokens.next.value !== "(") {
-      error("E054", state.tokens.next, state.tokens.next.value);
+    if (stateBinding.tokens.next.value !== "(") {
+      error("E054", stateBinding.tokens.next, stateBinding.tokens.next.value);
       advance();
-      if (state.tokens.next.value === "{") {
+      if (stateBinding.tokens.next.value === "{") {
         // manually cheating the test "invalidClasses", which asserts this particular behavior when a class is misdefined.
         advance();
-        if (state.tokens.next.value === "}") {
-          warning("W116", state.tokens.next, "(", state.tokens.next.value);
+        if (stateBinding.tokens.next.value === "}") {
+          warning("W116", stateBinding.tokens.next, "(", stateBinding.tokens.next.value);
           advance();
           identifier(context);
           advance();
         }
         return;
       } else {
-        while (state.tokens.next.value !== "(") {
+        while (stateBinding.tokens.next.value !== "(") {
           advance();
         }
       }
@@ -2959,22 +2920,22 @@ var JSHINT = (function() {
     that.left = left;
     that.right = m;
 
-    if (m && m === "hasOwnProperty" && state.tokens.next.value === "=") {
+    if (m && m === "hasOwnProperty" && stateBinding.tokens.next.value === "=") {
       warning("W001");
     }
 
     if (left && left.value === "arguments" && (m === "callee" || m === "caller")) {
-      if (state.option.noarg)
+      if (stateBinding.option.noarg)
         warning("W059", left, m);
-      else if (state.isStrict())
+      else if (stateBinding.isStrict())
         error("E008");
-    } else if (!state.option.evil && left && left.value === "document" &&
+    } else if (!stateBinding.option.evil && left && left.value === "document" &&
         (m === "write" || m === "writeln")) {
       warning("W060", left);
     }
 
-    if (!state.option.evil && (m === "eval" || m === "execScript")) {
-      if (isGlobalEval(left, state)) {
+    if (!stateBinding.option.evil && (m === "eval" || m === "execScript")) {
+      if (isGlobalEval(left, stateBinding)) {
         warning("W061");
       }
     }
@@ -2983,13 +2944,13 @@ var JSHINT = (function() {
   }, 160, true);
 
   infix("(", function(context, left, that) {
-    if (state.option.immed && left && !left.immed && left.id === "function") {
+    if (stateBinding.option.immed && left && !left.immed && left.id === "function") {
       warning("W062");
     }
 
-    if (state.option.asi && checkPunctuators(state.tokens.prev, [")", "]"]) &&
-      state.tokens.prev.line !== startLine(state.tokens.curr)) {
-      warning("W014", state.tokens.curr, state.tokens.curr.id);
+    if (stateBinding.option.asi && checkPunctuators(stateBinding.tokens.prev, [")", "]"]) &&
+      stateBinding.tokens.prev.line !== startLine(stateBinding.tokens.curr)) {
+      warning("W014", stateBinding.tokens.curr, stateBinding.tokens.curr.id);
     }
 
     var n = 0;
@@ -3001,7 +2962,7 @@ var JSHINT = (function() {
           if ("Array Number String Boolean Date Object Error Symbol".indexOf(left.value) === -1) {
             if (left.value === "Math") {
               warning("W063", left);
-            } else if (state.option.newcap) {
+            } else if (stateBinding.option.newcap) {
               warning("W064", left);
             }
           }
@@ -3009,20 +2970,20 @@ var JSHINT = (function() {
       }
     }
 
-    if (state.tokens.next.id !== ")") {
+    if (stateBinding.tokens.next.id !== ")") {
       for (;;) {
         spreadrest("spread");
 
         p[p.length] = expression(context, 10);
         n += 1;
-        if (state.tokens.next.id !== ",") {
+        if (stateBinding.tokens.next.id !== ",") {
           break;
         }
         parseComma({ allowTrailing: true });
 
-        if (state.tokens.next.id === ")") {
-          if (!state.inES8()) {
-            warning("W119", state.tokens.curr, "Trailing comma in arguments lists", "8");
+        if (stateBinding.tokens.next.id === ")") {
+          if (!stateBinding.inES8()) {
+            warning("W119", stateBinding.tokens.curr, "Trailing comma in arguments lists", "8");
           }
 
           break;
@@ -3033,10 +2994,10 @@ var JSHINT = (function() {
     advance(")");
 
     if (typeof left === "object") {
-      if (!state.inES5() && left.value === "parseInt" && n === 1) {
-        warning("W065", state.tokens.curr);
+      if (!stateBinding.inES5() && left.value === "parseInt" && n === 1) {
+        warning("W065", stateBinding.tokens.curr);
       }
-      if (!state.option.evil) {
+      if (!stateBinding.option.evil) {
         if (left.value === "eval" || left.value === "Function" ||
             left.value === "execScript") {
           warning("W061", left);
@@ -3069,7 +3030,7 @@ var JSHINT = (function() {
       }
       if (!left.identifier && left.id !== "." && left.id !== "[" && left.id !== "=>" &&
           left.id !== "(" && left.id !== "&&" && left.id !== "||" && left.id !== "?" &&
-          left.id !== "async" && !(state.inES6() && left["(name)"])) {
+          left.id !== "async" && !(stateBinding.inES6() && left["(name)"])) {
         warning("W067", that);
       }
     }
@@ -3079,7 +3040,7 @@ var JSHINT = (function() {
   }, 155, true).exps = true;
 
   function peekThroughParens(parens) {
-    var pn = state.tokens.next;
+    var pn = stateBinding.tokens.next;
     var i = -1;
     var pn1;
 
@@ -3100,13 +3061,13 @@ var JSHINT = (function() {
 
   prefix("(", function(context, rbp) {
     var ret, triggerFnExpr, first, last;
-    var opening = state.tokens.curr;
-    var preceeding = state.tokens.prev;
-    var isNecessary = !state.option.singleGroups;
+    var opening = stateBinding.tokens.curr;
+    var preceeding = stateBinding.tokens.prev;
+    var isNecessary = !stateBinding.option.singleGroups;
     var pn = peekThroughParens(1);
 
-    if (state.tokens.next.id === "function") {
-      triggerFnExpr = state.tokens.next.immed = true;
+    if (stateBinding.tokens.next.id === "function") {
+      triggerFnExpr = stateBinding.tokens.next.immed = true;
     }
 
     // If the balanced grouping operator is followed by a "fat arrow", the
@@ -3119,15 +3080,15 @@ var JSHINT = (function() {
 
     var exprs = [];
 
-    if (state.tokens.next.id !== ")") {
+    if (stateBinding.tokens.next.id !== ")") {
       for (;;) {
         exprs.push(expression(context, 10));
 
-        if (state.tokens.next.id !== ",") {
+        if (stateBinding.tokens.next.id !== ",") {
           break;
         }
 
-        if (state.option.nocomma) {
+        if (stateBinding.option.nocomma) {
           warning("W127");
         }
 
@@ -3136,9 +3097,9 @@ var JSHINT = (function() {
     }
 
     advance(")", this);
-    if (state.option.immed && exprs[0] && exprs[0].id === "function") {
-      if (state.tokens.next.id !== "(" &&
-        state.tokens.next.id !== "." && state.tokens.next.id !== "[") {
+    if (stateBinding.option.immed && exprs[0] && exprs[0].id === "function") {
+      if (stateBinding.tokens.next.id !== "(" &&
+        stateBinding.tokens.next.id !== "." && stateBinding.tokens.next.id !== "[") {
         warning("W068", this);
       }
     }
@@ -3147,7 +3108,7 @@ var JSHINT = (function() {
       return;
     }
     if (exprs.length > 1) {
-      ret = Object.create(state.syntax[","]);
+      ret = Object.create(stateBinding.syntax[","]);
       ret.exprs = exprs;
 
       first = exprs[0];
@@ -3167,7 +3128,7 @@ var JSHINT = (function() {
             // necessary, the grouping operator should be the left-hand-side of
             // some other operator--either within the parenthesis or directly
             // following them.
-            (!isEndOfExpr() || state.tokens.prev.id !== "}")) ||
+            (!isEndOfExpr() || stateBinding.tokens.prev.id !== "}")) ||
           // Used to demarcate an arrow function as the left-hand side of some
           // operator.
           (ret.id === "=>" && !isEndOfExpr()) ||
@@ -3175,7 +3136,7 @@ var JSHINT = (function() {
           (ret.id === "{" && preceeding.id === "=>") ||
           // Used to cover a unary expression as the left-hand side of the
           // exponentiation operator
-          (beginsUnaryExpression(ret) && state.tokens.next.id === "**") ||
+          (beginsUnaryExpression(ret) && stateBinding.tokens.next.id === "**") ||
           // Used to delineate an integer number literal from a dereferencing
           // punctuator (otherwise interpreted as a decimal point)
           (ret.type === "(number)" &&
@@ -3193,7 +3154,7 @@ var JSHINT = (function() {
         isNecessary =
           (rbp > first.lbp) ||
           (rbp > 0 && rbp === first.lbp) ||
-          (!isEndOfExpr() && last.rbp < state.tokens.next.lbp);
+          (!isEndOfExpr() && last.rbp < stateBinding.tokens.next.lbp);
       }
 
       if (!isNecessary) {
@@ -3211,23 +3172,23 @@ var JSHINT = (function() {
   infix("[", function(context, left, that) {
     var e, s, canUseDot;
 
-    if (state.option.asi && checkPunctuators(state.tokens.prev, [")", "]"]) &&
-      state.tokens.prev.line !== startLine(state.tokens.curr)) {
-      warning("W014", state.tokens.curr, state.tokens.curr.id);
+    if (stateBinding.option.asi && checkPunctuators(stateBinding.tokens.prev, [")", "]"]) &&
+      stateBinding.tokens.prev.line !== startLine(stateBinding.tokens.curr)) {
+      warning("W014", stateBinding.tokens.curr, stateBinding.tokens.curr.id);
     }
 
     e = expression(context & ~prodParams.noin, 10);
 
     if (e && e.type === "(string)") {
-      if (!state.option.evil && (e.value === "eval" || e.value === "execScript")) {
-        if (isGlobalEval(left, state)) {
+      if (!stateBinding.option.evil && (e.value === "eval" || e.value === "execScript")) {
+        if (isGlobalEval(left, stateBinding)) {
           warning("W061");
         }
       }
 
       countMember(e.value);
-      if (!state.option.sub && reg.identifier.test(e.value)) {
-        s = state.syntax[e.value];
+      if (!stateBinding.option.sub && reg.identifier.test(e.value)) {
+        s = stateBinding.syntax[e.value];
 
         if (s) {
           canUseDot = !isReserved(context, s);
@@ -3242,13 +3203,13 @@ var JSHINT = (function() {
         }
 
         if (canUseDot) {
-          warning("W069", state.tokens.prev, e.value);
+          warning("W069", stateBinding.tokens.prev, e.value);
         }
       }
     }
     advance("]", that);
 
-    if (e && e.value === "hasOwnProperty" && state.tokens.next.value === "=") {
+    if (e && e.value === "hasOwnProperty" && stateBinding.tokens.next.value === "=") {
       warning("W001");
     }
 
@@ -3260,61 +3221,61 @@ var JSHINT = (function() {
   function comprehensiveArrayExpression(context) {
     var res = {};
     res.exps = true;
-    state.funct["(comparray)"].stack();
+    stateBinding.funct["(comparray)"].stack();
 
     // Handle reversed for expressions, used in spidermonkey
     var reversed = false;
-    if (state.tokens.next.value !== "for") {
+    if (stateBinding.tokens.next.value !== "for") {
       reversed = true;
-      if (!state.inMoz()) {
-        warning("W116", state.tokens.next, "for", state.tokens.next.value);
+      if (!stateBinding.inMoz()) {
+        warning("W116", stateBinding.tokens.next, "for", stateBinding.tokens.next.value);
       }
-      state.funct["(comparray)"].setState("use");
+      stateBinding.funct["(comparray)"].setState("use");
       res.right = expression(context, 10);
     }
 
     advance("for");
-    if (state.tokens.next.value === "each") {
+    if (stateBinding.tokens.next.value === "each") {
       advance("each");
-      if (!state.inMoz()) {
-        warning("W118", state.tokens.curr, "for each");
+      if (!stateBinding.inMoz()) {
+        warning("W118", stateBinding.tokens.curr, "for each");
       }
     }
     advance("(");
-    state.funct["(comparray)"].setState("define");
+    stateBinding.funct["(comparray)"].setState("define");
     res.left = expression(context, 130);
-    if (_.includes(["in", "of"], state.tokens.next.value)) {
+    if (_.includes(["in", "of"], stateBinding.tokens.next.value)) {
       advance();
     } else {
-      error("E045", state.tokens.curr);
+      error("E045", stateBinding.tokens.curr);
     }
-    state.funct["(comparray)"].setState("generate");
+    stateBinding.funct["(comparray)"].setState("generate");
     expression(context, 10);
 
     advance(")");
-    if (state.tokens.next.value === "if") {
+    if (stateBinding.tokens.next.value === "if") {
       advance("if");
       advance("(");
-      state.funct["(comparray)"].setState("filter");
+      stateBinding.funct["(comparray)"].setState("filter");
       expression(context, 10);
       advance(")");
     }
 
     if (!reversed) {
-      state.funct["(comparray)"].setState("use");
+      stateBinding.funct["(comparray)"].setState("use");
       res.right = expression(context, 10);
     }
 
     advance("]");
-    state.funct["(comparray)"].unstack();
+    stateBinding.funct["(comparray)"].unstack();
     return res;
   }
 
   prefix("[", function(context) {
     var blocktype = lookupBlockType();
     if (blocktype.isCompArray) {
-      if (!state.option.esnext && !state.inMoz()) {
-        warning("W118", state.tokens.curr, "array comprehension");
+      if (!stateBinding.option.esnext && !stateBinding.inMoz()) {
+        warning("W118", stateBinding.tokens.curr, "array comprehension");
       }
       return comprehensiveArrayExpression(context);
     } else if (blocktype.isDestAssign) {
@@ -3324,18 +3285,18 @@ var JSHINT = (function() {
         });
       return this;
     }
-    var b = state.tokens.curr.line !== startLine(state.tokens.next);
+    var b = stateBinding.tokens.curr.line !== startLine(stateBinding.tokens.next);
     this.first = [];
     if (b) {
-      indent += state.option.indent;
-      if (state.tokens.next.from === indent + state.option.indent) {
-        indent += state.option.indent;
+      indent += stateBinding.option.indent;
+      if (stateBinding.tokens.next.from === indent + stateBinding.option.indent) {
+        indent += stateBinding.option.indent;
       }
     }
-    while (state.tokens.next.id !== "(end)") {
-      while (state.tokens.next.id === ",") {
-        if (!state.option.elision) {
-          if (!state.inES5()) {
+    while (stateBinding.tokens.next.id !== "(end)") {
+      while (stateBinding.tokens.next.id === ",") {
+        if (!stateBinding.option.elision) {
+          if (!stateBinding.inES5()) {
             // Maintain compat with old options --- ES5 mode without
             // elision=true will warn once per comma
             warning("W070");
@@ -3343,35 +3304,35 @@ var JSHINT = (function() {
             warning("W128");
             do {
               advance(",");
-            } while (state.tokens.next.id === ",");
+            } while (stateBinding.tokens.next.id === ",");
             continue;
           }
         }
         advance(",");
       }
 
-      if (state.tokens.next.id === "]") {
+      if (stateBinding.tokens.next.id === "]") {
         break;
       }
 
       spreadrest("spread");
 
       this.first.push(expression(context, 10));
-      if (state.tokens.next.id === ",") {
+      if (stateBinding.tokens.next.id === ",") {
         parseComma({ allowTrailing: true });
-        if (state.tokens.next.id === "]" && !state.inES5()) {
-          warning("W070", state.tokens.curr);
+        if (stateBinding.tokens.next.id === "]" && !stateBinding.inES5()) {
+          warning("W070", stateBinding.tokens.curr);
           break;
         }
       } else {
-        if (state.option.trailingcomma && state.inES5()) {
-          warningAt("W140", state.tokens.curr.line, state.tokens.curr.character);
+        if (stateBinding.option.trailingcomma && stateBinding.inES5()) {
+          warningAt("W140", stateBinding.tokens.curr.line, stateBinding.tokens.curr.character);
         }
         break;
       }
     }
     if (b) {
-      indent -= state.option.indent;
+      indent -= stateBinding.option.indent;
     }
     advance("]", this);
     return this;
@@ -3379,7 +3340,7 @@ var JSHINT = (function() {
 
 
   function isMethod() {
-    return !!state.funct["(method)"];
+    return !!stateBinding.funct["(method)"];
   }
 
   function propertyName(context, preserveOrToken) {
@@ -3393,13 +3354,13 @@ var JSHINT = (function() {
     }
 
     if (!id) {
-      if (state.tokens.next.id === "(string)") {
-        id = state.tokens.next.value;
+      if (stateBinding.tokens.next.id === "(string)") {
+        id = stateBinding.tokens.next.value;
         if (!preserve) {
           advance();
         }
-      } else if (state.tokens.next.id === "(number)") {
-        id = state.tokens.next.value.toString();
+      } else if (stateBinding.tokens.next.id === "(number)") {
+        id = stateBinding.tokens.next.value.toString();
         if (!preserve) {
           advance();
         }
@@ -3436,27 +3397,27 @@ var JSHINT = (function() {
     var pastDefault = false;
     var pastRest = false;
     var arity = 0;
-    var loneArg = options && options.loneArg;
+    var loneArg = optionsBinding && optionsBinding.loneArg;
     var hasDestructuring = false;
 
     if (loneArg && loneArg.identifier === true) {
-      state.funct["(scope)"].addParam(loneArg.value, loneArg);
+      stateBinding.funct["(scope)"].addParam(loneArg.value, loneArg);
       return { arity: 1, params: [ loneArg.value ], isSimple: true };
     }
 
-    next = state.tokens.next;
+    next = stateBinding.tokens.next;
 
-    if (!options || !options.parsedOpening) {
+    if (!optionsBinding || !optionsBinding.parsedOpening) {
       advance("(");
     }
 
-    if (state.tokens.next.id === ")") {
+    if (stateBinding.tokens.next.id === ")") {
       advance(")");
       return;
     }
 
     function addParam(addParamArgs) {
-      state.funct["(scope)"].addParam.apply(state.funct["(scope)"], addParamArgs);
+      stateBinding.funct["(scope)"].addParam.apply(stateBinding.funct["(scope)"], addParamArgs);
     }
 
     for (;;) {
@@ -3464,7 +3425,7 @@ var JSHINT = (function() {
       // are added to the param scope
       var currentParams = [];
 
-      if (_.includes(["{", "["], state.tokens.next.id)) {
+      if (_.includes(["{", "["], stateBinding.tokens.next.id)) {
         hasDestructuring = true;
         tokens = destructuringPattern(context);
         for (t in tokens) {
@@ -3480,10 +3441,10 @@ var JSHINT = (function() {
 
         if (ident) {
           paramsIds.push(ident);
-          currentParams.push([ident, state.tokens.curr]);
+          currentParams.push([ident, stateBinding.tokens.curr]);
         } else {
           // Skip invalid parameter.
-          while (!checkPunctuators(state.tokens.next, [",", ")"])) advance();
+          while (!checkPunctuators(stateBinding.tokens.next, [",", ")"])) advance();
         }
       }
 
@@ -3491,17 +3452,17 @@ var JSHINT = (function() {
       // since undefined can be used for missing parameters. Still warn as it is
       // a possible code smell.
       if (pastDefault) {
-        if (state.tokens.next.id !== "=") {
-          error("W138", state.tokens.curr);
+        if (stateBinding.tokens.next.id !== "=") {
+          error("W138", stateBinding.tokens.curr);
         }
       }
-      if (state.tokens.next.id === "=") {
-        if (!state.inES6()) {
-          warning("W119", state.tokens.next, "default parameters", "6");
+      if (stateBinding.tokens.next.id === "=") {
+        if (!stateBinding.inES6()) {
+          warning("W119", stateBinding.tokens.next, "default parameters", "6");
         }
 
         if (pastRest) {
-          error("E062", state.tokens.next);
+          error("E062", stateBinding.tokens.next);
         }
 
         advance("=");
@@ -3511,16 +3472,16 @@ var JSHINT = (function() {
 
       // now we have evaluated the default expression, add the variable to the param scope
       currentParams.forEach(addParam);
-      if (state.tokens.next.id === ",") {
+      if (stateBinding.tokens.next.id === ",") {
         if (pastRest) {
-          warning("W131", state.tokens.next);
+          warning("W131", stateBinding.tokens.next);
         }
         parseComma({ allowTrailing: true });
       }
 
-      if (state.tokens.next.id === ")") {
-        if (state.tokens.curr.id === "," && !state.inES8()) {
-          warning("W119", state.tokens.curr, "Trailing comma in function parameters", "8");
+      if (stateBinding.tokens.next.id === ")") {
+        if (stateBinding.tokens.curr.id === "," && !stateBinding.inES8()) {
+          warning("W119", stateBinding.tokens.curr, "Trailing comma in function parameters", "8");
         }
 
         advance(")", next);
@@ -3614,7 +3575,7 @@ var JSHINT = (function() {
 
     if (!noSubst) {
       while (!end()) {
-        if (!state.tokens.next.template || state.tokens.next.depth > depth) {
+        if (!stateBinding.tokens.next.template || stateBinding.tokens.next.depth > depth) {
           expression(context, 0); // should probably have different rbp?
         } else {
           // skip template start / middle
@@ -3630,12 +3591,12 @@ var JSHINT = (function() {
     };
 
     function end() {
-      if (state.tokens.curr.template && state.tokens.curr.tail &&
-          state.tokens.curr.context === ctx) return true;
-      var complete = (state.tokens.next.template && state.tokens.next.tail &&
-                      state.tokens.next.context === ctx);
+      if (stateBinding.tokens.curr.template && stateBinding.tokens.curr.tail &&
+          stateBinding.tokens.curr.context === ctx) return true;
+      var complete = (stateBinding.tokens.next.template && stateBinding.tokens.next.tail &&
+                      stateBinding.tokens.next.context === ctx);
       if (complete) advance();
-      return complete || state.tokens.next.isUnclosed;
+      return complete || stateBinding.tokens.next.isUnclosed;
     }
   }
 
@@ -3663,18 +3624,18 @@ var JSHINT = (function() {
   function doFunction(context, options) {
     var f, token, name, statement, classExprBinding, isGenerator, isArrow,
       isMethod, ignoreLoopFunc;
-    var oldOption = state.option;
-    var oldIgnored = state.ignored;
+    var oldOption = stateBinding.option;
+    var oldIgnored = stateBinding.ignored;
     var isAsync = context & prodParams.preAsync;
 
-    if (options) {
-      name = options.name;
-      statement = options.statement;
-      classExprBinding = options.classExprBinding;
-      isGenerator = options.type === "generator";
-      isArrow = options.type === "arrow";
-      isMethod = options.isMethod;
-      ignoreLoopFunc = options.ignoreLoopFunc;
+    if (optionsBinding) {
+      name = optionsBinding.name;
+      statement = optionsBinding.statement;
+      classExprBinding = optionsBinding.classExprBinding;
+      isGenerator = optionsBinding.type === "generator";
+      isArrow = optionsBinding.type === "arrow";
+      isMethod = optionsBinding.isMethod;
+      ignoreLoopFunc = optionsBinding.ignoreLoopFunc;
     }
 
     context &= ~prodParams.noin;
@@ -3687,89 +3648,89 @@ var JSHINT = (function() {
     }
     context &= ~prodParams.preAsync;
 
-    state.option = Object.create(state.option);
-    state.ignored = Object.create(state.ignored);
+    stateBinding.option = Object.create(stateBinding.option);
+    stateBinding.ignored = Object.create(stateBinding.ignored);
 
-    state.funct = functor(name || state.nameStack.infer(), state.tokens.next, {
+    stateBinding.funct = functor(name || stateBinding.nameStack.infer(), stateBinding.tokens.next, {
       "(statement)": statement,
-      "(context)":   state.funct,
+      "(context)":   stateBinding.funct,
       "(arrow)":     isArrow,
       "(method)":    isMethod,
       "(generator)": isGenerator,
       "(async)":     isAsync
     });
 
-    f = state.funct;
-    token = state.tokens.curr;
+    f = stateBinding.funct;
+    token = stateBinding.tokens.curr;
 
-    functions.push(state.funct);
+    functions.push(stateBinding.funct);
 
     // So that the function is available to itself and referencing itself is not
     // seen as a closure, add the function name to a new scope, but do not
     // test for unused (unused: false)
     // it is a new block scope so that params can override it, it can be block scoped
     // but declarations inside the function don't cause already declared error
-    state.funct["(scope)"].stack("functionouter");
+    stateBinding.funct["(scope)"].stack("functionouter");
     var internallyAccessibleName = !isMethod && (name || classExprBinding);
     if (internallyAccessibleName) {
-      state.funct["(scope)"].block.add(internallyAccessibleName,
-        classExprBinding ? "class" : "function", state.tokens.curr, false);
+      stateBinding.funct["(scope)"].block.add(internallyAccessibleName,
+        classExprBinding ? "class" : "function", stateBinding.tokens.curr, false);
     }
 
     if (!isArrow) {
-      state.funct["(scope)"].funct.add("arguments", "var", token, false);
+      stateBinding.funct["(scope)"].funct.add("arguments", "var", token, false);
     }
 
     // create the param scope (params added in functionparams)
-    state.funct["(scope)"].stack("functionparams");
+    stateBinding.funct["(scope)"].stack("functionparams");
 
-    var paramsInfo = functionparams(context, options);
+    var paramsInfo = functionparams(context, optionsBinding);
 
     if (paramsInfo) {
-      state.funct["(params)"] = paramsInfo.params;
-      state.funct["(hasSimpleParams)"] = paramsInfo.isSimple;
-      state.funct["(metrics)"].arity = paramsInfo.arity;
-      state.funct["(metrics)"].verifyMaxParametersPerFunction();
+      stateBinding.funct["(params)"] = paramsInfo.params;
+      stateBinding.funct["(hasSimpleParams)"] = paramsInfo.isSimple;
+      stateBinding.funct["(metrics)"].arity = paramsInfo.arity;
+      stateBinding.funct["(metrics)"].verifyMaxParametersPerFunction();
     } else {
-      state.funct["(params)"] = [];
-      state.funct["(metrics)"].arity = 0;
-      state.funct["(hasSimpleParams)"] = true;
+      stateBinding.funct["(params)"] = [];
+      stateBinding.funct["(metrics)"].arity = 0;
+      stateBinding.funct["(hasSimpleParams)"] = true;
     }
 
     if (isArrow) {
-      if (!state.inES6(true)) {
-        warning("W119", state.tokens.curr, "arrow function syntax (=>)", "6");
+      if (!stateBinding.inES6(true)) {
+        warning("W119", stateBinding.tokens.curr, "arrow function syntax (=>)", "6");
       }
 
-      if (!options.loneArg) {
+      if (!optionsBinding.loneArg) {
         advance("=>");
       }
     }
 
     block(context, false, true, true, isArrow);
 
-    if (!state.option.noyield && isGenerator &&
-        state.funct["(generator)"] !== "yielded") {
-      warning("W124", state.tokens.curr);
+    if (!stateBinding.option.noyield && isGenerator &&
+        stateBinding.funct["(generator)"] !== "yielded") {
+      warning("W124", stateBinding.tokens.curr);
     }
 
-    state.funct["(metrics)"].verifyMaxStatementsPerFunction();
-    state.funct["(metrics)"].verifyMaxComplexityPerFunction();
-    state.funct["(unusedOption)"] = state.option.unused;
-    state.option = oldOption;
-    state.ignored = oldIgnored;
-    state.funct["(last)"] = state.tokens.curr.line;
-    state.funct["(lastcharacter)"] = state.tokens.curr.character;
+    stateBinding.funct["(metrics)"].verifyMaxStatementsPerFunction();
+    stateBinding.funct["(metrics)"].verifyMaxComplexityPerFunction();
+    stateBinding.funct["(unusedOption)"] = stateBinding.option.unused;
+    stateBinding.option = oldOption;
+    stateBinding.ignored = oldIgnored;
+    stateBinding.funct["(last)"] = stateBinding.tokens.curr.line;
+    stateBinding.funct["(lastcharacter)"] = stateBinding.tokens.curr.character;
 
     // unstack the params scope
-    state.funct["(scope)"].unstack(); // also does usage and label checks
+    stateBinding.funct["(scope)"].unstack(); // also does usage and label checks
 
     // unstack the function outer stack
-    state.funct["(scope)"].unstack();
+    stateBinding.funct["(scope)"].unstack();
 
-    state.funct = state.funct["(context)"];
+    stateBinding.funct = stateBinding.funct["(context)"];
 
-    if (!ignoreLoopFunc && !state.option.loopfunc && state.funct["(loopage)"]) {
+    if (!ignoreLoopFunc && !stateBinding.option.loopfunc && stateBinding.funct["(loopage)"]) {
       // If the function we just parsed accesses any non-local variables
       // trigger a warning. Otherwise, the function is safe even within
       // a loop.
@@ -3789,29 +3750,29 @@ var JSHINT = (function() {
       arity: 0,
 
       verifyMaxStatementsPerFunction: function() {
-        if (state.option.maxstatements &&
-          this.statementCount > state.option.maxstatements) {
+        if (stateBinding.option.maxstatements &&
+          this.statementCount > stateBinding.option.maxstatements) {
           warning("W071", functionStartToken, this.statementCount);
         }
       },
 
       verifyMaxParametersPerFunction: function() {
-        if (_.isNumber(state.option.maxparams) &&
-          this.arity > state.option.maxparams) {
+        if (_.isNumber(stateBinding.option.maxparams) &&
+          this.arity > stateBinding.option.maxparams) {
           warning("W072", functionStartToken, this.arity);
         }
       },
 
       verifyMaxNestedBlockDepthPerFunction: function() {
-        if (state.option.maxdepth &&
+        if (stateBinding.option.maxdepth &&
           this.nestedBlockDepth > 0 &&
-          this.nestedBlockDepth === state.option.maxdepth + 1) {
+          this.nestedBlockDepth === stateBinding.option.maxdepth + 1) {
           warning("W073", null, this.nestedBlockDepth);
         }
       },
 
       verifyMaxComplexityPerFunction: function() {
-        var max = state.option.maxcomplexity;
+        var max = stateBinding.option.maxcomplexity;
         var cc = this.ComplexityCount;
         if (max && cc > max) {
           warning("W074", functionStartToken, cc);
@@ -3821,7 +3782,7 @@ var JSHINT = (function() {
   }
 
   function increaseComplexityCount() {
-    state.funct["(metrics)"].ComplexityCount += 1;
+    stateBinding.funct["(metrics)"].ComplexityCount += 1;
   }
 
   // Parse assignments that were found instead of conditionals.
@@ -3847,7 +3808,7 @@ var JSHINT = (function() {
     case "|=":
     case "^=":
     case "/=":
-      if (!paren && !state.option.boss) {
+      if (!paren && !stateBinding.option.boss) {
         warning("W084");
       }
     }
@@ -3862,7 +3823,7 @@ var JSHINT = (function() {
    */
   function checkProperties(props) {
     // Check for lonely setters if in the ES5 mode.
-    if (state.inES5()) {
+    if (stateBinding.inES5()) {
       for (var name in props) {
         if (props[name] && props[name].setterToken && !props[name].getterToken &&
           !props[name].static) {
@@ -3873,17 +3834,17 @@ var JSHINT = (function() {
   }
 
   function metaProperty(context, name, c) {
-    if (checkPunctuator(state.tokens.next, ".")) {
-      var left = state.tokens.curr.id;
+    if (checkPunctuator(stateBinding.tokens.next, ".")) {
+      var left = stateBinding.tokens.curr.id;
       advance(".");
       var id = identifier(context);
-      state.tokens.curr.isMetaProperty = true;
+      stateBinding.tokens.curr.isMetaProperty = true;
       if (name !== id) {
-        error("E057", state.tokens.prev, left, id);
+        error("E057", stateBinding.tokens.prev, left, id);
       } else {
         c();
       }
-      return state.tokens.curr;
+      return stateBinding.tokens.curr;
     }
   }
 
@@ -3894,11 +3855,11 @@ var JSHINT = (function() {
       var props = Object.create(null); // All properties, including accessors
       var isAsyncMethod = false;
 
-      b = state.tokens.curr.line !== startLine(state.tokens.next);
+      b = stateBinding.tokens.curr.line !== startLine(stateBinding.tokens.next);
       if (b) {
-        indent += state.option.indent;
-        if (state.tokens.next.from === indent + state.option.indent) {
-          indent += state.option.indent;
+        indent += stateBinding.option.indent;
+        if (stateBinding.tokens.next.from === indent + stateBinding.option.indent) {
+          indent += stateBinding.option.indent;
         }
       }
 
@@ -3910,31 +3871,31 @@ var JSHINT = (function() {
           });
         return this;
       }
-      state.inObjectBody = true;
+      stateBinding.inObjectBody = true;
       for (;;) {
-        if (state.tokens.next.id === "}") {
+        if (stateBinding.tokens.next.id === "}") {
           break;
         }
 
-        nextVal = state.tokens.next.value;
-        if (state.tokens.next.identifier &&
+        nextVal = stateBinding.tokens.next.value;
+        if (stateBinding.tokens.next.identifier &&
             (peekIgnoreEOL().id === "," || peekIgnoreEOL().id === "}")) {
-          if (!state.inES6()) {
-            warning("W104", state.tokens.next, "object short notation", "6");
+          if (!stateBinding.inES6()) {
+            warning("W104", stateBinding.tokens.next, "object short notation", "6");
           }
           i = propertyName(context, true);
-          saveProperty(props, i, state.tokens.next);
+          saveProperty(props, i, stateBinding.tokens.next);
 
           expression(context, 10);
 
         } else if (peek().id !== ":" && (nextVal === "get" || nextVal === "set")) {
           advance(nextVal);
 
-          if (!state.inES5()) {
+          if (!stateBinding.inES5()) {
             error("E034");
           }
 
-          if (state.tokens.next.id === "[") {
+          if (stateBinding.tokens.next.id === "[") {
             i = computedPropertyName();
           } else {
             i = propertyName(context);
@@ -3942,7 +3903,7 @@ var JSHINT = (function() {
             // ES6 allows for get() {...} and set() {...} method
             // definition shorthand syntax, so we don't produce an error
             // if linting ECMAScript 6 code.
-            if (!i && !state.inES6()) {
+            if (!i && !stateBinding.inES6()) {
               error("E035");
             }
           }
@@ -3950,10 +3911,10 @@ var JSHINT = (function() {
           // We don't want to save this getter unless it's an actual getter
           // and not an ES6 concise method
           if (i) {
-            saveAccessor(nextVal, props, i, state.tokens.curr);
+            saveAccessor(nextVal, props, i, stateBinding.tokens.curr);
           }
 
-          t = state.tokens.next;
+          t = stateBinding.tokens.next;
           f = doFunction(context, { isMethod: true });
           params = f["(params)"];
 
@@ -3965,30 +3926,30 @@ var JSHINT = (function() {
           }
 
         } else if (spreadrest("spread")) {
-          if (!state.inES9()) {
-            warning("W119", state.tokens.next, "object spread property", "9");
+          if (!stateBinding.inES9()) {
+            warning("W119", stateBinding.tokens.next, "object spread property", "9");
           }
 
           expression(context, 10);
         } else {
-          if (state.tokens.next.id === "async" && !checkPunctuators(peek(), ["(", ":"])) {
-            if (!state.inES8()) {
-              warning("W119", state.tokens.next, "async functions", "8");
+          if (stateBinding.tokens.next.id === "async" && !checkPunctuators(peek(), ["(", ":"])) {
+            if (!stateBinding.inES8()) {
+              warning("W119", stateBinding.tokens.next, "async functions", "8");
             }
 
             isAsyncMethod = true;
             advance();
 
-            nolinebreak(state.tokens.curr);
+            nolinebreak(stateBinding.tokens.curr);
           } else {
             isAsyncMethod = false;
           }
 
-          if (state.tokens.next.value === "*" && state.tokens.next.type === "(punctuator)") {
-            if (isAsyncMethod && !state.inES9()) {
-              warning("W119", state.tokens.next, "async generators", "9");
-            } else if (!state.inES6()) {
-              warning("W104", state.tokens.next, "generator functions", "6");
+          if (stateBinding.tokens.next.value === "*" && stateBinding.tokens.next.type === "(punctuator)") {
+            if (isAsyncMethod && !stateBinding.inES9()) {
+              warning("W119", stateBinding.tokens.next, "async generators", "9");
+            } else if (!stateBinding.inES6()) {
+              warning("W104", stateBinding.tokens.next, "generator functions", "6");
             }
 
             advance("*");
@@ -3997,22 +3958,22 @@ var JSHINT = (function() {
             isGeneratorMethod = false;
           }
 
-          if (state.tokens.next.id === "[") {
+          if (stateBinding.tokens.next.id === "[") {
             i = computedPropertyName(context);
-            state.nameStack.set(i);
+            stateBinding.nameStack.set(i);
           } else {
-            state.nameStack.set(state.tokens.next);
+            stateBinding.nameStack.set(stateBinding.tokens.next);
             i = propertyName(context);
-            saveProperty(props, i, state.tokens.next);
+            saveProperty(props, i, stateBinding.tokens.next);
 
             if (typeof i !== "string") {
               break;
             }
           }
 
-          if (state.tokens.next.value === "(") {
-            if (!state.inES6()) {
-              warning("W104", state.tokens.curr, "concise methods", "6");
+          if (stateBinding.tokens.next.value === "(") {
+            if (!stateBinding.inES6()) {
+              warning("W104", stateBinding.tokens.curr, "concise methods", "6");
             }
 
             doFunction(isAsyncMethod ? context | prodParams.preAsync : context, {
@@ -4027,66 +3988,66 @@ var JSHINT = (function() {
 
         countMember(i);
 
-        if (state.tokens.next.id === ",") {
+        if (stateBinding.tokens.next.id === ",") {
           parseComma({ allowTrailing: true, property: true });
-          if (state.tokens.next.id === ",") {
-            warning("W070", state.tokens.curr);
-          } else if (state.tokens.next.id === "}" && !state.inES5()) {
-            warning("W070", state.tokens.curr);
+          if (stateBinding.tokens.next.id === ",") {
+            warning("W070", stateBinding.tokens.curr);
+          } else if (stateBinding.tokens.next.id === "}" && !stateBinding.inES5()) {
+            warning("W070", stateBinding.tokens.curr);
           }
         } else {
-          if (state.option.trailingcomma && state.inES5()) {
-            warningAt("W140", state.tokens.curr.line, state.tokens.curr.character);
+          if (stateBinding.option.trailingcomma && stateBinding.inES5()) {
+            warningAt("W140", stateBinding.tokens.curr.line, stateBinding.tokens.curr.character);
           }
           break;
         }
       }
       if (b) {
-        indent -= state.option.indent;
+        indent -= stateBinding.option.indent;
       }
       advance("}", this);
 
       checkProperties(props);
-      state.inObjectBody = false;
+      stateBinding.inObjectBody = false;
 
       return this;
     };
     x.fud = function() {
-      error("E036", state.tokens.curr);
+      error("E036", stateBinding.tokens.curr);
     };
   }(delim("{")));
 
   function destructuringPattern(context, options) {
-    var isAssignment = options && options.assignment;
+    var isAssignment = optionsBinding && optionsBinding.assignment;
 
     context &= ~prodParams.noin;
 
-    if (!state.inES6()) {
-      warning("W104", state.tokens.curr,
+    if (!stateBinding.inES6()) {
+      warning("W104", stateBinding.tokens.curr,
         isAssignment ? "destructuring assignment" : "destructuring binding", "6");
     }
 
-    return destructuringPatternRecursive(context, options);
+    return destructuringPatternRecursive(context, optionsBinding);
   }
 
   function destructuringPatternRecursive(context, options) {
     var ids, idx;
     var identifiers = [];
-    var openingParsed = options && options.openingParsed;
-    var isAssignment = options && options.assignment;
+    var openingParsed = optionsBinding && optionsBinding.openingParsed;
+    var isAssignment = optionsBinding && optionsBinding.assignment;
     var recursiveOptions = isAssignment ? { assignment: isAssignment } : null;
-    var firstToken = openingParsed ? state.tokens.curr : state.tokens.next;
+    var firstToken = openingParsed ? stateBinding.tokens.curr : stateBinding.tokens.next;
 
     var nextInnerDE = function() {
       var ident;
-      if (checkPunctuators(state.tokens.next, ["[", "{"])) {
+      if (checkPunctuators(stateBinding.tokens.next, ["[", "{"])) {
         ids = destructuringPatternRecursive(context, recursiveOptions);
         for (idx = 0; idx < ids.length; idx++) {
           identifiers.push({ id: ids[idx].id, token: ids[idx].token });
         }
-      } else if (checkPunctuator(state.tokens.next, ",")) {
-        identifiers.push({ id: null, token: state.tokens.curr });
-      } else if (checkPunctuator(state.tokens.next, "(")) {
+      } else if (checkPunctuator(stateBinding.tokens.next, ",")) {
+        identifiers.push({ id: null, token: stateBinding.tokens.curr });
+      } else if (checkPunctuator(stateBinding.tokens.next, "(")) {
         advance("(");
         nextInnerDE();
         advance(")");
@@ -4105,7 +4066,7 @@ var JSHINT = (function() {
           ident = identifier(context);
         }
         if (ident) {
-          identifiers.push({ id: ident, token: state.tokens.curr });
+          identifiers.push({ id: ident, token: stateBinding.tokens.curr });
         }
       }
     };
@@ -4113,14 +4074,14 @@ var JSHINT = (function() {
     var assignmentProperty = function(context) {
       var id, expr;
 
-      if (checkPunctuator(state.tokens.next, "[")) {
+      if (checkPunctuator(stateBinding.tokens.next, "[")) {
         advance("[");
         expression(context, 10);
         advance("]");
         advance(":");
         nextInnerDE();
-      } else if (state.tokens.next.id === "(string)" ||
-                 state.tokens.next.id === "(number)") {
+      } else if (stateBinding.tokens.next.id === "(string)" ||
+                 stateBinding.tokens.next.id === "(number)") {
         advance();
         advance(":");
         nextInnerDE();
@@ -4129,8 +4090,8 @@ var JSHINT = (function() {
         var isRest = spreadrest("rest");
 
         if (isRest) {
-          if (!state.inES9()) {
-            warning("W119", state.tokens.next, "object rest property", "9");
+          if (!stateBinding.inES9()) {
+            warning("W119", stateBinding.tokens.next, "object rest property", "9");
           }
 
           // Due to visual symmetry with the array rest property (and the early
@@ -4147,19 +4108,19 @@ var JSHINT = (function() {
           id = identifier(context);
         }
 
-        if (!isRest && checkPunctuator(state.tokens.next, ":")) {
+        if (!isRest && checkPunctuator(stateBinding.tokens.next, ":")) {
           advance(":");
           nextInnerDE();
         } else if (id) {
           // in this case we are assigning (not declaring), so check assignment
           if (isAssignment) {
-            checkLeftSideAssign(context, state.tokens.curr);
+            checkLeftSideAssign(context, stateBinding.tokens.curr);
           }
-          identifiers.push({ id: id, token: state.tokens.curr });
+          identifiers.push({ id: id, token: stateBinding.tokens.curr });
         }
 
-        if (isRest && checkPunctuator(state.tokens.next, ",")) {
-          warning("W130", state.tokens.next);
+        if (isRest && checkPunctuator(stateBinding.tokens.next, ",")) {
+          warning("W130", stateBinding.tokens.next);
         }
       }
     };
@@ -4169,33 +4130,33 @@ var JSHINT = (function() {
       if (!openingParsed) {
         advance("[");
       }
-      if (checkPunctuator(state.tokens.next, "]")) {
-        warning("W137", state.tokens.curr);
+      if (checkPunctuator(stateBinding.tokens.next, "]")) {
+        warning("W137", stateBinding.tokens.curr);
       }
       var element_after_rest = false;
-      while (!checkPunctuator(state.tokens.next, "]")) {
+      while (!checkPunctuator(stateBinding.tokens.next, "]")) {
         var isRest = spreadrest("rest");
 
         nextInnerDE();
 
         if (isRest && !element_after_rest &&
-            checkPunctuator(state.tokens.next, ",")) {
-          warning("W130", state.tokens.next);
+            checkPunctuator(stateBinding.tokens.next, ",")) {
+          warning("W130", stateBinding.tokens.next);
           element_after_rest = true;
         }
-        if (!isRest && checkPunctuator(state.tokens.next, "=")) {
-          if (checkPunctuator(state.tokens.prev, "...")) {
+        if (!isRest && checkPunctuator(stateBinding.tokens.next, "=")) {
+          if (checkPunctuator(stateBinding.tokens.prev, "...")) {
             advance("]");
           } else {
             advance("=");
           }
-          id = state.tokens.prev;
+          id = stateBinding.tokens.prev;
           value = expression(context, 10);
           if (value && value.identifier && value.value === "undefined") {
             warning("W080", id, id.value);
           }
         }
-        if (!checkPunctuator(state.tokens.next, "]")) {
+        if (!checkPunctuator(stateBinding.tokens.next, "]")) {
           advance(",");
         }
       }
@@ -4205,22 +4166,22 @@ var JSHINT = (function() {
       if (!openingParsed) {
         advance("{");
       }
-      if (checkPunctuator(state.tokens.next, "}")) {
-        warning("W137", state.tokens.curr);
+      if (checkPunctuator(stateBinding.tokens.next, "}")) {
+        warning("W137", stateBinding.tokens.curr);
       }
-      while (!checkPunctuator(state.tokens.next, "}")) {
+      while (!checkPunctuator(stateBinding.tokens.next, "}")) {
         assignmentProperty(context);
-        if (checkPunctuator(state.tokens.next, "=")) {
+        if (checkPunctuator(stateBinding.tokens.next, "=")) {
           advance("=");
-          id = state.tokens.prev;
+          id = stateBinding.tokens.prev;
           value = expression(context, 10);
           if (value && value.identifier && value.value === "undefined") {
             warning("W080", id, id.value);
           }
         }
-        if (!checkPunctuator(state.tokens.next, "}")) {
+        if (!checkPunctuator(stateBinding.tokens.next, "}")) {
           advance(",");
-          if (checkPunctuator(state.tokens.next, "}")) {
+          if (checkPunctuator(stateBinding.tokens.next, "}")) {
             // Trailing comma
             // ObjectBindingPattern: { BindingPropertyList , }
             break;
@@ -4258,13 +4219,13 @@ var JSHINT = (function() {
     var isConst = type === "const";
     var tokens, lone, value, letblock;
 
-    if (!state.inES6()) {
-      warning("W104", state.tokens.curr, type, "6");
+    if (!stateBinding.inES6()) {
+      warning("W104", stateBinding.tokens.curr, type, "6");
     }
 
     if (isLet && isMozillaLet()) {
       advance("(");
-      state.funct["(scope)"].stack();
+      stateBinding.funct["(scope)"].stack();
       letblock = true;
       statement.declaration = false;
     }
@@ -4272,11 +4233,11 @@ var JSHINT = (function() {
     statement.first = [];
     for (;;) {
       var names = [];
-      if (_.includes(["{", "["], state.tokens.next.value)) {
+      if (_.includes(["{", "["], stateBinding.tokens.next.value)) {
         tokens = destructuringPattern(context);
         lone = false;
       } else {
-        tokens = [ { id: identifier(context), token: state.tokens.curr } ];
+        tokens = [ { id: identifier(context), token: stateBinding.tokens.curr } ];
         lone = true;
       }
 
@@ -4287,8 +4248,8 @@ var JSHINT = (function() {
       // "C-style" `for` statements (i.e. `for (const x;;) {}`, the `for`
       // statement logic includes dedicated logic to issue the error for such
       // cases.
-      if (!noin && isConst && state.tokens.next.id !== "=") {
-        warning("E012", state.tokens.curr, state.tokens.curr.value);
+      if (!noin && isConst && stateBinding.tokens.next.id !== "=") {
+        warning("E012", stateBinding.tokens.curr, stateBinding.tokens.curr.value);
       }
 
       for (var t in tokens) {
@@ -4301,13 +4262,13 @@ var JSHINT = (function() {
             warning("W024", t.token, t.id);
           }
 
-          if (state.funct["(scope)"].block.isGlobal()) {
+          if (stateBinding.funct["(scope)"].block.isGlobal()) {
             if (predefined[t.id] === false) {
               warning("W079", t.token, t.id);
             }
           }
           if (t.id) {
-            state.funct["(scope)"].addlabel(t.id, {
+            stateBinding.funct["(scope)"].addlabel(t.id, {
               type: type,
               token: t.token });
             names.push(t.token);
@@ -4315,14 +4276,14 @@ var JSHINT = (function() {
         }
       }
 
-      if (state.tokens.next.id === "=") {
+      if (stateBinding.tokens.next.id === "=") {
         statement.hasInitializer = true;
 
         advance("=");
-        if (!noin && peek(0).id === "=" && state.tokens.next.identifier) {
-          warning("W120", state.tokens.next, state.tokens.next.value);
+        if (!noin && peek(0).id === "=" && stateBinding.tokens.next.identifier) {
+          warning("W120", stateBinding.tokens.next, stateBinding.tokens.next.value);
         }
-        var id = state.tokens.prev;
+        var id = stateBinding.tokens.prev;
         value = expression(context, 10);
         if (value && value.identifier && value.value === "undefined") {
           warning("W080", id, id.value);
@@ -4335,14 +4296,14 @@ var JSHINT = (function() {
       // Bindings are not immediately initialized in for-in and for-of
       // statements. As with `const` initializers (described above), the `for`
       // statement parsing logic includes
-      if (state.tokens.next.value !== "in" && state.tokens.next.value !== "of") {
+      if (stateBinding.tokens.next.value !== "in" && stateBinding.tokens.next.value !== "of") {
         for (t in tokens) {
           if (tokens.hasOwnProperty(t)) {
             t = tokens[t];
-            state.funct["(scope)"].initialize(t.id);
+            stateBinding.funct["(scope)"].initialize(t.id);
 
             if (lone && inexport) {
-              state.funct["(scope)"].setExported(t.token.value, t.token);
+              stateBinding.funct["(scope)"].setExported(t.token.value, t.token);
             }
           }
         }
@@ -4350,7 +4311,7 @@ var JSHINT = (function() {
 
       statement.first = statement.first.concat(names);
 
-      if (state.tokens.next.id !== ",") {
+      if (stateBinding.tokens.next.id !== ",") {
         break;
       }
 
@@ -4361,7 +4322,7 @@ var JSHINT = (function() {
       advance(")");
       block(context, true, true);
       statement.block = true;
-      state.funct["(scope)"].unstack();
+      stateBinding.funct["(scope)"].unstack();
     }
 
     return statement;
@@ -4395,7 +4356,7 @@ var JSHINT = (function() {
    * @returns {boolean}
    */
   function isMozillaLet() {
-    return state.tokens.next.id === "(" && state.inMoz();
+    return stateBinding.tokens.next.id === "(" && stateBinding.inMoz();
   }
   var letstatement = stmt("let", function(context) {
     return blockVariableStatement("let", this, context);
@@ -4403,25 +4364,25 @@ var JSHINT = (function() {
   letstatement.nud = function(context, rbp) {
     if (isMozillaLet()) {
       // create a new block scope we use only for the current expression
-      state.funct["(scope)"].stack();
+      stateBinding.funct["(scope)"].stack();
       advance("(");
-      state.tokens.prev.fud(context);
+      stateBinding.tokens.prev.fud(context);
       advance(")");
       expression(context, rbp);
-      state.funct["(scope)"].unstack();
+      stateBinding.funct["(scope)"].unstack();
     } else {
       this.exps = false;
-      return state.syntax["(identifier)"].nud.apply(this, arguments);
+      return stateBinding.syntax["(identifier)"].nud.apply(this, arguments);
     }
   };
   letstatement.meta = { es5: true, isFutureReservedWord: false, strictOnly: true };
   letstatement.exps = true;
   letstatement.declaration = true;
   letstatement.useFud = function(context) {
-    var next = state.tokens.next;
+    var next = stateBinding.tokens.next;
     var nextIsBindingName;
 
-    if (this.line !== next.line && !state.inES6()) {
+    if (this.line !== next.line && !stateBinding.inES6()) {
       return false;
     }
 
@@ -4450,7 +4411,7 @@ var JSHINT = (function() {
     this.first = [];
     for (;;) {
       var names = [];
-      if (_.includes(["{", "["], state.tokens.next.value)) {
+      if (_.includes(["{", "["], stateBinding.tokens.next.value)) {
         tokens = destructuringPattern(context);
         lone = false;
       } else {
@@ -4458,13 +4419,13 @@ var JSHINT = (function() {
         id = identifier(context);
 
         if (id) {
-          tokens.push({ id: id, token: state.tokens.curr });
+          tokens.push({ id: id, token: stateBinding.tokens.curr });
         }
 
         lone = true;
       }
 
-      if (state.option.varstmt) {
+      if (stateBinding.option.varstmt) {
         warning("W132", this);
       }
 
@@ -4472,45 +4433,45 @@ var JSHINT = (function() {
       for (var t in tokens) {
         if (tokens.hasOwnProperty(t)) {
           t = tokens[t];
-          if (state.funct["(global)"] && !state.impliedClosure()) {
+          if (stateBinding.funct["(global)"] && !stateBinding.impliedClosure()) {
             if (predefined[t.id] === false) {
               warning("W079", t.token, t.id);
-            } else if (state.option.futurehostile === false) {
-              if ((!state.inES5() && vars.ecmaIdentifiers[5][t.id] === false) ||
-                (!state.inES6() && vars.ecmaIdentifiers[6][t.id] === false)) {
+            } else if (stateBinding.option.futurehostile === false) {
+              if ((!stateBinding.inES5() && vars.ecmaIdentifiers[5][t.id] === false) ||
+                (!stateBinding.inES6() && vars.ecmaIdentifiers[6][t.id] === false)) {
                 warning("W129", t.token, t.id);
               }
             }
           }
           if (t.id) {
-            state.funct["(scope)"].addlabel(t.id, {
+            stateBinding.funct["(scope)"].addlabel(t.id, {
               type: "var",
               token: t.token });
 
             if (lone && inexport) {
-              state.funct["(scope)"].setExported(t.id, t.token);
+              stateBinding.funct["(scope)"].setExported(t.id, t.token);
             }
             names.push(t.token);
           }
         }
       }
 
-      if (state.tokens.next.id === "=") {
+      if (stateBinding.tokens.next.id === "=") {
         this.hasInitializer = true;
 
-        state.nameStack.set(state.tokens.curr);
+        stateBinding.nameStack.set(stateBinding.tokens.curr);
 
         advance("=");
-        if (peek(0).id === "=" && state.tokens.next.identifier) {
+        if (peek(0).id === "=" && stateBinding.tokens.next.identifier) {
           if (!noin &&
-              !state.funct["(params)"] ||
-              state.funct["(params)"].indexOf(state.tokens.next.value) === -1) {
-            warning("W120", state.tokens.next, state.tokens.next.value);
+              !stateBinding.funct["(params)"] ||
+              stateBinding.funct["(params)"].indexOf(stateBinding.tokens.next.value) === -1) {
+            warning("W120", stateBinding.tokens.next, stateBinding.tokens.next.value);
           }
         }
-        id = state.tokens.prev;
+        id = stateBinding.tokens.prev;
         value = expression(context, 10);
-        if (value && !state.funct["(loopage)"] && value.identifier &&
+        if (value && !stateBinding.funct["(loopage)"] && value.identifier &&
           value.value === "undefined") {
           warning("W080", id, id.value);
         }
@@ -4521,7 +4482,7 @@ var JSHINT = (function() {
 
       this.first = this.first.concat(names);
 
-      if (state.tokens.next.id !== ",") {
+      if (stateBinding.tokens.next.id !== ",") {
         break;
       }
       this.hasComma = true;
@@ -4542,11 +4503,11 @@ var JSHINT = (function() {
       labelType = "async ";
     }
 
-    if (state.tokens.next.value === "*") {
-      if (isAsync && !state.inES9()) {
-        warning("W119", state.tokens.prev, "async generators", "9");
-      } else if (!isAsync && !state.inES6(true)) {
-        warning("W119", state.tokens.next, "function*", "6");
+    if (stateBinding.tokens.next.value === "*") {
+      if (isAsync && !stateBinding.inES9()) {
+        warning("W119", stateBinding.tokens.prev, "async generators", "9");
+      } else if (!isAsync && !stateBinding.inES6(true)) {
+        warning("W119", stateBinding.tokens.next, "function*", "6");
       }
 
       advance("*");
@@ -4557,22 +4518,22 @@ var JSHINT = (function() {
     labelType += "function";
 
     if (inblock) {
-      warning("W082", state.tokens.curr);
+      warning("W082", stateBinding.tokens.curr);
     }
-    var nameToken = optionalidentifier(context) ? state.tokens.curr : null;
+    var nameToken = optionalidentifier(context) ? stateBinding.tokens.curr : null;
 
     if (!nameToken) {
       if (!inexport) {
         warning("W025");
       }
     } else {
-      state.funct["(scope)"].addlabel(nameToken.value, {
+      stateBinding.funct["(scope)"].addlabel(nameToken.value, {
         type: labelType,
-        token: state.tokens.curr,
+        token: stateBinding.tokens.curr,
         initialized: true });
 
       if (inexport) {
-        state.funct["(scope)"].setExported(nameToken.value, state.tokens.prev);
+        stateBinding.funct["(scope)"].setExported(nameToken.value, stateBinding.tokens.prev);
       }
     }
 
@@ -4589,13 +4550,13 @@ var JSHINT = (function() {
     // should only be signaled here when the function itself enables strict
     // mode (the scope manager will not report an error because a declaration
     // does not introduce a binding into the function's environment record).
-    var enablesStrictMode = f["(isStrict)"] && !state.isStrict();
+    var enablesStrictMode = f["(isStrict)"] && !stateBinding.isStrict();
     if (nameToken && (f["(name)"] === "arguments" || f["(name)"] === "eval") &&
       enablesStrictMode) {
       error("E008", nameToken);
     }
 
-    if (state.tokens.next.id === "(" && state.tokens.next.line === state.tokens.curr.line) {
+    if (stateBinding.tokens.next.id === "(" && stateBinding.tokens.next.line === stateBinding.tokens.curr.line) {
       error("E039");
     }
     return this;
@@ -4605,11 +4566,11 @@ var JSHINT = (function() {
     var generator = false;
     var isAsync = context & prodParams.preAsync;
 
-    if (state.tokens.next.value === "*") {
-      if (isAsync && !state.inES9()) {
-        warning("W119", state.tokens.prev, "async generators", "9");
-      } else if (!isAsync && !state.inES6(true)) {
-        warning("W119", state.tokens.curr, "function*", "6");
+    if (stateBinding.tokens.next.value === "*") {
+      if (isAsync && !stateBinding.inES9()) {
+        warning("W119", stateBinding.tokens.prev, "async generators", "9");
+      } else if (!isAsync && !stateBinding.inES6(true)) {
+        warning("W119", stateBinding.tokens.curr, "function*", "6");
       }
 
       advance("*");
@@ -4619,7 +4580,7 @@ var JSHINT = (function() {
     // This context modification restricts the use of `await` as the optional
     // BindingIdentifier in async function expressions.
     var nameToken = optionalidentifier(isAsync ? context | prodParams.async : context) ?
-      state.tokens.curr : null;
+      stateBinding.tokens.curr : null;
 
     var f = doFunction(context, {
       name: nameToken && nameToken.value,
@@ -4635,9 +4596,9 @@ var JSHINT = (function() {
   });
 
   blockstmt("if", function(context) {
-    var t = state.tokens.next;
+    var t = stateBinding.tokens.next;
     increaseComplexityCount();
-    state.condition = true;
+    stateBinding.condition = true;
     advance("(");
     var expr = expression(context, 0);
 
@@ -4650,9 +4611,9 @@ var JSHINT = (function() {
     // When the if is within a for-in loop, check if the condition
     // starts with a negation operator
     var forinifcheck = null;
-    if (state.option.forin && state.forinifcheckneeded) {
-      state.forinifcheckneeded = false; // We only need to analyze the first if inside the loop
-      forinifcheck = state.forinifchecks[state.forinifchecks.length - 1];
+    if (stateBinding.option.forin && stateBinding.forinifcheckneeded) {
+      stateBinding.forinifcheckneeded = false; // We only need to analyze the first if inside the loop
+      forinifcheck = stateBinding.forinifchecks[stateBinding.forinifchecks.length - 1];
       if (expr.type === "(punctuator)" && expr.value === "!") {
         forinifcheck.type = "(negative)";
       } else {
@@ -4661,7 +4622,7 @@ var JSHINT = (function() {
     }
 
     advance(")", t);
-    state.condition = false;
+    stateBinding.condition = false;
     var s = block(context, true, true);
 
     // When the if is within a for-in loop and the condition has a negative form,
@@ -4672,9 +4633,9 @@ var JSHINT = (function() {
       }
     }
 
-    if (state.tokens.next.id === "else") {
+    if (stateBinding.tokens.next.id === "else") {
       advance("else");
-      if (state.tokens.next.id === "if" || state.tokens.next.id === "switch") {
+      if (stateBinding.tokens.next.id === "if" || stateBinding.tokens.next.id === "switch") {
         statement(context);
       } else {
         block(context, true, true);
@@ -4690,26 +4651,26 @@ var JSHINT = (function() {
       advance("catch");
       advance("(");
 
-      state.funct["(scope)"].stack("catchparams");
+      stateBinding.funct["(scope)"].stack("catchparams");
 
-      if (checkPunctuators(state.tokens.next, ["[", "{"])) {
+      if (checkPunctuators(stateBinding.tokens.next, ["[", "{"])) {
         var tokens = destructuringPattern(context);
         _.each(tokens, function(token) {
           if (token.id) {
-            state.funct["(scope)"].addParam(token.id, token, "exception");
+            stateBinding.funct["(scope)"].addParam(token.id, token, "exception");
           }
         });
-      } else if (state.tokens.next.type !== "(identifier)") {
-        warning("E030", state.tokens.next, state.tokens.next.value);
+      } else if (stateBinding.tokens.next.type !== "(identifier)") {
+        warning("E030", stateBinding.tokens.next, stateBinding.tokens.next.value);
       } else {
         // only advance if an identifier is present. This allows JSHint to
         // recover from the case where no value is specified.
-        state.funct["(scope)"].addParam(identifier(context), state.tokens.curr, "exception");
+        stateBinding.funct["(scope)"].addParam(identifier(context), stateBinding.tokens.curr, "exception");
       }
 
-      if (state.tokens.next.value === "if") {
-        if (!state.inMoz()) {
-          warning("W118", state.tokens.curr, "catch filter");
+      if (stateBinding.tokens.next.value === "if") {
+        if (!stateBinding.inMoz()) {
+          warning("W118", stateBinding.tokens.curr, "catch filter");
         }
         advance("if");
         expression(context, 0);
@@ -4718,53 +4679,53 @@ var JSHINT = (function() {
       advance(")");
 
       block(context, false);
-      state.funct["(scope)"].unstack();
+      stateBinding.funct["(scope)"].unstack();
     }
 
     block(context | prodParams.tryClause, true);
 
-    while (state.tokens.next.id === "catch") {
+    while (stateBinding.tokens.next.id === "catch") {
       increaseComplexityCount();
-      if (b && (!state.inMoz())) {
-        warning("W118", state.tokens.next, "multiple catch blocks");
+      if (b && (!stateBinding.inMoz())) {
+        warning("W118", stateBinding.tokens.next, "multiple catch blocks");
       }
       doCatch();
       b = true;
     }
 
-    if (state.tokens.next.id === "finally") {
+    if (stateBinding.tokens.next.id === "finally") {
       advance("finally");
       block(context, true);
       return;
     }
 
     if (!b) {
-      error("E021", state.tokens.next, "catch", state.tokens.next.value);
+      error("E021", stateBinding.tokens.next, "catch", stateBinding.tokens.next.value);
     }
 
     return this;
   });
 
   blockstmt("while", function(context) {
-    var t = state.tokens.next;
-    state.funct["(breakage)"] += 1;
-    state.funct["(loopage)"] += 1;
+    var t = stateBinding.tokens.next;
+    stateBinding.funct["(breakage)"] += 1;
+    stateBinding.funct["(loopage)"] += 1;
     increaseComplexityCount();
     advance("(");
     checkCondAssignment(expression(context, 0));
     advance(")", t);
     block(context, true, true);
-    state.funct["(breakage)"] -= 1;
-    state.funct["(loopage)"] -= 1;
+    stateBinding.funct["(breakage)"] -= 1;
+    stateBinding.funct["(loopage)"] -= 1;
     return this;
   }).labelled = true;
 
   blockstmt("with", function(context) {
-    var t = state.tokens.next;
-    if (state.isStrict()) {
-      error("E010", state.tokens.curr);
-    } else if (!state.option.withstmt) {
-      warning("W085", state.tokens.curr);
+    var t = stateBinding.tokens.next;
+    if (stateBinding.isStrict()) {
+      error("E010", stateBinding.tokens.curr);
+    } else if (!stateBinding.option.withstmt) {
+      warning("W085", stateBinding.tokens.curr);
     }
 
     advance("(");
@@ -4776,30 +4737,30 @@ var JSHINT = (function() {
   });
 
   blockstmt("switch", function(context) {
-    var t = state.tokens.next;
+    var t = stateBinding.tokens.next;
     var g = false;
     var noindent = false;
 
-    state.funct["(breakage)"] += 1;
+    stateBinding.funct["(breakage)"] += 1;
     advance("(");
     checkCondAssignment(expression(context, 0));
     advance(")", t);
-    t = state.tokens.next;
+    t = stateBinding.tokens.next;
     advance("{");
-    state.funct["(scope)"].stack();
+    stateBinding.funct["(scope)"].stack();
 
-    if (state.tokens.next.from === indent)
+    if (stateBinding.tokens.next.from === indent)
       noindent = true;
 
     if (!noindent)
-      indent += state.option.indent;
+      indent += stateBinding.option.indent;
 
     this.cases = [];
 
     for (;;) {
-      switch (state.tokens.next.id) {
+      switch (stateBinding.tokens.next.id) {
       case "case":
-        switch (state.funct["(verb)"]) {
+        switch (stateBinding.funct["(verb)"]) {
         case "yield":
         case "break":
         case "case":
@@ -4809,8 +4770,8 @@ var JSHINT = (function() {
         case "throw":
           break;
         case "default":
-          if (state.option.leanswitch) {
-            warning("W145", state.tokens.next);
+          if (stateBinding.option.leanswitch) {
+            warning("W145", stateBinding.tokens.next);
           }
 
           break;
@@ -4818,8 +4779,8 @@ var JSHINT = (function() {
           // You can tell JSHint that you don't use break intentionally by
           // adding a comment /* falls through */ on a line just before
           // the next `case`.
-          if (!state.tokens.curr.caseFallsThrough) {
-            warning("W086", state.tokens.curr, "case");
+          if (!stateBinding.tokens.curr.caseFallsThrough) {
+            warning("W086", stateBinding.tokens.curr, "case");
           }
         }
 
@@ -4828,10 +4789,10 @@ var JSHINT = (function() {
         increaseComplexityCount();
         g = true;
         advance(":");
-        state.funct["(verb)"] = "case";
+        stateBinding.funct["(verb)"] = "case";
         break;
       case "default":
-        switch (state.funct["(verb)"]) {
+        switch (stateBinding.funct["(verb)"]) {
         case "yield":
         case "break":
         case "continue":
@@ -4839,8 +4800,8 @@ var JSHINT = (function() {
         case "throw":
           break;
         case "case":
-          if (state.option.leanswitch) {
-            warning("W145", state.tokens.curr);
+          if (stateBinding.option.leanswitch) {
+            warning("W145", stateBinding.tokens.curr);
           }
 
           break;
@@ -4848,8 +4809,8 @@ var JSHINT = (function() {
           // Do not display a warning if 'default' is the first statement or if
           // there is a special /* falls through */ comment.
           if (this.cases.length) {
-            if (!state.tokens.curr.caseFallsThrough) {
-              warning("W086", state.tokens.curr, "default");
+            if (!stateBinding.tokens.curr.caseFallsThrough) {
+              warning("W086", stateBinding.tokens.curr, "default");
             }
           }
         }
@@ -4857,24 +4818,24 @@ var JSHINT = (function() {
         advance("default");
         g = true;
         advance(":");
-        state.funct["(verb)"] = "default";
+        stateBinding.funct["(verb)"] = "default";
         break;
       case "}":
         if (!noindent)
-          indent -= state.option.indent;
+          indent -= stateBinding.option.indent;
 
         advance("}", t);
-        state.funct["(scope)"].unstack();
-        state.funct["(breakage)"] -= 1;
-        state.funct["(verb)"] = undefined;
+        stateBinding.funct["(scope)"].unstack();
+        stateBinding.funct["(breakage)"] -= 1;
+        stateBinding.funct["(verb)"] = undefined;
         return;
       case "(end)":
-        error("E023", state.tokens.next, "}");
+        error("E023", stateBinding.tokens.next, "}");
         return;
       default:
-        indent += state.option.indent;
+        indent += stateBinding.option.indent;
         if (g) {
-          switch (state.tokens.curr.id) {
+          switch (stateBinding.tokens.curr.id) {
           case ",":
             error("E040");
             return;
@@ -4883,26 +4844,26 @@ var JSHINT = (function() {
             statements(context);
             break;
           default:
-            error("E025", state.tokens.curr);
+            error("E025", stateBinding.tokens.curr);
             return;
           }
         } else {
-          if (state.tokens.curr.id === ":") {
+          if (stateBinding.tokens.curr.id === ":") {
             advance(":");
-            error("E024", state.tokens.curr, ":");
+            error("E024", stateBinding.tokens.curr, ":");
             statements(context);
           } else {
-            error("E021", state.tokens.next, "case", state.tokens.next.value);
+            error("E021", stateBinding.tokens.next, "case", stateBinding.tokens.next.value);
             return;
           }
         }
-        indent -= state.option.indent;
+        indent -= stateBinding.option.indent;
       }
     }
   }).labelled = true;
 
   stmt("debugger", function() {
-    if (!state.option.debug) {
+    if (!stateBinding.option.debug) {
       warning("W087", this);
     }
     return this;
@@ -4910,18 +4871,18 @@ var JSHINT = (function() {
 
   (function() {
     var x = stmt("do", function(context) {
-      state.funct["(breakage)"] += 1;
-      state.funct["(loopage)"] += 1;
+      stateBinding.funct["(breakage)"] += 1;
+      stateBinding.funct["(loopage)"] += 1;
       increaseComplexityCount();
 
       this.first = block(context, true, true);
       advance("while");
-      var t = state.tokens.next;
+      var t = stateBinding.tokens.next;
       advance("(");
       checkCondAssignment(expression(context, 0));
       advance(")", t);
-      state.funct["(breakage)"] -= 1;
-      state.funct["(loopage)"] -= 1;
+      stateBinding.funct["(breakage)"] -= 1;
+      stateBinding.funct["(loopage)"] -= 1;
       return this;
     });
     x.labelled = true;
@@ -4929,7 +4890,7 @@ var JSHINT = (function() {
   }());
 
   blockstmt("for", function(context) {
-    var s, t = state.tokens.next;
+    var s, t = stateBinding.tokens.next;
     var letscope = false;
     var isAsync = false;
     var foreachtok = null;
@@ -4937,19 +4898,19 @@ var JSHINT = (function() {
     if (t.value === "each") {
       foreachtok = t;
       advance("each");
-      if (!state.inMoz()) {
-        warning("W118", state.tokens.curr, "for each");
+      if (!stateBinding.inMoz()) {
+        warning("W118", stateBinding.tokens.curr, "for each");
       }
     }
 
-    if (state.tokens.next.identifier && state.tokens.next.value === "await") {
+    if (stateBinding.tokens.next.identifier && stateBinding.tokens.next.value === "await") {
       advance("await");
       isAsync = true;
 
       if (!(context & prodParams.async)) {
-        error("E024", state.tokens.curr, "await");
-      } else if (!state.inES9()) {
-        warning("W119", state.tokens.curr, "asynchronous iteration", "9");
+        error("E024", stateBinding.tokens.curr, "await");
+      } else if (!stateBinding.inES9()) {
+        warning("W119", stateBinding.tokens.curr, "asynchronous iteration", "9");
       }
     }
 
@@ -4968,40 +4929,40 @@ var JSHINT = (function() {
 
     var headContext = context | prodParams.noin;
 
-    if (state.tokens.next.id === "var") {
+    if (stateBinding.tokens.next.id === "var") {
       advance("var");
-      decl = state.tokens.curr.fud(headContext);
+      decl = stateBinding.tokens.curr.fud(headContext);
       comma = decl.hasComma ? decl : null;
       initializer = decl.hasInitializer ? decl : null;
-    } else if (state.tokens.next.id === "const" ||
+    } else if (stateBinding.tokens.next.id === "const" ||
       // The "let" keyword only signals a lexical binding if it is followed by
       // an identifier, `{`, or `[`. Otherwise, it should be parsed as an
       // IdentifierReference (i.e. in a subsquent branch).
-      (state.tokens.next.id === "let" &&
+      (stateBinding.tokens.next.id === "let" &&
         ((afterNext.identifier && afterNext.id !== "in") ||
          checkPunctuators(afterNext, ["{", "["])))) {
-      advance(state.tokens.next.id);
+      advance(stateBinding.tokens.next.id);
       // create a new block scope
       letscope = true;
-      state.funct["(scope)"].stack();
-      decl = state.tokens.curr.fud(headContext);
+      stateBinding.funct["(scope)"].stack();
+      decl = stateBinding.tokens.curr.fud(headContext);
       comma = decl.hasComma ? decl : null;
       initializer = decl.hasInitializer ? decl : null;
-    } else if (!checkPunctuator(state.tokens.next, ";")) {
+    } else if (!checkPunctuator(stateBinding.tokens.next, ";")) {
       targets = [];
 
-      while (state.tokens.next.value !== "in" &&
-        state.tokens.next.value !== "of" &&
-        !checkPunctuator(state.tokens.next, ";")) {
+      while (stateBinding.tokens.next.value !== "in" &&
+        stateBinding.tokens.next.value !== "of" &&
+        !checkPunctuator(stateBinding.tokens.next, ";")) {
 
-        if (checkPunctuators(state.tokens.next, ["{", "["])) {
+        if (checkPunctuators(stateBinding.tokens.next, ["{", "["])) {
           destructuringPattern(headContext, { assignment: true })
             .forEach(function(elem) {
               this.push(elem.token);
             }, targets);
-          if (checkPunctuator(state.tokens.next, "=")) {
+          if (checkPunctuator(stateBinding.tokens.next, "=")) {
             advance("=");
-            initializer = state.tokens.curr;
+            initializer = stateBinding.tokens.curr;
             expression(headContext, 10);
           }
         } else {
@@ -5017,11 +4978,11 @@ var JSHINT = (function() {
           }
         }
 
-        if (checkPunctuator(state.tokens.next, ",")) {
+        if (checkPunctuator(stateBinding.tokens.next, ",")) {
           advance(",");
 
           if (!comma) {
-            comma = state.tokens.curr;
+            comma = stateBinding.tokens.curr;
           }
         }
       }
@@ -5032,14 +4993,14 @@ var JSHINT = (function() {
       // implicit creation of bindings.
       if (!initializer && !comma) {
         targets.forEach(function(token) {
-          if (!state.funct["(scope)"].has(token.value)) {
+          if (!stateBinding.funct["(scope)"].has(token.value)) {
             warning("W088", token, token.value);
           }
         });
       }
     }
 
-    nextop = state.tokens.next;
+    nextop = stateBinding.tokens.next;
 
     if (isAsync && nextop.value !== "of") {
       error("E066", nextop);
@@ -5050,7 +5011,7 @@ var JSHINT = (function() {
       if (nextop.value === "of") {
         bindingPower = 20;
 
-        if (!state.inES6()) {
+        if (!stateBinding.inES6()) {
           warning("W104", nextop, "for of", "6");
         }
       } else {
@@ -5077,28 +5038,28 @@ var JSHINT = (function() {
       expression(context, bindingPower);
       advance(")", t);
 
-      if (nextop.value === "in" && state.option.forin) {
-        state.forinifcheckneeded = true;
+      if (nextop.value === "in" && stateBinding.option.forin) {
+        stateBinding.forinifcheckneeded = true;
 
-        if (state.forinifchecks === undefined) {
-          state.forinifchecks = [];
+        if (stateBinding.forinifchecks === undefined) {
+          stateBinding.forinifchecks = [];
         }
 
         // Push a new for-in-if check onto the stack. The type will be modified
         // when the loop's body is parsed and a suitable if statement exists.
-        state.forinifchecks.push({
+        stateBinding.forinifchecks.push({
           type: "(none)"
         });
       }
 
-      state.funct["(breakage)"] += 1;
-      state.funct["(loopage)"] += 1;
+      stateBinding.funct["(breakage)"] += 1;
+      stateBinding.funct["(loopage)"] += 1;
 
       s = block(context, true, true);
 
-      if (nextop.value === "in" && state.option.forin) {
-        if (state.forinifchecks && state.forinifchecks.length > 0) {
-          var check = state.forinifchecks.pop();
+      if (nextop.value === "in" && stateBinding.option.forin) {
+        if (stateBinding.forinifchecks && stateBinding.forinifchecks.length > 0) {
+          var check = stateBinding.forinifchecks.pop();
 
           if (// No if statement or not the first statement in loop body
               s && s.length > 0 && (typeof s[0] !== "object" || s[0].value !== "if") ||
@@ -5111,17 +5072,17 @@ var JSHINT = (function() {
         }
 
         // Reset the flag in case no if statement was contained in the loop body
-        state.forinifcheckneeded = false;
+        stateBinding.forinifcheckneeded = false;
       }
 
-      state.funct["(breakage)"] -= 1;
-      state.funct["(loopage)"] -= 1;
+      stateBinding.funct["(breakage)"] -= 1;
+      stateBinding.funct["(loopage)"] -= 1;
 
     } else {
       if (foreachtok) {
         error("E045", foreachtok);
       }
-      nolinebreak(state.tokens.curr);
+      nolinebreak(stateBinding.tokens.curr);
       advance(";");
       if (decl) {
         if (decl.value === "const"  && !decl.hasInitializer) {
@@ -5129,61 +5090,61 @@ var JSHINT = (function() {
         }
 
         decl.first.forEach(function(token) {
-          state.funct["(scope)"].initialize(token.value);
+          stateBinding.funct["(scope)"].initialize(token.value);
         });
       }
 
       // start loopage after the first ; as the next two expressions are executed
       // on every loop
-      state.funct["(loopage)"] += 1;
-      if (state.tokens.next.id !== ";") {
+      stateBinding.funct["(loopage)"] += 1;
+      if (stateBinding.tokens.next.id !== ";") {
         checkCondAssignment(expression(context, 0));
       }
-      nolinebreak(state.tokens.curr);
+      nolinebreak(stateBinding.tokens.curr);
       advance(";");
-      if (state.tokens.next.id === ";") {
-        error("E021", state.tokens.next, ")", ";");
+      if (stateBinding.tokens.next.id === ";") {
+        error("E021", stateBinding.tokens.next, ")", ";");
       }
-      if (state.tokens.next.id !== ")") {
+      if (stateBinding.tokens.next.id !== ")") {
         for (;;) {
           expression(context, 0);
-          if (state.tokens.next.id !== ",") {
+          if (stateBinding.tokens.next.id !== ",") {
             break;
           }
           parseComma();
         }
       }
       advance(")", t);
-      state.funct["(breakage)"] += 1;
+      stateBinding.funct["(breakage)"] += 1;
       block(context, true, true);
-      state.funct["(breakage)"] -= 1;
-      state.funct["(loopage)"] -= 1;
+      stateBinding.funct["(breakage)"] -= 1;
+      stateBinding.funct["(loopage)"] -= 1;
     }
 
     // unstack loop blockscope
     if (letscope) {
-      state.funct["(scope)"].unstack();
+      stateBinding.funct["(scope)"].unstack();
     }
     return this;
   }).labelled = true;
 
 
   stmt("break", function() {
-    var v = state.tokens.next.value;
+    var v = stateBinding.tokens.next.value;
 
-    if (!state.option.asi)
+    if (!stateBinding.option.asi)
       nolinebreak(this);
 
-    if (state.tokens.next.id !== ";" && !state.tokens.next.reach &&
-        state.tokens.curr.line === startLine(state.tokens.next)) {
-      if (!state.funct["(scope)"].funct.hasBreakLabel(v)) {
-        warning("W090", state.tokens.next, v);
+    if (stateBinding.tokens.next.id !== ";" && !stateBinding.tokens.next.reach &&
+        stateBinding.tokens.curr.line === startLine(stateBinding.tokens.next)) {
+      if (!stateBinding.funct["(scope)"].funct.hasBreakLabel(v)) {
+        warning("W090", stateBinding.tokens.next, v);
       }
-      this.first = state.tokens.next;
+      this.first = stateBinding.tokens.next;
       advance();
     } else {
-      if (state.funct["(breakage)"] === 0)
-        warning("W052", state.tokens.next, this.value);
+      if (stateBinding.funct["(breakage)"] === 0)
+        warning("W052", stateBinding.tokens.next, this.value);
     }
 
     reachable(this);
@@ -5193,21 +5154,21 @@ var JSHINT = (function() {
 
 
   stmt("continue", function() {
-    var v = state.tokens.next.value;
+    var v = stateBinding.tokens.next.value;
 
-    if (state.funct["(breakage)"] === 0 || !state.funct["(loopage)"]) {
-      warning("W052", state.tokens.next, this.value);
+    if (stateBinding.funct["(breakage)"] === 0 || !stateBinding.funct["(loopage)"]) {
+      warning("W052", stateBinding.tokens.next, this.value);
     }
 
-    if (!state.option.asi)
+    if (!stateBinding.option.asi)
       nolinebreak(this);
 
-    if (state.tokens.next.id !== ";" && !state.tokens.next.reach) {
-      if (state.tokens.curr.line === startLine(state.tokens.next)) {
-        if (!state.funct["(scope)"].funct.hasBreakLabel(v)) {
-          warning("W090", state.tokens.next, v);
+    if (stateBinding.tokens.next.id !== ";" && !stateBinding.tokens.next.reach) {
+      if (stateBinding.tokens.curr.line === startLine(stateBinding.tokens.next)) {
+        if (!stateBinding.funct["(scope)"].funct.hasBreakLabel(v)) {
+          warning("W090", stateBinding.tokens.next, v);
         }
-        this.first = state.tokens.next;
+        this.first = stateBinding.tokens.next;
         advance();
       }
     }
@@ -5219,25 +5180,25 @@ var JSHINT = (function() {
 
 
   stmt("return", function(context) {
-    if (this.line === startLine(state.tokens.next)) {
-      if (state.tokens.next.id !== ";" && !state.tokens.next.reach) {
+    if (this.line === startLine(stateBinding.tokens.next)) {
+      if (stateBinding.tokens.next.id !== ";" && !stateBinding.tokens.next.reach) {
         this.first = expression(context, 0);
 
         if (this.first &&
             this.first.type === "(punctuator)" && this.first.value === "=" &&
-            !this.first.paren && !state.option.boss) {
+            !this.first.paren && !stateBinding.option.boss) {
           warningAt("W093", this.first.line, this.first.character);
         }
 
-        if (state.option.noreturnawait && context & prodParams.async &&
+        if (stateBinding.option.noreturnawait && context & prodParams.async &&
             !(context & prodParams.tryClause) &&
             this.first.identifier && this.first.value === "await") {
           warning("W146", this.first);
         }
       }
     } else {
-      if (state.tokens.next.type === "(punctuator)" &&
-        ["[", "{", "+", "-"].indexOf(state.tokens.next.value) > -1) {
+      if (stateBinding.tokens.next.type === "(punctuator)" &&
+        ["[", "{", "+", "-"].indexOf(stateBinding.tokens.next.value) > -1) {
         nolinebreak(this); // always warn (Line breaking error)
       }
     }
@@ -5252,7 +5213,7 @@ var JSHINT = (function() {
       // If the parameters of the current function scope have not been defined,
       // it is because the current expression is contained within the parameter
       // list.
-      if (!state.funct["(params)"]) {
+      if (!stateBinding.funct["(params)"]) {
         error("E024", this, "await");
       }
 
@@ -5260,14 +5221,14 @@ var JSHINT = (function() {
       return this;
     } else {
       this.exps = false;
-      return state.syntax["(identifier)"].nud.apply(this, arguments);
+      return stateBinding.syntax["(identifier)"].nud.apply(this, arguments);
     }
   }).exps = true;
 
   (function(asyncSymbol) {
     asyncSymbol.meta = { es5: true, isFutureReservedWord: true, strictOnly: true };
     asyncSymbol.isFunc = function() {
-      var next = state.tokens.next;
+      var next = stateBinding.tokens.next;
       var afterParens;
 
       if (this.line !== next.line) {
@@ -5293,7 +5254,7 @@ var JSHINT = (function() {
     asyncSymbol.useFud = asyncSymbol.isFunc;
     // async function declaration
     asyncSymbol.fud = function(context) {
-      if (!state.inES8()) {
+      if (!stateBinding.inES8()) {
         warning("W119", this, "async functions", "8");
       }
       context |= prodParams.preAsync;
@@ -5307,7 +5268,7 @@ var JSHINT = (function() {
     delete asyncSymbol.reserved;
   }(prefix("async", function(context, rbp) {
     if (this.isFunc(context)) {
-      if (!state.inES8()) {
+      if (!stateBinding.inES8()) {
         warning("W119", this, "async functions", "8");
       }
 
@@ -5318,7 +5279,7 @@ var JSHINT = (function() {
     }
 
     this.exps = false;
-    return state.syntax["(identifier)"].nud.apply(this, arguments);
+    return stateBinding.syntax["(identifier)"].nud.apply(this, arguments);
   })));
 
   (function(x) {
@@ -5326,15 +5287,15 @@ var JSHINT = (function() {
     x.lbp = x.rbp = 25;
     x.ltBoundary = "after";
   }(prefix("yield", function(context) {
-    if (state.inMoz()) {
+    if (stateBinding.inMoz()) {
       return mozYield.call(this, context);
     }
-    var prev = state.tokens.prev;
+    var prev = stateBinding.tokens.prev;
 
     // If the parameters of the current function scope have not been defined,
     // it is because the current expression is contained within the parameter
     // list.
-    if (!state.funct["(params)"]) {
+    if (!stateBinding.funct["(params)"]) {
       error("E024", this, "yield");
     }
 
@@ -5342,34 +5303,34 @@ var JSHINT = (function() {
       error("E061", this);
     }
 
-    if (state.inES6(true) && !state.funct["(generator)"]) {
+    if (stateBinding.inES6(true) && !stateBinding.funct["(generator)"]) {
       // If it's a yield within a catch clause inside a generator then that's ok
-      if (!("(catch)" === state.funct["(name)"] && state.funct["(context)"]["(generator)"])) {
-        error("E046", state.tokens.curr, "yield");
+      if (!("(catch)" === stateBinding.funct["(name)"] && stateBinding.funct["(context)"]["(generator)"])) {
+        error("E046", stateBinding.tokens.curr, "yield");
       }
-    } else if (!state.inES6()) {
-      warning("W104", state.tokens.curr, "yield", "6");
+    } else if (!stateBinding.inES6()) {
+      warning("W104", stateBinding.tokens.curr, "yield", "6");
     }
-    state.funct["(generator)"] = "yielded";
+    stateBinding.funct["(generator)"] = "yielded";
 
-    if (state.tokens.next.value === "*") {
+    if (stateBinding.tokens.next.value === "*") {
       advance("*");
     }
 
     // Parse operand
-    if (!isEndOfExpr() && state.tokens.next.id !== ",") {
-      if (state.tokens.next.nud) {
+    if (!isEndOfExpr() && stateBinding.tokens.next.id !== ",") {
+      if (stateBinding.tokens.next.nud) {
 
-        nobreaknonadjacent(state.tokens.curr, state.tokens.next);
+        nobreaknonadjacent(stateBinding.tokens.curr, stateBinding.tokens.next);
         this.first = expression(context, 10);
 
         if (this.first.type === "(punctuator)" && this.first.value === "=" &&
-            !this.first.paren && !state.option.boss) {
+            !this.first.paren && !stateBinding.option.boss) {
           warningAt("W093", this.first.line, this.first.character);
         }
-      } else if (state.tokens.next.led) {
-        if (state.tokens.next.id !== ",") {
-          error("W017", state.tokens.next);
+      } else if (stateBinding.tokens.next.led) {
+        if (stateBinding.tokens.next.id !== ",") {
+          error("W017", stateBinding.tokens.next);
         }
       }
     }
@@ -5382,40 +5343,40 @@ var JSHINT = (function() {
    * expressions.
    */
   var mozYield = function(context) {
-    var prev = state.tokens.prev;
-    if (state.inES6(true) && !state.funct["(generator)"]) {
+    var prev = stateBinding.tokens.prev;
+    if (stateBinding.inES6(true) && !stateBinding.funct["(generator)"]) {
       // If it's a yield within a catch clause inside a generator then that's ok
-      if (!("(catch)" === state.funct["(name)"] && state.funct["(context)"]["(generator)"])) {
-        error("E046", state.tokens.curr, "yield");
+      if (!("(catch)" === stateBinding.funct["(name)"] && stateBinding.funct["(context)"]["(generator)"])) {
+        error("E046", stateBinding.tokens.curr, "yield");
       }
     }
-    state.funct["(generator)"] = "yielded";
+    stateBinding.funct["(generator)"] = "yielded";
     var delegatingYield = false;
 
-    if (state.tokens.next.value === "*") {
+    if (stateBinding.tokens.next.value === "*") {
       delegatingYield = true;
       advance("*");
     }
 
-    if (this.line === startLine(state.tokens.next)) {
+    if (this.line === startLine(stateBinding.tokens.next)) {
       if (delegatingYield ||
-          (state.tokens.next.id !== ";" && !state.option.asi &&
-           !state.tokens.next.reach && state.tokens.next.nud)) {
+          (stateBinding.tokens.next.id !== ";" && !stateBinding.option.asi &&
+           !stateBinding.tokens.next.reach && stateBinding.tokens.next.nud)) {
 
-        nobreaknonadjacent(state.tokens.curr, state.tokens.next);
+        nobreaknonadjacent(stateBinding.tokens.curr, stateBinding.tokens.next);
         this.first = expression(context, 10);
 
         if (this.first.type === "(punctuator)" && this.first.value === "=" &&
-            !this.first.paren && !state.option.boss) {
+            !this.first.paren && !stateBinding.option.boss) {
           warningAt("W093", this.first.line, this.first.character);
         }
       }
 
-      if (state.tokens.next.id !== ")" &&
+      if (stateBinding.tokens.next.id !== ")" &&
           (prev.lbp > 30 || (!prev.assign && !isEndOfExpr()) || prev.id === "yield")) {
         error("E050", this);
       }
-    } else if (!state.option.asi) {
+    } else if (!stateBinding.option.asi) {
       nolinebreak(this); // always warn (Line breaking error)
     }
     return this;
@@ -5431,30 +5392,30 @@ var JSHINT = (function() {
   }).exps = true;
 
   stmt("import", function(context) {
-    if (!state.funct["(scope)"].block.isGlobal()) {
-      error("E053", state.tokens.curr, "Import");
+    if (!stateBinding.funct["(scope)"].block.isGlobal()) {
+      error("E053", stateBinding.tokens.curr, "Import");
     }
 
-    if (!state.inES6()) {
-      warning("W119", state.tokens.curr, "import", "6");
+    if (!stateBinding.inES6()) {
+      warning("W119", stateBinding.tokens.curr, "import", "6");
     }
 
-    if (state.tokens.next.type === "(string)") {
+    if (stateBinding.tokens.next.type === "(string)") {
       // ModuleSpecifier :: StringLiteral
       advance("(string)");
       return this;
     }
 
-    if (state.tokens.next.identifier) {
+    if (stateBinding.tokens.next.identifier) {
       // ImportClause :: ImportedDefaultBinding
       this.name = identifier(context);
       // Import bindings are immutable (see ES6 8.1.1.5.5)
-      state.funct["(scope)"].addlabel(this.name, {
+      stateBinding.funct["(scope)"].addlabel(this.name, {
         type: "import",
         initialized: true,
-        token: state.tokens.curr });
+        token: stateBinding.tokens.curr });
 
-      if (state.tokens.next.value === ",") {
+      if (stateBinding.tokens.next.value === ",") {
         // ImportClause :: ImportedDefaultBinding , NameSpaceImport
         // ImportClause :: ImportedDefaultBinding , NamedImports
         advance(",");
@@ -5469,51 +5430,51 @@ var JSHINT = (function() {
       }
     }
 
-    if (state.tokens.next.id === "*") {
+    if (stateBinding.tokens.next.id === "*") {
       // ImportClause :: NameSpaceImport
       advance("*");
       advance("as");
-      if (state.tokens.next.identifier) {
+      if (stateBinding.tokens.next.identifier) {
         this.name = identifier(context);
         // Import bindings are immutable (see ES6 8.1.1.5.5)
-        state.funct["(scope)"].addlabel(this.name, {
+        stateBinding.funct["(scope)"].addlabel(this.name, {
           type: "import",
           initialized: true,
-          token: state.tokens.curr });
+          token: stateBinding.tokens.curr });
       }
     } else {
       // ImportClause :: NamedImports
       advance("{");
       for (;;) {
-        if (state.tokens.next.value === "}") {
+        if (stateBinding.tokens.next.value === "}") {
           advance("}");
           break;
         }
         var importName;
-        if (state.tokens.next.type === "default") {
+        if (stateBinding.tokens.next.type === "default") {
           importName = "default";
           advance("default");
         } else {
           importName = identifier(context);
         }
-        if (state.tokens.next.value === "as") {
+        if (stateBinding.tokens.next.value === "as") {
           advance("as");
           importName = identifier(context);
         }
 
         // Import bindings are immutable (see ES6 8.1.1.5.5)
-        state.funct["(scope)"].addlabel(importName, {
+        stateBinding.funct["(scope)"].addlabel(importName, {
           type: "import",
           initialized: true,
-          token: state.tokens.curr });
+          token: stateBinding.tokens.curr });
 
-        if (state.tokens.next.value === ",") {
+        if (stateBinding.tokens.next.value === ",") {
           advance(",");
-        } else if (state.tokens.next.value === "}") {
+        } else if (stateBinding.tokens.next.value === "}") {
           advance("}");
           break;
         } else {
-          error("E024", state.tokens.next, state.tokens.next.value);
+          error("E024", stateBinding.tokens.next, stateBinding.tokens.next.value);
           break;
         }
       }
@@ -5541,17 +5502,17 @@ var JSHINT = (function() {
     var moduleSpecifier;
     context = context | prodParams.export;
 
-    if (!state.inES6()) {
-      warning("W119", state.tokens.curr, "export", "6");
+    if (!stateBinding.inES6()) {
+      warning("W119", stateBinding.tokens.curr, "export", "6");
       ok = false;
     }
 
-    if (!state.funct["(scope)"].block.isGlobal()) {
-      error("E053", state.tokens.curr, "Export");
+    if (!stateBinding.funct["(scope)"].block.isGlobal()) {
+      error("E053", stateBinding.tokens.curr, "Export");
       ok = false;
     }
 
-    if (state.tokens.next.value === "*") {
+    if (stateBinding.tokens.next.value === "*") {
       // ExportDeclaration :: export * FromClause
       advance("*");
       advance("from");
@@ -5559,7 +5520,7 @@ var JSHINT = (function() {
       return this;
     }
 
-    if (state.tokens.next.type === "default") {
+    if (stateBinding.tokens.next.type === "default") {
       // ExportDeclaration ::
       //      export default [lookahead ∉ { function, class }] AssignmentExpression[In] ;
       //      export default HoistableDeclaration
@@ -5567,65 +5528,65 @@ var JSHINT = (function() {
 
       // because the 'name' of a default-exported function is, confusingly, 'default'
       // see https://bocoup.com/blog/whats-in-a-function-name
-      state.nameStack.set(state.tokens.next);
+      stateBinding.nameStack.set(stateBinding.tokens.next);
 
       advance("default");
-      var exportType = state.tokens.next.id;
+      var exportType = stateBinding.tokens.next.id;
       if (exportType === "function") {
         this.block = true;
         advance("function");
-        state.syntax["function"].fud(context);
+        stateBinding.syntax["function"].fud(context);
       } else if (exportType === "async" && peek().id === "function") {
         this.block = true;
         advance("async");
         advance("function");
-        state.syntax["function"].fud(context | prodParams.preAsync);
+        stateBinding.syntax["function"].fud(context | prodParams.preAsync);
       } else if (exportType === "class") {
         this.block = true;
         advance("class");
-        state.syntax["class"].fud(context);
+        stateBinding.syntax["class"].fud(context);
       } else {
         token = expression(context, 10);
         if (token.identifier) {
           identifier = token.value;
-          state.funct["(scope)"].setExported(identifier, token);
+          stateBinding.funct["(scope)"].setExported(identifier, token);
         }
       }
       return this;
     }
-    if (state.tokens.next.value === "{") {
+    if (stateBinding.tokens.next.value === "{") {
       // ExportDeclaration :: export ExportClause
       advance("{");
       var exportedTokens = [];
-      while (!checkPunctuator(state.tokens.next, "}")) {
-        if (!state.tokens.next.identifier) {
-          error("E030", state.tokens.next, state.tokens.next.value);
+      while (!checkPunctuator(stateBinding.tokens.next, "}")) {
+        if (!stateBinding.tokens.next.identifier) {
+          error("E030", stateBinding.tokens.next, stateBinding.tokens.next.value);
         }
         advance();
 
-        exportedTokens.push(state.tokens.curr);
+        exportedTokens.push(stateBinding.tokens.curr);
 
-        if (state.tokens.next.value === "as") {
+        if (stateBinding.tokens.next.value === "as") {
           advance("as");
-          if (!state.tokens.next.identifier) {
-            error("E030", state.tokens.next, state.tokens.next.value);
+          if (!stateBinding.tokens.next.identifier) {
+            error("E030", stateBinding.tokens.next, stateBinding.tokens.next.value);
           }
           advance();
         }
 
-        if (!checkPunctuator(state.tokens.next, "}")) {
+        if (!checkPunctuator(stateBinding.tokens.next, "}")) {
           advance(",");
         }
       }
       advance("}");
-      if (state.tokens.next.value === "from") {
+      if (stateBinding.tokens.next.value === "from") {
         // ExportDeclaration :: export ExportClause FromClause
         advance("from");
-        moduleSpecifier = state.tokens.next;
+        moduleSpecifier = stateBinding.tokens.next;
         advance("(string)");
       } else if (ok) {
         exportedTokens.forEach(function(token) {
-          state.funct["(scope)"].setExported(token.value, token);
+          stateBinding.funct["(scope)"].setExported(token.value, token);
         });
       }
 
@@ -5638,36 +5599,36 @@ var JSHINT = (function() {
       }
 
       return this;
-    } else if (state.tokens.next.id === "var") {
+    } else if (stateBinding.tokens.next.id === "var") {
       // ExportDeclaration :: export VariableStatement
       advance("var");
-      state.tokens.curr.fud(context);
-    } else if (state.tokens.next.id === "let") {
+      stateBinding.tokens.curr.fud(context);
+    } else if (stateBinding.tokens.next.id === "let") {
       // ExportDeclaration :: export VariableStatement
       advance("let");
-      state.tokens.curr.fud(context);
-    } else if (state.tokens.next.id === "const") {
+      stateBinding.tokens.curr.fud(context);
+    } else if (stateBinding.tokens.next.id === "const") {
       // ExportDeclaration :: export VariableStatement
       advance("const");
-      state.tokens.curr.fud(context);
-    } else if (state.tokens.next.id === "function") {
+      stateBinding.tokens.curr.fud(context);
+    } else if (stateBinding.tokens.next.id === "function") {
       // ExportDeclaration :: export Declaration
       this.block = true;
       advance("function");
-      state.syntax["function"].fud(context);
-    } else if (state.tokens.next.id === "async" && peek().id === "function") {
+      stateBinding.syntax["function"].fud(context);
+    } else if (stateBinding.tokens.next.id === "async" && peek().id === "function") {
       // ExportDeclaration :: export Declaration
       this.block = true;
       advance("async");
       advance("function");
-      state.syntax["function"].fud(context | prodParams.preAsync);
-    } else if (state.tokens.next.id === "class") {
+      stateBinding.syntax["function"].fud(context | prodParams.preAsync);
+    } else if (stateBinding.tokens.next.id === "class") {
       // ExportDeclaration :: export Declaration
       this.block = true;
       advance("class");
-      state.syntax["class"].fud(context);
+      stateBinding.syntax["class"].fud(context);
     } else {
-      error("E024", state.tokens.next, state.tokens.next.value);
+      error("E024", stateBinding.tokens.next, stateBinding.tokens.next.value);
     }
 
     return this;
@@ -5705,14 +5666,14 @@ var JSHINT = (function() {
   }
 
   var superNud = function() {
-    var next = state.tokens.next;
+    var next = stateBinding.tokens.next;
 
     if (checkPunctuators(next, ["[", "."])) {
-      if (!supportsSuper("property", state.funct)) {
+      if (!supportsSuper("property", stateBinding.funct)) {
         error("E063", this);
       }
     } else if (checkPunctuator(next, "(")) {
-      if (!supportsSuper("call", state.funct)) {
+      if (!supportsSuper("call", stateBinding.funct)) {
         error("E064", this);
       }
     } else {
@@ -5759,12 +5720,12 @@ var JSHINT = (function() {
     var i = -1;
     var bracketStack = 0;
     var ret = {};
-    if (checkPunctuators(state.tokens.curr, ["[", "{"])) {
+    if (checkPunctuators(stateBinding.tokens.curr, ["[", "{"])) {
       bracketStack += 1;
     }
     do {
-      prev = i === -1 ? state.tokens.curr : pn;
-      pn = i === -1 ? state.tokens.next : peek(i);
+      prev = i === -1 ? stateBinding.tokens.curr : pn;
+      pn = i === -1 ? stateBinding.tokens.next : peek(i);
       pn1 = peek(i + 1);
       i = i + 1;
       if (checkPunctuators(pn, ["[", "{"])) {
@@ -5821,7 +5782,7 @@ var JSHINT = (function() {
     if (props[key] && name !== "__proto__" && !isComputed) {
       var msg = ["key", "class method", "static class method"];
       msg = msg[(isClass || false) + (isStatic || false)];
-      warning("W075", state.tokens.next, msg, name);
+      warning("W075", stateBinding.tokens.next, msg, name);
     } else {
       props[key] = Object.create(null);
     }
@@ -5846,8 +5807,8 @@ var JSHINT = (function() {
   function saveAccessor(accessorType, props, name, tkn, isClass, isStatic) {
     var flagName = accessorType === "get" ? "getterToken" : "setterToken";
     var key = name;
-    state.tokens.curr.accessorType = accessorType;
-    state.nameStack.set(tkn);
+    stateBinding.tokens.curr.accessorType = accessorType;
+    stateBinding.nameStack.set(tkn);
     if (isClass && isStatic) {
       key = "static " + name;
     }
@@ -5863,7 +5824,7 @@ var JSHINT = (function() {
         } else {
           msg = "key";
         }
-        warning("W075", state.tokens.next, msg, name);
+        warning("W075", stateBinding.tokens.next, msg, name);
       }
     } else {
       props[key] = Object.create(null);
@@ -5893,11 +5854,11 @@ var JSHINT = (function() {
 
     // Explicitly reclassify token as a delimeter to prevent its later
     // interpretation as an "infix" operator.
-    state.tokens.curr.delim = true;
-    state.tokens.curr.lbp = 0;
+    stateBinding.tokens.curr.delim = true;
+    stateBinding.tokens.curr.lbp = 0;
 
-    if (!state.inES6()) {
-      warning("W119", state.tokens.curr, "computed property names", "6");
+    if (!stateBinding.inES6()) {
+      warning("W119", stateBinding.tokens.curr, "computed property names", "6");
     }
     var value = expression(context & ~prodParams.noin, 10);
     advance("]");
@@ -5945,14 +5906,14 @@ var JSHINT = (function() {
 
     var block = lookupBlockType();
     if (block.notJson) {
-      if (!state.inES6() && block.isDestAssign) {
-        warning("W104", state.tokens.curr, "destructuring assignment", "6");
+      if (!stateBinding.inES6() && block.isDestAssign) {
+        warning("W104", stateBinding.tokens.curr, "destructuring assignment", "6");
       }
       statements(context);
     // otherwise parse json value
     } else {
-      state.option.laxbreak = true;
-      state.jsonMode = true;
+      stateBinding.option.laxbreak = true;
+      stateBinding.jsonMode = true;
       jsonValue();
     }
   }
@@ -6007,7 +5968,7 @@ var JSHINT = (function() {
             if (v.unused)
               warning("W098", v.token, v.token.raw_text || v.value);
             if (v.undef)
-              state.funct["(scope)"].block.use(v.value, v.token);
+              stateBinding.funct["(scope)"].block.use(v.value, v.token);
           });
           _carrays.splice(-1, 1);
           _current = _carrays[_carrays.length - 1];
@@ -6024,7 +5985,7 @@ var JSHINT = (function() {
           if (_current && _current.mode === "use") {
             if (use(v)) {
               _current.variables.push({
-                token: state.tokens.curr,
+                token: stateBinding.tokens.curr,
                 value: v,
                 undef: true,
                 unused: false
@@ -6036,7 +5997,7 @@ var JSHINT = (function() {
             // check if the variable has been used previously
             if (!declare(v)) {
               _current.variables.push({
-                token: state.tokens.curr,
+                token: stateBinding.tokens.curr,
                 value: v,
                 undef: false,
                 unused: true
@@ -6045,14 +6006,14 @@ var JSHINT = (function() {
             return true;
           // When we are in the "generate" state of the list comp,
           } else if (_current && _current.mode === "generate") {
-            state.funct["(scope)"].block.use(v, state.tokens.curr);
+            stateBinding.funct["(scope)"].block.use(v, stateBinding.tokens.curr);
             return true;
           // When we are in "filter" state,
           } else if (_current && _current.mode === "filter") {
             // we check whether current variable has been declared
             if (use(v)) {
               // if not we warn about it
-              state.funct["(scope)"].block.use(v, state.tokens.curr);
+              stateBinding.funct["(scope)"].block.use(v, stateBinding.tokens.curr);
             }
             return true;
           }
@@ -6069,33 +6030,33 @@ var JSHINT = (function() {
    */
   function jsonValue() {
     function jsonObject() {
-      var o = {}, t = state.tokens.next;
+      var o = {}, t = stateBinding.tokens.next;
       advance("{");
-      if (state.tokens.next.id !== "}") {
+      if (stateBinding.tokens.next.id !== "}") {
         for (;;) {
-          if (state.tokens.next.id === "(end)") {
-            error("E026", state.tokens.next, t.line);
-          } else if (state.tokens.next.id === "}") {
-            warning("W094", state.tokens.curr);
+          if (stateBinding.tokens.next.id === "(end)") {
+            error("E026", stateBinding.tokens.next, t.line);
+          } else if (stateBinding.tokens.next.id === "}") {
+            warning("W094", stateBinding.tokens.curr);
             break;
-          } else if (state.tokens.next.id === ",") {
-            error("E028", state.tokens.next);
-          } else if (state.tokens.next.id !== "(string)") {
-            warning("W095", state.tokens.next, state.tokens.next.value);
+          } else if (stateBinding.tokens.next.id === ",") {
+            error("E028", stateBinding.tokens.next);
+          } else if (stateBinding.tokens.next.id !== "(string)") {
+            warning("W095", stateBinding.tokens.next, stateBinding.tokens.next.value);
           }
-          if (o[state.tokens.next.value] === true) {
-            warning("W075", state.tokens.next, "key", state.tokens.next.value);
-          } else if ((state.tokens.next.value === "__proto__" &&
-            !state.option.proto) || (state.tokens.next.value === "__iterator__" &&
-            !state.option.iterator)) {
-            warning("W096", state.tokens.next, state.tokens.next.value);
+          if (o[stateBinding.tokens.next.value] === true) {
+            warning("W075", stateBinding.tokens.next, "key", stateBinding.tokens.next.value);
+          } else if ((stateBinding.tokens.next.value === "__proto__" &&
+            !stateBinding.option.proto) || (stateBinding.tokens.next.value === "__iterator__" &&
+            !stateBinding.option.iterator)) {
+            warning("W096", stateBinding.tokens.next, stateBinding.tokens.next.value);
           } else {
-            o[state.tokens.next.value] = true;
+            o[stateBinding.tokens.next.value] = true;
           }
           advance();
           advance(":");
           jsonValue();
-          if (state.tokens.next.id !== ",") {
+          if (stateBinding.tokens.next.id !== ",") {
             break;
           }
           advance(",");
@@ -6105,20 +6066,20 @@ var JSHINT = (function() {
     }
 
     function jsonArray() {
-      var t = state.tokens.next;
+      var t = stateBinding.tokens.next;
       advance("[");
-      if (state.tokens.next.id !== "]") {
+      if (stateBinding.tokens.next.id !== "]") {
         for (;;) {
-          if (state.tokens.next.id === "(end)") {
-            error("E027", state.tokens.next, t.line);
-          } else if (state.tokens.next.id === "]") {
-            warning("W094", state.tokens.curr);
+          if (stateBinding.tokens.next.id === "(end)") {
+            error("E027", stateBinding.tokens.next, t.line);
+          } else if (stateBinding.tokens.next.id === "]") {
+            warning("W094", stateBinding.tokens.curr);
             break;
-          } else if (state.tokens.next.id === ",") {
-            error("E028", state.tokens.next);
+          } else if (stateBinding.tokens.next.id === ",") {
+            error("E028", stateBinding.tokens.next);
           }
           jsonValue();
-          if (state.tokens.next.id !== ",") {
+          if (stateBinding.tokens.next.id !== ",") {
             break;
           }
           advance(",");
@@ -6127,7 +6088,7 @@ var JSHINT = (function() {
       advance("]");
     }
 
-    switch (state.tokens.next.id) {
+    switch (stateBinding.tokens.next.id) {
     case "{":
       jsonObject();
       break;
@@ -6146,7 +6107,7 @@ var JSHINT = (function() {
       advance("(number)");
       break;
     default:
-      error("E003", state.tokens.next);
+      error("E003", stateBinding.tokens.next);
     }
   }
 
@@ -6164,10 +6125,10 @@ var JSHINT = (function() {
 
     for (idx = 0; idx < internals.length; idx += 1) {
       internal = internals[idx];
-      options.scope = internal.elem;
+      optionsBinding.scope = internal.elem;
       priorErrorCount = JSHINT.errors.length;
 
-      itself(internal.code, options, globals);
+      itself(internal.code, optionsBinding, globals);
 
       for (jdx = priorErrorCount; jdx < JSHINT.errors.length; jdx += 1) {
         JSHINT.errors[jdx].line += internal.token.line - 1;
@@ -6185,9 +6146,9 @@ var JSHINT = (function() {
     var optionKeys, newOptionObj, newIgnoredObj;
 
     o = _.clone(o);
-    state.reset();
-    newOptionObj = state.option;
-    newIgnoredObj = state.ignored;
+    stateBinding.reset();
+    newOptionObj = stateBinding.option;
+    newIgnoredObj = stateBinding.ignored;
 
     if (o && o.scope) {
       JSHINT.scope = o.scope;
@@ -6251,15 +6212,15 @@ var JSHINT = (function() {
       }
     }
 
-    state.option = newOptionObj;
-    state.ignored = newIgnoredObj;
+    stateBinding.option = newOptionObj;
+    stateBinding.ignored = newIgnoredObj;
 
-    state.option.indent = state.option.indent || 4;
-    state.option.maxerr = state.option.maxerr || 50;
+    stateBinding.option.indent = stateBinding.option.indent || 4;
+    stateBinding.option.maxerr = stateBinding.option.maxerr || 50;
 
     indent = 1;
 
-    var scopeManagerInst = scopeManager(state, predefined, exported, declared);
+    var scopeManagerInst = scopeManager(stateBinding, predefined, exported, declared);
     scopeManagerInst.on("warning", function(ev) {
       warning.apply(null, [ ev.code, ev.token].concat(ev.data));
     });
@@ -6268,14 +6229,14 @@ var JSHINT = (function() {
       error.apply(null, [ ev.code, ev.token ].concat(ev.data));
     });
 
-    state.funct = functor("(global)", null, {
+    stateBinding.funct = functor("(global)", null, {
       "(global)"    : true,
       "(scope)"     : scopeManagerInst,
       "(comparray)" : arrayComprehension(),
-      "(metrics)"   : createMetrics(state.tokens.next)
+      "(metrics)"   : createMetrics(stateBinding.tokens.next)
     });
 
-    functions = [state.funct];
+    functions = [stateBinding.funct];
     urls = [];
     member = {};
     membersOnly = null;
@@ -6289,19 +6250,19 @@ var JSHINT = (function() {
 
     api = {
       get isJSON() {
-        return state.jsonMode;
+        return stateBinding.jsonMode;
       },
 
       getOption: function(name) {
-        return state.option[name] || null;
+        return stateBinding.option[name] || null;
       },
 
       getCache: function(name) {
-        return state.cache[name];
+        return stateBinding.cache[name];
       },
 
       setCache: function(name, value) {
-        state.cache[name] = value;
+        stateBinding.cache[name] = value;
       },
 
       warn: function(code, data) {
@@ -6320,7 +6281,7 @@ var JSHINT = (function() {
       func(api);
     });
 
-    state.tokens.prev = state.tokens.curr = state.tokens.next = state.syntax["(begin)"];
+    stateBinding.tokens.prev = stateBinding.tokens.curr = stateBinding.tokens.next = stateBinding.syntax["(begin)"];
     if (o && o.ignoreDelimiters) {
 
       if (!Array.isArray(o.ignoreDelimiters)) {
@@ -6373,13 +6334,13 @@ var JSHINT = (function() {
     var name;
     for (name in o) {
       if (_.has(o, name)) {
-        checkOption(name, true, state.tokens.curr);
+        checkOption(name, true, stateBinding.tokens.curr);
       }
     }
     if (o) {
       for (name in o.unstable) {
         if (_.has(o.unstable, name)) {
-          checkOption(name, false, state.tokens.curr);
+          checkOption(name, false, stateBinding.tokens.curr);
         }
       }
     }
@@ -6394,7 +6355,7 @@ var JSHINT = (function() {
       parseComma.first = true;
 
       advance();
-      switch (state.tokens.next.id) {
+      switch (stateBinding.tokens.next.id) {
       case "{":
       case "[":
         destructuringAssignOrJsonValue(0);
@@ -6402,24 +6363,24 @@ var JSHINT = (function() {
       default:
         directives();
 
-        if (state.directive["use strict"]) {
-          if (!state.allowsGlobalUsd()) {
-            warning("W097", state.tokens.prev);
+        if (stateBinding.directive["use strict"]) {
+          if (!stateBinding.allowsGlobalUsd()) {
+            warning("W097", stateBinding.tokens.prev);
           }
         }
 
         statements(0);
       }
 
-      if (state.tokens.next.id !== "(end)") {
-        quit("E041", state.tokens.curr);
+      if (stateBinding.tokens.next.id !== "(end)") {
+        quit("E041", stateBinding.tokens.curr);
       }
 
-      state.funct["(scope)"].unstack();
+      stateBinding.funct["(scope)"].unstack();
 
     } catch (err) {
       if (err && err.name === "JSHintError") {
-        var nt = state.tokens.next || {};
+        var nt = stateBinding.tokens.next || {};
         JSHINT.errors.push({
           scope     : "(main)",
           raw       : err.raw,
@@ -6452,7 +6413,7 @@ var JSHINT = (function() {
   itself.data = function() {
     var data = {
       functions: [],
-      options: state.option
+      options: stateBinding.option
     };
 
     var fu, f, i, n, globals;
@@ -6461,11 +6422,11 @@ var JSHINT = (function() {
       data.errors = itself.errors;
     }
 
-    if (state.jsonMode) {
+    if (stateBinding.jsonMode) {
       data.json = true;
     }
 
-    var impliedGlobals = state.funct["(scope)"].getImpliedGlobals();
+    var impliedGlobals = stateBinding.funct["(scope)"].getImpliedGlobals();
     if (impliedGlobals.length > 0) {
       data.implieds = impliedGlobals;
     }
@@ -6474,7 +6435,7 @@ var JSHINT = (function() {
       data.urls = urls;
     }
 
-    globals = state.funct["(scope)"].getUsedOrDefinedGlobals();
+    globals = stateBinding.funct["(scope)"].getUsedOrDefinedGlobals();
     if (globals.length > 0) {
       data.globals = globals;
     }
@@ -6499,7 +6460,7 @@ var JSHINT = (function() {
       data.functions.push(fu);
     }
 
-    var unuseds = state.funct["(scope)"].getUnuseds();
+    var unuseds = stateBinding.funct["(scope)"].getUnuseds();
     if (unuseds.length > 0) {
       data.unused = unuseds;
     }
@@ -6519,7 +6480,8 @@ var JSHINT = (function() {
   return itself;
 }());
 
+let exported_JSHINT = JSHINT;
+
 // Make JSHINT a Node module, if possible.
-if (typeof exports === "object" && exports) {
-  exports.JSHINT = JSHINT;
-}
+if (typeof exports === "object" && exports) {}
+export { exported_JSHINT as JSHINT };

@@ -6,50 +6,33 @@
 
 "use strict";
 
-// Unsafe comment or string (ax)
-exports.unsafeString =
-  /@cc|<\/?|script|\]\s*\]|<\s*!|&lt/i;
-
-// Characters in strings that need escaping (nx and nxg)
-exports.needEsc =
-  /[\u0000-\u001f&<"\/\\\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/;
-
-exports.needEscGlobal =
-  /[\u0000-\u001f&<"\/\\\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
-
-// Star slash (lx)
-exports.starSlash = /\*\//;
-
-// Identifier (ix)
-exports.identifier = /^([a-zA-Z_$][a-zA-Z0-9_$]*)$/;
-
-// JavaScript URL (jx)
-exports.javascriptURL = /^(?:javascript|jscript|ecmascript|vbscript|livescript)\s*:/i;
-
-// Catches /* falls through */ comments (ft)
-exports.fallsThrough = /^\s*falls?\sthrough\s*$/;
-
-// very conservative rule (eg: only one space between the start of the comment and the first character)
-// to relax the maxlen option
-exports.maxlenException = /^(?:(?:\/\/|\/\*|\*) ?)?[^ ]+$/;
-
-// Node.js releases prior to version 8 include a version of the V8 engine which
-// incorrectly interprets the character class escape `\s`. The following
-// regular expression may be replaced with `/\s/` when JSHint removes support
-// for Node.js versions prior to 8.
-// Source:
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
-exports.whitespace = /[ \f\n\r\t\v\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]/;
-
-exports.nonzeroDigit = /^[1-9]$/;
-
-exports.decimalDigit = /^[0-9]$/;
-
-exports.regexpSyntaxChars = /[\^$\\.*+?()[\]{}|]/;
-
-exports.regexpQuantifiers = /[*+?{]/;
-
-exports.regexpCharClasses = /[dDsSwW]/;
-
-// Identifies the "dot" atom in regular expressions
-exports.regexpDot = /(^|[^\\])(\\\\)*\./;
+var exported_unsafeString = /@cc|<\/?|script|\]\s*\]|<\s*!|&lt/i;
+var exported_needEsc = /[\u0000-\u001f&<"\/\\\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/;
+var exported_needEscGlobal = /[\u0000-\u001f&<"\/\\\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+var exported_starSlash = /\*\//;
+var exported_identifier = /^([a-zA-Z_$][a-zA-Z0-9_$]*)$/;
+var exported_javascriptURL = /^(?:javascript|jscript|ecmascript|vbscript|livescript)\s*:/i;
+var exported_fallsThrough = /^\s*falls?\sthrough\s*$/;
+var exported_maxlenException = /^(?:(?:\/\/|\/\*|\*) ?)?[^ ]+$/;
+var exported_whitespace = /[ \f\n\r\t\v\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]/;
+var exported_nonzeroDigit = /^[1-9]$/;
+var exported_decimalDigit = /^[0-9]$/;
+var exported_regexpSyntaxChars = /[\^$\\.*+?()[\]{}|]/;
+var exported_regexpQuantifiers = /[*+?{]/;
+var exported_regexpCharClasses = /[dDsSwW]/;
+var exported_regexpDot = /(^|[^\\])(\\\\)*\./;
+export { exported_unsafeString as unsafeString };
+export { exported_needEsc as needEsc };
+export { exported_needEscGlobal as needEscGlobal };
+export { exported_starSlash as starSlash };
+export { exported_identifier as identifier };
+export { exported_javascriptURL as javascriptURL };
+export { exported_fallsThrough as fallsThrough };
+export { exported_maxlenException as maxlenException };
+export { exported_whitespace as whitespace };
+export { exported_nonzeroDigit as nonzeroDigit };
+export { exported_decimalDigit as decimalDigit };
+export { exported_regexpSyntaxChars as regexpSyntaxChars };
+export { exported_regexpQuantifiers as regexpQuantifiers };
+export { exported_regexpCharClasses as regexpCharClasses };
+export { exported_regexpDot as regexpDot };

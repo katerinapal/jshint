@@ -1,6 +1,7 @@
+import path_moduleObject from "path";
 "use strict";
 
-var resolve = require("path").resolve;
+var resolve = path_moduleObject.resolve;
 
 exports.readFileSync = function(path) {
   return window.JSHintTestFixtures[resolve(path)];

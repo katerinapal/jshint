@@ -1,7 +1,6 @@
 "use strict";
 
-// These are the JSHint boolean options.
-exports.bool = {
+var exported_bool = {
   enforcing: {
 
     /**
@@ -797,9 +796,7 @@ exports.bool = {
   }
 };
 
-// These are the JSHint options that can take any value
-// (we use this object to detect invalid options)
-exports.val = {
+var exported_val = {
 
   /**
    * This option lets you set the maximum length of a line.
@@ -1052,18 +1049,10 @@ exports.val = {
   esversion: 5
 };
 
-/**
- * Unstable options allow control for parsing and linting of proposed additions
- * to the JavaScript language. Just like the language features they describe,
- * the presence and behavior of these options is volatile; JSHint reserves the
- * right to remove or modify them between major version releases.
- */
-exports.unstable = {
+var exported_unstable = {
 };
 
-// These are JSHint boolean options which are shared with JSLint
-// where the definition in JSHint is opposite JSLint
-exports.inverted = {
+var exported_inverted = {
   bitwise : true,
   forin   : true,
   newcap  : true,
@@ -1076,24 +1065,22 @@ exports.inverted = {
   strict  : true
 };
 
-exports.validNames = Object.keys(exports.val)
-  .concat(Object.keys(exports.bool.relaxing))
-  .concat(Object.keys(exports.bool.enforcing))
-  .concat(Object.keys(exports.bool.obsolete))
-  .concat(Object.keys(exports.bool.environments))
+var exported_validNames = Object.keys(exported_val)
+  .concat(Object.keys(exported_bool.relaxing))
+  .concat(Object.keys(exported_bool.enforcing))
+  .concat(Object.keys(exported_bool.obsolete))
+  .concat(Object.keys(exported_bool.environments))
   .concat(["unstable"]);
 
-exports.unstableNames = Object.keys(exports.unstable);
+var exported_unstableNames = Object.keys(exported_unstable);
 
-// These are JSHint boolean options which are shared with JSLint
-// where the name has been changed but the effect is unchanged
-exports.renamed = {
+var exported_renamed = {
   eqeq   : "eqeqeq",
   windows: "wsh",
   sloppy : "strict"
 };
 
-exports.removed = {
+var exported_removed = {
   nomen: true,
   onevar: true,
   passfail: true,
@@ -1103,10 +1090,18 @@ exports.removed = {
   trailing: true
 };
 
-// Add options here which should not be automatically enforced by
-// `enforceall`.
-exports.noenforceall = {
+var exported_noenforceall = {
   varstmt: true,
   strict: true,
   regexpu: true
 };
+
+export { exported_bool as bool };
+export { exported_val as val };
+export { exported_unstable as unstable };
+export { exported_inverted as inverted };
+export { exported_validNames as validNames };
+export { exported_unstableNames as unstableNames };
+export { exported_renamed as renamed };
+export { exported_removed as removed };
+export { exported_noenforceall as noenforceall };
