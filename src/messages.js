@@ -1,6 +1,5 @@
+import _ from "lodash";
 "use strict";
-
-var _ = require("lodash");
 
 var errors = {
   // JSHint options
@@ -249,18 +248,33 @@ var info = {
   I003: "ES5 option is now set per default"
 };
 
-exports.errors = {};
-exports.warnings = {};
-exports.info = {};
+var exported_errors = exported_errors = {};
+var exported_warnings = exported_warnings = {};
+var exported_info = exported_info = {};
 
-_.each(errors, function(desc, code) {
-  exports.errors[code] = { code: code, desc: desc };
-});
+_.each(errors, function(desc, code) {});
 
-_.each(warnings, function(desc, code) {
-  exports.warnings[code] = { code: code, desc: desc };
-});
+_.each(warnings, function(desc, code) {});
 
-_.each(info, function(desc, code) {
-  exports.info[code] = { code: code, desc: desc };
-});
+_.each(info, function(desc, code) {});
+
+var exported_code = {
+  code: code,
+  desc: desc
+};
+
+export { exported_code as code };
+
+var exported_code = {
+  code: code,
+  desc: desc
+};
+
+export { exported_code as code };
+
+var exported_code = {
+  code: code,
+  desc: desc
+};
+
+export { exported_code as code };

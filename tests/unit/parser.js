@@ -1,13 +1,14 @@
+import { JSHINT } from "../..";
+import fs from "fs";
+import * as testhelper_moduleObject from "../helpers/testhelper";
+import path from "path";
 /**
  * Tests for the parser/tokenizer
  */
 
 "use strict";
 
-var JSHINT  = require("../..").JSHINT;
-var fs    = require('fs');
-var TestRun = require("../helpers/testhelper").setup.testRun;
-var path    = require("path");
+var TestRun = testhelper_moduleObject.setup.testRun;
 
 /**
  * The warning for this input was intentionally disabled after research into

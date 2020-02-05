@@ -16,7 +16,11 @@ for (var i = 0; i < 128; i++) {
     i >= 48 && i <= 57;        // 0-9
 }
 
-module.exports = {
+var exported_asciiidentifierdatajs = {
   asciiIdentifierStartTable: identifierStartTable,
   asciiIdentifierPartTable: identifierPartTable
 };
+
+var exported_asciiIdentifierStartTable = identifierStartTable;
+var exported_asciiIdentifierPartTable = identifierPartTable;
+export { exported_asciiIdentifierStartTable as asciiIdentifierStartTable, exported_asciiIdentifierPartTable as asciiIdentifierPartTable };

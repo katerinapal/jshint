@@ -1,15 +1,16 @@
 #! /usr/bin/env node
 
+import path from "path";
+import stream_moduleObject from "stream";
+import Test262Stream from "test262-stream";
+import Interpreter from "results-interpreter";
+import { testjs as runTest } from "./test";
+import { reportjs as report } from "./report";
+
 "use strict";
 
-var path = require("path");
-var Transform = require("stream").Transform;
+var Transform = stream_moduleObject.Transform;
 
-var Test262Stream = require("test262-stream");
-var Interpreter = require("results-interpreter");
-
-var runTest = require("./test");
-var report = require("./report");
 var expectationsFile = path.join(__dirname, "expectations.txt");
 var shouldUpdate = process.argv.indexOf("--update-expectations") > -1;
 var stream = new Test262Stream(path.join(__dirname, "test262"), {

@@ -1,8 +1,14 @@
+import path from "path";
+import shjs from "shelljs";
+import sinon from "sinon";
+import { clijs as srcclijs_moduleDefault } from "../src/cli.js";
+import _cli from "cli";
+import * as rep from "../examples/reporter.js";
+import * as rep from "../src/reporters/jslint_xml.js";
+import * as rep from "../src/reporters/checkstyle.js";
+import * as rep from "../src/reporters/non_error.js";
+import mockstdin_moduleObject from "mock-stdin";
 "use strict";
-
-var path  = require("path");
-var shjs  = require("shelljs");
-var sinon = require("sinon");
 
 var cliPath = path.resolve(__dirname, "../src/cli.js");
 var cli;
@@ -16,7 +22,7 @@ exports.setUp = function(done) {
   // negatively effect the execution time of this test suite, it is the most
   // maintainable way to avoid any current or future problems relating to
   // shared internal state.
-  cli = require("../src/cli.js");
+  cli = srcclijs_moduleDefault;
 
   done();
 };
@@ -85,7 +91,6 @@ exports.group = {
         .withArgs("-e", sinon.match(/file5\.json$/)).returns(true)
         .withArgs("-e", sinon.match(/file6\.json$/)).returns(true);
 
-      var _cli = require("cli");
       this.out = this.sinon.stub(_cli, "error");
 
       done();
@@ -266,7 +271,6 @@ exports.group = {
 
   testOverrides: function (test) {
     var dir = __dirname + "/../examples/";
-    var rep = require("../examples/reporter.js");
     var config = {
       "asi": true,
       "overrides": {
@@ -277,7 +281,7 @@ exports.group = {
     };
 
     this.sinon.stub(process, "cwd").returns(dir);
-    this.sinon.stub(rep, "reporter");
+    this.sinon.stub(rep.rep, "reporter");
     this.sinon.stub(shjs, "cat")
       .withArgs(sinon.match(/foo\.js$/)).returns("a()")
       .withArgs(sinon.match(/bar\.js$/)).returns("a()")
@@ -310,7 +314,6 @@ exports.group = {
 
   testOverridesMatchesRelativePaths: function (test) {
     var dir = __dirname + "/../examples/";
-    var rep = require("../examples/reporter.js");
     var config = {
       "asi": true,
       "overrides": {
@@ -321,7 +324,7 @@ exports.group = {
     };
 
     this.sinon.stub(process, "cwd").returns(dir);
-    this.sinon.stub(rep, "reporter");
+    this.sinon.stub(rep.rep, "reporter");
     this.sinon.stub(shjs, "cat")
       .withArgs(sinon.match(/bar\.js$/)).returns("a()")
       .withArgs(sinon.match(/config\.json$/))
@@ -345,8 +348,6 @@ exports.group = {
   testReporter: function (test) {
     test.expect(5);
 
-    var _cli = require("cli");
-    var rep = require("../examples/reporter.js");
     var run = this.sinon.stub(cli, "run");
     var out = this.sinon.stub(_cli, "error");
     var dir = __dirname + "/../examples/";
@@ -368,7 +369,7 @@ exports.group = {
 
     // Test successful attempt.
     run.restore();
-    this.sinon.stub(rep, "reporter");
+    this.sinon.stub(rep.rep, "reporter");
     this.sinon.stub(shjs, "test")
       .withArgs("-e", sinon.match(/file\.js$/)).returns(true);
 
@@ -392,7 +393,6 @@ exports.group = {
   },
 
   testJSLintReporter: function (test) {
-    var rep = require("../src/reporters/jslint_xml.js");
     var run = this.sinon.stub(cli, "run");
 
     cli.interpret([
@@ -409,7 +409,6 @@ exports.group = {
   },
 
   testCheckStyleReporter: function (test) {
-    var rep = require("../src/reporters/checkstyle.js");
     var run = this.sinon.stub(cli, "run");
 
     cli.interpret([
@@ -426,7 +425,6 @@ exports.group = {
   },
 
   testShowNonErrors: function (test) {
-    var rep = require("../src/reporters/non_error.js");
     var run = this.sinon.stub(cli, "run");
 
     cli.interpret([
@@ -915,9 +913,8 @@ exports.group = {
   },
 
   testStatusCode: function (test) {
-    var rep = require("../examples/reporter.js");
     var dir = __dirname + "/../examples/";
-    this.sinon.stub(rep, "reporter");
+    this.sinon.stub(rep.rep, "reporter");
     this.sinon.stub(process, "cwd").returns(dir);
 
     this.sinon.stub(shjs, "test")
@@ -1002,9 +999,8 @@ exports.extract = {
   },
 
   withIndentReportLocation: function (test) {
-    var rep = require("../examples/reporter.js");
     var errors = [];
-    this.sinon.stub(rep, "reporter", function (res) {
+    this.sinon.stub(rep.rep, "reporter", function (res) {
       errors = errors.concat(res);
     });
 
@@ -1043,9 +1039,8 @@ exports.extract = {
   },
 
   withIndentReportLocationMultipleFragments: function (test) {
-    var rep = require("../examples/reporter.js");
     var errors = [];
-    this.sinon.stub(rep, "reporter", function (res) {
+    this.sinon.stub(rep.rep, "reporter", function (res) {
       errors = errors.concat(res);
     });
 
@@ -1090,9 +1085,8 @@ exports.extract = {
   },
 
   firstLine: function (test) {
-    var rep = require("../examples/reporter.js");
     var errors = [];
-    this.sinon.stub(rep, "reporter", function (res) {
+    this.sinon.stub(rep.rep, "reporter", function (res) {
       errors = errors.concat(res);
     });
 
@@ -1134,9 +1128,8 @@ exports.extract = {
   },
 
   sameLine: function (test) {
-    var rep = require("../examples/reporter.js");
     var errors = [];
-    this.sinon.stub(rep, "reporter", function (res) {
+    this.sinon.stub(rep.rep, "reporter", function (res) {
       errors = errors.concat(res);
     });
 
@@ -1186,9 +1179,8 @@ exports.extract = {
   },
 
   usingMultipleFiles: function (test) {
-    var rep = require("../examples/reporter.js");
     var errors = [];
-    this.sinon.stub(rep, "reporter", function (res) {
+    this.sinon.stub(rep.rep, "reporter", function (res) {
       errors = errors.concat(res);
     });
 
@@ -1247,15 +1239,14 @@ exports.extract = {
 
 exports.useStdin = {
   setUp: function (cb) {
-    this.stdin = require('mock-stdin').stdin();
+    this.stdin = mockstdin_moduleObject.stdin();
     this.sinon.stub(cli, "exit");
     cb();
   },
 
   testFilenameOption: function (test) {
-    var rep = require("../examples/reporter.js");
     var errors = [];
-    this.sinon.stub(rep, "reporter", function (res) {
+    this.sinon.stub(rep.rep, "reporter", function (res) {
       errors = errors.concat(res);
     });
 
@@ -1291,9 +1282,8 @@ exports.useStdin = {
   },
 
   testNoFilename: function(test) {
-    var rep = require("../examples/reporter.js");
     var errors = [];
-    this.sinon.stub(rep, "reporter", function (res) {
+    this.sinon.stub(rep.rep, "reporter", function (res) {
       errors = errors.concat(res);
     });
 
@@ -1328,9 +1318,8 @@ exports.useStdin = {
 
   testFilenameOverridesOption: function (test) {
     test.expect(4);
-    var rep = require("../examples/reporter.js");
     var errors = [];
-    this.sinon.stub(rep, "reporter", function (res) {
+    this.sinon.stub(rep.rep, "reporter", function (res) {
       errors = errors.concat(res);
     });
 
@@ -1375,7 +1364,7 @@ exports.useStdin = {
     this.sinon.stub(cli, "exit");
 
     this.stdin.restore();
-    this.stdin = require('mock-stdin').stdin();
+    this.stdin = mockstdin_moduleObject.stdin();
     cli.interpret([
       "node", "jshint", "--filename", "fake2/fakescript.js", "--reporter=reporter.js", "-"
     ]);

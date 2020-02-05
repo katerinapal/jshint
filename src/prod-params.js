@@ -1,17 +1,4 @@
-/**
- * This module defines a set of enum-like values intended for use as bit
- * "flags" during parsing. The ECMAScript grammar defines a number of such
- * "production parameters" to control how certain forms are parsed in context.
- * JSHint implements additional parameters to facilitate detection of lint
- * warnings.
- *
- * An equivalent implementation which described the context in terms of a
- * "lookup table" object would be more idiomatic for a JavaScript project like
- * JSHint. However, because the number of contexts scales with the number of
- * expressions in the input program, this would have non-negligible impact on
- * the process's memory footprint.
- */
-module.exports = {
+var exported_prodparamsjs = {
   /**
    * Enabled when parsing expressions within ES2015 "export" declarations,
    * allowing otherwise-unreferenced bindings to be considered "used".
@@ -41,3 +28,11 @@ module.exports = {
    */
   tryClause: 32
 };
+
+var exported_export = 1;
+var exported_noin = 2;
+var exported_initial = 4;
+var exported_preAsync = 8;
+var exported_async = 16;
+var exported_tryClause = 32;
+export { exported_export as export, exported_noin as noin, exported_initial as initial, exported_preAsync as preAsync, exported_async as async, exported_tryClause as tryClause };
