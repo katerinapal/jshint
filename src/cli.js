@@ -1,16 +1,17 @@
+import { JSHINT } from "./jshint.js";
+import _ from "lodash";
+import fs from "fs";
+import cli from "cli";
+import path from "path";
+import shjs from "shelljs";
+import minimatch from "minimatch";
+import htmlparser from "htmlparser2";
+import exit from "exit";
+import stripJsonComments from "strip-json-comments";
+import * as default_moduleObject from "./reporters/default";
 "use strict";
 
-var _                 = require("lodash");
-var fs                = require("fs");
-var cli               = require("cli");
-var path              = require("path");
-var shjs              = require("shelljs");
-var minimatch         = require("minimatch");
-var htmlparser        = require("htmlparser2");
-var exit              = require("exit");
-var stripJsonComments = require("strip-json-comments");
-var JSHINT            = require("./jshint.js").JSHINT;
-var defReporter       = require("./reporters/default").reporter;
+var defReporter       = default_moduleObject.reporter;
 
 var OPTIONS = {
   "config": ["c", "Custom configuration file", "string", false ],
@@ -632,7 +633,7 @@ var exports = {
         mergeCLIPrereq(config);
 
         lint(extract(code, opts.extract), results, config, data, filename);
-        (opts.reporter || defReporter)(results, data, { verbose: opts.verbose });
+        (opts.reporter || default_moduleObject.default_moduleObject)(results, data, { verbose: opts.verbose });
         cb(results.length === 0);
 
       });
@@ -670,7 +671,7 @@ var exports = {
       }
     });
 
-    (opts.reporter || defReporter)(results, data, { verbose: opts.verbose });
+    (opts.reporter || default_moduleObject.default_moduleObject)(results, data, { verbose: opts.verbose });
     return results.length === 0;
   },
 
@@ -768,4 +769,5 @@ var exports = {
   }
 };
 
-module.exports = exports;
+var exported_clijs = exports;
+export { exported_clijs as clijs };

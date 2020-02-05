@@ -1,7 +1,7 @@
+import browserify from "browserify";
+import path from "path";
 "use strict";
 
-var browserify = require("browserify");
-var path       = require("path");
 var version    = require("../package.json").version;
 
 var srcDir     = path.join(__dirname, "../src");

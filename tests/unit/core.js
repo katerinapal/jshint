@@ -1,8 +1,9 @@
+import { JSHINT } from "../..";
+import fs from "fs";
+import * as testhelper_moduleObject from "../helpers/testhelper";
 "use strict";
 
-var JSHINT  = require("../..").JSHINT;
-var fs      = require('fs');
-var TestRun = require("../helpers/testhelper").setup.testRun;
+var TestRun = testhelper_moduleObject.setup.testRun;
 
 /**
  * JSHint allows you to specify custom globals as a parameter to the JSHINT
