@@ -1,12 +1,13 @@
+import { JSHINT } from "../..";
+import fs from "fs";
+import * as testhelper_moduleObject from "../helpers/testhelper";
 /**
  * Tests for the environmental (browser, jquery, etc.) options
  */
 
 "use strict";
 
-var JSHINT  = require("../..").JSHINT;
-var fs      = require('fs');
-var TestRun = require("../helpers/testhelper").setup.testRun;
+var TestRun = testhelper_moduleObject.setup.testRun;
 
 function wrap(globals) {
   return 'void [ ' + globals.join(',') + ' ];';

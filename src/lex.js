@@ -1,19 +1,20 @@
+import { state } from "./state.js";
+import _ from "lodash";
+import events from "events";
+import * as reg from "./reg.js";
+import * as unicodeData from "../data/ascii-identifier-data.js";
+import { arr as nonAsciiIdentifierStartTable } from "../data/non-ascii-identifier-start.js";
+import { arr as nonAsciiIdentifierPartTable } from "../data/non-ascii-identifier-part-only.js";
+import { es5identifiernamesjs as es5identifiernames } from "../data/es5-identifier-names.js";
+var stateBinding = state;
 /*
  * Lexical analysis and token construction.
  */
 
 "use strict";
 
-var _      = require("lodash");
-var events = require("events");
-var reg    = require("./reg.js");
-var state  = require("./state.js").state;
-
-var unicodeData = require("../data/ascii-identifier-data.js");
 var asciiIdentifierStartTable = unicodeData.asciiIdentifierStartTable;
 var asciiIdentifierPartTable = unicodeData.asciiIdentifierPartTable;
-var nonAsciiIdentifierStartTable = require("../data/non-ascii-identifier-start.js");
-var nonAsciiIdentifierPartTable = require("../data/non-ascii-identifier-part-only.js");
 // Loading of this module is deferred as an optimization for ES2015 input
 var es5IdentifierNames;
 
@@ -69,32 +70,6 @@ function asyncTrigger() {
   };
 }
 
-/*
- * Lexer for JSHint.
- *
- * This object does a char-by-char scan of the provided source code
- * and produces a sequence of tokens.
- *
- *   var lex = new Lexer("var i = 0;");
- *   lex.start();
- *   lex.token(); // returns the next token
- *
- * You have to use the token() method to move the lexer forward
- * but you don't have to use its return value to get tokens. In addition
- * to token() method returning the next token, the Lexer object also
- * emits events.
- *
- *   lex.on("Identifier", function(data) {
- *     if (data.name.indexOf("_") >= 0) {
- *       // Produce a warning.
- *     }
- *   });
- *
- * Note that the token() method returns tokens in a JSLint-compatible
- * format while the event emitter uses a slightly modified version of
- * Mozilla's JavaScript Parser API. Eventually, we will move away from
- * JSLint format.
- */
 function Lexer(source) {
   var lines = source;
 
@@ -110,7 +85,7 @@ function Lexer(source) {
 
   if (lines[0] && lines[0].substr(0, 2) === "#!") {
     if (lines[0].indexOf("node") !== -1) {
-      state.option.node = true;
+      stateBinding.option.node = true;
     }
     lines[0] = "";
   }
@@ -128,8 +103,8 @@ function Lexer(source) {
   this.context = [];
   this.templateStarts = [];
 
-  for (var i = 0; i < state.option.indent; i += 1) {
-    state.tab += " ";
+  for (var i = 0; i < stateBinding.option.indent; i += 1) {
+    stateBinding.tab += " ";
   }
 }
 
@@ -153,13 +128,13 @@ Lexer.prototype = {
   },
 
   getLines: function() {
-    this._lines = state.lines;
+    this._lines = stateBinding.lines;
     return this._lines;
   },
 
   setLines: function(val) {
     this._lines = val;
-    state.lines = this._lines;
+    stateBinding.lines = this._lines;
   },
 
   /*
@@ -709,8 +684,8 @@ Lexer.prototype = {
 
     value = removeEscapeSequences(id);
 
-    if (!state.inES6(true)) {
-      es5IdentifierNames = require("../data/es5-identifier-names.js");
+    if (!stateBinding.inES6(true)) {
+      es5IdentifierNames = es5identifiernames;
 
       if (!es5IdentifierNames.test(value)) {
         this.triggerAsync(
@@ -796,7 +771,7 @@ Lexer.prototype = {
           isAllowedDigit = isOctalDigit;
           base = 8;
 
-          if (!state.inES6(true)) {
+          if (!stateBinding.inES6(true)) {
             this.triggerAsync(
               "warning",
               {
@@ -819,7 +794,7 @@ Lexer.prototype = {
           isAllowedDigit = isBinaryDigit;
           base = 2;
 
-          if (!state.inES6(true)) {
+          if (!stateBinding.inES6(true)) {
             this.triggerAsync(
               "warning",
               {
@@ -970,7 +945,7 @@ Lexer.prototype = {
         line: this.line,
         character: this.char,
         data: [ "\\'" ]
-      }, checks, function() {return state.jsonMode; });
+      }, checks, function() {return stateBinding.jsonMode; });
       break;
     case "b":
       char = "\\b";
@@ -998,7 +973,7 @@ Lexer.prototype = {
         line: this.line,
         character: this.char
       }, checks,
-      function() { return n >= 0 && n <= 7 && state.isStrict(); });
+      function() { return n >= 0 && n <= 7 && stateBinding.isStrict(); });
       break;
     case "1":
     case "2":
@@ -1013,7 +988,7 @@ Lexer.prototype = {
         line: this.line,
         character: this.char
       }, checks,
-      function() { return state.isStrict(); });
+      function() { return stateBinding.isStrict(); });
       break;
     case "u":
       var sequence = this.input.substr(1, 4);
@@ -1037,7 +1012,7 @@ Lexer.prototype = {
         line: this.line,
         character: this.char,
         data: [ "\\v" ]
-      }, checks, function() { return state.jsonMode; });
+      }, checks, function() { return stateBinding.jsonMode; });
 
       char = "\v";
       break;
@@ -1049,7 +1024,7 @@ Lexer.prototype = {
         line: this.line,
         character: this.char,
         data: [ "\\x-" ]
-      }, checks, function() { return state.jsonMode; });
+      }, checks, function() { return stateBinding.jsonMode; });
 
       char = String.fromCharCode(x);
       jump = 3;
@@ -1086,7 +1061,7 @@ Lexer.prototype = {
     var depth = this.templateStarts.length;
 
     if (this.peek() === "`") {
-      if (!state.inES6(true)) {
+      if (!stateBinding.inES6(true)) {
         this.triggerAsync(
           "warning",
           {
@@ -1200,7 +1175,7 @@ Lexer.prototype = {
       code: "W108",
       line: this.line,
       character: this.char // +1?
-    }, checks, function() { return state.jsonMode && quote !== "\""; });
+    }, checks, function() { return stateBinding.jsonMode && quote !== "\""; });
 
     var value = "";
     var startLine = this.line;
@@ -1237,13 +1212,13 @@ Lexer.prototype = {
             code: "W043",
             line: this.line,
             character: this.char
-          }, checks, function() { return !state.option.multistr; });
+          }, checks, function() { return !stateBinding.option.multistr; });
 
           this.triggerAsync("warning", {
             code: "W042",
             line: this.line,
             character: this.char
-          }, checks, function() { return state.jsonMode && state.option.multistr; });
+          }, checks, function() { return stateBinding.jsonMode && stateBinding.option.multistr; });
         }
 
         // If we get an EOF inside of an unclosed string, show an
@@ -1658,7 +1633,7 @@ Lexer.prototype = {
         break;
       }
       if (char === "y") {
-        if (!state.inES6(true)) {
+        if (!stateBinding.inES6(true)) {
           this.triggerAsync(
             "warning",
             {
@@ -1672,7 +1647,7 @@ Lexer.prototype = {
           );
         }
       } else if (char === "u") {
-        if (!state.inES6(true)) {
+        if (!stateBinding.inES6(true)) {
           this.triggerAsync(
             "warning",
             {
@@ -1703,7 +1678,7 @@ Lexer.prototype = {
                 reg.regexpCharClasses.test(escapedChar) ||
                 reg.regexpSyntaxChars.test(escapedChar);
             });
-        }(groupReferences, groupCount, escapedChars, reg));
+        }(groupReferences, groupCount, escapedChars, reg.reg));
 
         if (hasInvalidEscape) {
           malformedDesc = "Invalid escape";
@@ -1713,7 +1688,7 @@ Lexer.prototype = {
 
         body = translateUFlag(body);
       } else if (char === "s") {
-        if (!state.inES9()) {
+        if (!stateBinding.inES9()) {
           this.triggerAsync(
             "warning",
             {
@@ -1748,7 +1723,7 @@ Lexer.prototype = {
         code: "W147",
         line: this.line,
         character: this.char
-      }, checks, function() { return state.option.regexpu; });
+      }, checks, function() { return stateBinding.option.regexpu; });
     }
 
     // Check regular expression for correctness.
@@ -1793,7 +1768,7 @@ Lexer.prototype = {
    * pages with non-breaking pages produce syntax errors.
    */
   scanNonBreakingSpaces: function() {
-    return state.option.nonbsp ?
+    return stateBinding.option.nonbsp ?
       this.input.search(/(\u00A0)/) : -1;
   },
 
@@ -1888,13 +1863,13 @@ Lexer.prototype = {
       );
     }
 
-    this.input = this.input.replace(/\t/g, state.tab);
+    this.input = this.input.replace(/\t/g, stateBinding.tab);
 
     // If there is a limit on line length, warn when lines get too
     // long.
 
-    if (!this.ignoringLinterErrors && state.option.maxlen &&
-      state.option.maxlen < this.input.length) {
+    if (!this.ignoringLinterErrors && stateBinding.option.maxlen &&
+      stateBinding.option.maxlen < this.input.length) {
       var inComment = this.inComment ||
         startsWith.call(inputTrimmed, "//") ||
         startsWith.call(inputTrimmed, "/*");
@@ -1948,7 +1923,7 @@ Lexer.prototype = {
           this.prereg = true;
         }
 
-        obj = Object.create(state.syntax[value] || state.syntax["(error)"]);
+        obj = Object.create(stateBinding.syntax[value] || stateBinding.syntax["(error)"]);
       }
 
       if (type === "(identifier)") {
@@ -1958,8 +1933,8 @@ Lexer.prototype = {
           this.prereg = true;
         }
 
-        if (_.has(state.syntax, value)) {
-          obj = Object.create(state.syntax[value] || state.syntax["(error)"]);
+        if (_.has(stateBinding.syntax, value)) {
+          obj = Object.create(stateBinding.syntax[value] || stateBinding.syntax["(error)"]);
         }
       }
 
@@ -1968,7 +1943,7 @@ Lexer.prototype = {
       }
 
       if (!obj) {
-        obj = Object.create(state.syntax[type]);
+        obj = Object.create(stateBinding.syntax[type]);
       }
 
       obj.identifier = (type === "(identifier)");
@@ -2100,12 +2075,12 @@ Lexer.prototype = {
           from: this.from,
           name: token.value,
           raw_name: token.text,
-          isProperty: state.tokens.curr.id === "."
+          isProperty: stateBinding.tokens.curr.id === "."
         }, checks, function() { return true; });
 
         /* falls through */
       case Token.Keyword:
-        return create("(identifier)", token.value, state.tokens.curr.id === ".", token);
+        return create("(identifier)", token.value, stateBinding.tokens.curr.id === ".", token);
 
       case Token.NumericLiteral:
         if (token.isMalformed) {
@@ -2124,14 +2099,14 @@ Lexer.prototype = {
           line: this.line,
           character: this.char,
           data: [ "0x-" ]
-        }, checks, function() { return token.base === 16 && state.jsonMode; });
+        }, checks, function() { return token.base === 16 && stateBinding.jsonMode; });
 
         this.triggerAsync("warning", {
           code: "W115",
           line: this.line,
           character: this.char
         }, checks, function() {
-          return state.isStrict() && token.base === 8 && token.isLegacy;
+          return stateBinding.isStrict() && token.base === 8 && token.isLegacy;
         });
 
         this.trigger("Number", {
@@ -2171,5 +2146,33 @@ Lexer.prototype = {
   }
 };
 
-exports.Lexer = Lexer;
 exports.Context = Context;
+var exported_Lexer = Lexer;
+
+/*
+ * Lexer for JSHint.
+ *
+ * This object does a char-by-char scan of the provided source code
+ * and produces a sequence of tokens.
+ *
+ *   var lex = new Lexer("var i = 0;");
+ *   lex.start();
+ *   lex.token(); // returns the next token
+ *
+ * You have to use the token() method to move the lexer forward
+ * but you don't have to use its return value to get tokens. In addition
+ * to token() method returning the next token, the Lexer object also
+ * emits events.
+ *
+ *   lex.on("Identifier", function(data) {
+ *     if (data.name.indexOf("_") >= 0) {
+ *       // Produce a warning.
+ *     }
+ *   });
+ *
+ * Note that the token() method returns tokens in a JSLint-compatible
+ * format while the event emitter uses a slightly modified version of
+ * Mozilla's JavaScript Parser API. Eventually, we will move away from
+ * JSLint format.
+ */
+export { exported_Lexer as Lexer };

@@ -1,3 +1,5 @@
+import { JSHINT } from "../..";
+import * as testhelper_moduleObject from "../helpers/testhelper";
 /**
  * The JSHint API does not allow for un-registering "modules", and the Nodeunit
  * API does not support per-group setup/teardown logic. These deficiencies
@@ -11,8 +13,7 @@
  */
 "use strict";
 
-var JSHINT  = require("../..").JSHINT;
-var TestRun = require("../helpers/testhelper").setup.testRun;
+var TestRun = testhelper_moduleObject.setup.testRun;
 
 var firstRun = true;
 var testContext = null;
