@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = function report(summary) {
+var exportedObject = function report(summary) {
   var goodnews = [
     summary.allowed.success.length + " valid programs parsed without error",
     summary.allowed.failure.length +
@@ -76,3 +76,5 @@ module.exports = function report(summary) {
     console.log(badnewsDetails.join("\n").replace(/^/gm, "   "));
   }
 };
+
+export { exportedObject as reportjs };

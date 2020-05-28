@@ -1,15 +1,14 @@
+import ext_fs_fs from "fs";
+import ext_http_http from "http";
+import ext_stream_Stream from "stream";
+import ext_path_path from "path";
+import ext_url_url from "url";
+import ext_browserify_browserify from "browserify";
 "use strict";
-var fs = require("fs");
-var http = require("http");
-var Stream = require("stream");
-var path = require("path");
-var url = require("url");
-
-var browserify = require("browserify");
 var buildJSHint = require(__dirname + "/../../../scripts/build");
 
-var mainPath = path.resolve(
-  __dirname + "/../../../" + require("../../../package.json").main
+var mainPath = ext_path_path.resolve(
+  __dirname + "/../../../" + null
 );
 var contentTypes = {
   ".html": "text/html",
@@ -19,10 +18,10 @@ var contentTypes = {
 var streams = {
   fixtures: function() {
     var fixtureDir = __dirname + "/../../unit/fixtures";
-    var fixtureStream = new Stream.Readable();
+    var fixtureStream = new ext_stream_Stream.Readable();
     fixtureStream._read = fixtureStream.write = function() {};
 
-    fs.readdir(fixtureDir, function(err, files) {
+    ext_fs_fs.readdir(fixtureDir, function(err, files) {
       var src = "";
       var fsCache = {};
 
@@ -34,7 +33,7 @@ var streams = {
       files.forEach(function(fileName) {
         var relativeName = "/tests/unit/fixtures/" + fileName;
 
-        fsCache[relativeName] = fs.readFileSync(
+        fsCache[relativeName] = ext_fs_fs.readFileSync(
           fixtureDir + "/" + fileName, { encoding: "utf-8" }
         );
       });
@@ -64,17 +63,17 @@ var streams = {
    */
   runAllScript: function() {
     var testDir = "../../unit";
-    var stream = new Stream.Readable();
+    var stream = new ext_stream_Stream.Readable();
     stream._read = stream.write = function() {};
 
-    fs.readdir(__dirname + "/" + testDir, function(err, allFiles) {
+    ext_fs_fs.readdir(__dirname + "/" + testDir, function(err, allFiles) {
       var testIncludes = allFiles.filter(function(file) {
           return /\.js$/i.test(file);
         }).map(function(file) {
           return "\"" + file + "\": require(\"" + testDir + "/" + file + "\")";
         }).join(",\n");
 
-      fs.readFile(__dirname + "/run-all.js.tmpl", function(err, src) {
+      ext_fs_fs.readFile(__dirname + "/run-all.js.tmpl", function(err, src) {
         stream.push(
           String(src).replace(/{{\s*INJECT_TEST_INCLUDES\s*}}/, testIncludes)
         );
@@ -88,7 +87,7 @@ var streams = {
 
 var build = {
   "index.html": function(done) {
-    fs.readFile(__dirname + "/index.html", done);
+    ext_fs_fs.readFile(__dirname + "/index.html", done);
   },
 
   "jshint.js": function(done) {
@@ -98,7 +97,7 @@ var build = {
   },
 
   "tests.js": function(done) {
-    var bundle = browserify({
+    var bundle = ext_browserify_browserify({
       insertGlobalVars: {
         /**
          * Ensure that the value of `__dirname` uses Unix path separator across
@@ -120,7 +119,7 @@ var build = {
     var includedFaker = false;
 
     bundle.require(
-      fs.createReadStream(__dirname + "/fixture-fs.js"),
+      ext_fs_fs.createReadStream(__dirname + "/fixture-fs.js"),
       { expose: "fs" }
     );
     bundle.add(streams.fixtures());
@@ -139,14 +138,14 @@ var build = {
 
       if (filename === mainPath) {
         includedFaker = true;
-        faker = new Stream.Readable();
+        faker = new ext_stream_Stream.Readable();
         faker._read = faker.write = function() {};
         faker.push("exports.JSHINT = window.JSHINT;");
         faker.push(null);
         return faker;
       }
 
-      return new Stream.PassThrough();
+      return new ext_stream_Stream.PassThrough();
     });
 
     bundle.bundle(function(err, src) {
@@ -167,10 +166,10 @@ var build = {
   }
 };
 
-module.exports = function(port, done) {
-  var server = http.createServer(function(req, res) {
-    var pathname = url.parse(req.url).pathname.slice(1) || "index.html";
-    var contentType = contentTypes[path.extname(pathname)];
+var exportedObject = function(port, done) {
+  var server = ext_http_http.createServer(function(req, res) {
+    var pathname = ext_url_url.parse(req.url).pathname.slice(1) || "index.html";
+    var contentType = contentTypes[ext_path_path.extname(pathname)];
 
     if (!Object.hasOwnProperty.call(build, pathname)) {
       res.statusCode = 404;
@@ -200,6 +199,8 @@ module.exports = function(port, done) {
   });
 };
 
+export { exportedObject as serverjs };
+
 
 if (require.main === module) {
   console.log("Starting JSHint browser build testing server.");
@@ -207,7 +208,7 @@ if (require.main === module) {
     "(override default port via the NODE_PORT environmental variable)"
   );
 
-  module.exports(process.env.NODE_PORT || 8045, function(server) {
+  server_exportedObject(process.env.NODE_PORT || 8045, function(server) {
     console.log("Server now listening on port " + server.address().port);
   });
 }

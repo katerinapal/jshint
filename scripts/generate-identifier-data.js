@@ -1,8 +1,8 @@
+import ext_regenerate_regenerate from "regenerate";
+import ext_fs_fs from "fs";
 // Based on https://gist.github.com/mathiasbynens/6334847 by @mathias
 
 'use strict';
-
-var regenerate = require('regenerate');
 
 var unicodeVersion = 'unicode-11.0.0';
 var oldUnicodeVersion = 'unicode-5.2.0';
@@ -34,12 +34,12 @@ var Pc = getOld('General_Category/Connector_Punctuation');
 
 var generateData = function() { // ES2015+ with latest Unicode
   // http://mathiasbynens.be/notes/javascript-identifiers#valid-identifier-names
-  var identifierStart = regenerate(ID_Start)
+  var identifierStart = ext_regenerate_regenerate(ID_Start)
     .add('$', '_')
     // remove astral symbols (JSHint-specific; lex.js needs updating)
     .removeRange(0x010000, 0x10FFFF)
     .removeRange(0x0, 0x7F); // remove ASCII symbols (JSHint-specific)
-  var identifierPart = regenerate(ID_Continue)
+  var identifierPart = ext_regenerate_regenerate(ID_Continue)
     .add('$', '_', '\u200C', '\u200D')
     // remove ASCII symbols (JSHint-specific)
     .removeRange(0x0, 0x7F)
@@ -56,7 +56,7 @@ var generateData = function() { // ES2015+ with latest Unicode
 // Adapted from https://gist.github.com/mathiasbynens/6334847
 var generateES5Regex = function() { // ES 5.1 + Unicode v5.2.0
   // https://mathiasbynens.be/notes/javascript-identifiers#valid-identifier-names
-  var identifierStart = regenerate('$', '_')
+  var identifierStart = ext_regenerate_regenerate('$', '_')
     .add(Lu, Ll, Lt, Lm, Lo, Nl)
     .removeRange(0x010000, 0x10FFFF); // Remove astral symbols.
   var identifierPart = identifierStart.clone()
@@ -67,9 +67,8 @@ var generateES5Regex = function() { // ES 5.1 + Unicode v5.2.0
     '(?:' + identifierPart.toString() + ')*$/';
 };
 
-var fs = require('fs');
 var writeFile = function(fileName, data) {
-  fs.writeFileSync(
+  ext_fs_fs.writeFileSync(
     fileName,
     [
     'var str = \'' + data.join(',') + '\';',
@@ -84,7 +83,7 @@ var writeFile = function(fileName, data) {
 var result = generateData();
 writeFile('./data/non-ascii-identifier-start.js', result.nonAsciiIdentifierStart);
 writeFile('./data/non-ascii-identifier-part-only.js', result.nonAsciiIdentifierPart);
-fs.writeFileSync(
+ext_fs_fs.writeFileSync(
   './data/es5-identifier-names.js',
   'module.exports = ' + generateES5Regex() + ';'
 );

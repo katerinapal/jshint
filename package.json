@@ -1,78 +1,98 @@
 {
-  "name": "jshint",
-  "version": "2.10.2",
-  "homepage": "http://jshint.com/",
-  "description": "Static analysis tool for JavaScript",
-  "author": {
-    "name": "Anton Kovalyov",
-    "email": "anton@kovalyov.net",
-    "url": "http://anton.kovalyov.net/"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jshint/jshint.git"
-  },
-  "bugs": {
-    "url": "https://github.com/jshint/jshint/issues"
-  },
-  "bin": {
-    "jshint": "./bin/jshint"
-  },
-  "scripts": {
-    "browser-test-server": "node tests/helpers/browser/server",
-    "build": "node bin/build",
-    "coverage": "istanbul -- cover ./node_modules/nodeunit/bin/nodeunit tests/unit",
-    "coverage-report": "npm run coverage && istanbul report html",
-    "data": "node scripts/generate-identifier-data",
-    "fetch-test262": "git submodule init && git submodule update",
-    "pretest": "node ./bin/jshint src && jscs src",
-    "changelog": "conventional-changelog -p jshint -i CHANGELOG.md -w",
-    "github-release": "conventional-github-releaser -p jshint",
-    "test-all": "npm run test-node && npm run test-browser && npm run test-262",
-    "test-262": "node tests/test262",
-    "test-browser": "node tests/browser",
-    "test-cli": "nodeunit tests/cli.js",
-    "test-node": "npm run test-unit && npm run test-cli && npm run test-regression",
-    "test-regression": "nodeunit tests/regression",
-    "test-unit": "nodeunit tests/unit",
-    "test": "npm run test-node && npm run test-browser"
-  },
-  "main": "./src/jshint.js",
-  "dependencies": {
-    "cli": "~1.0.0",
-    "console-browserify": "1.1.x",
-    "exit": "0.1.x",
-    "htmlparser2": "3.8.x",
-    "lodash": "~4.17.11",
-    "minimatch": "~3.0.2",
-    "shelljs": "0.3.x",
-    "strip-json-comments": "1.0.x"
-  },
-  "devDependencies": {
-    "async": "~2.1.2",
-    "browserify": "9.x",
-    "conventional-changelog": "0.4.x",
-    "conventional-github-releaser": "0.4.x",
-    "coveralls": "2.11.x",
-    "istanbul": "0.3.x",
-    "jscs": "1.11.x",
-    "mock-stdin": "0.3.x",
-    "nodeunit": "0.9.x",
-    "phantom": "~4.0.1",
-    "phantomjs-prebuilt": "~2.1.7",
-    "regenerate": "1.2.x",
-    "results-interpreter": "~1.0.0",
-    "sinon": "1.12.x",
-    "test262-stream": "~1.2.0",
-    "unicode-5.2.0": "^0.7.5",
-    "unicode-11.0.0": "0.7.x"
-  },
-  "license": "(MIT AND JSON)",
-  "preferGlobal": true,
-  "files": [
-    "bin",
-    "data",
-    "dist",
-    "src"
-  ]
+    "name": "jshint",
+    "version": "2.10.2",
+    "homepage": "http://jshint.com/",
+    "description": "Static analysis tool for JavaScript",
+    "author": {
+        "name": "Anton Kovalyov",
+        "email": "anton@kovalyov.net",
+        "url": "http://anton.kovalyov.net/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/jshint/jshint.git"
+    },
+    "bugs": {
+        "url": "https://github.com/jshint/jshint/issues"
+    },
+    "bin": {
+        "jshint": "./bin/jshint"
+    },
+    "scripts": {
+        "browser-test-server": "node tests/helpers/browser/server",
+        "build": "node bin/build",
+        "coverage": "istanbul -- cover ./node_modules/nodeunit/bin/nodeunit tests/unit",
+        "coverage-report": "npm run coverage && istanbul report html",
+        "data": "node scripts/generate-identifier-data",
+        "fetch-test262": "git submodule init && git submodule update",
+        "pretest": "node ./bin/jshint src && jscs src",
+        "changelog": "conventional-changelog -p jshint -i CHANGELOG.md -w",
+        "github-release": "conventional-github-releaser -p jshint",
+        "test-all": "npm run test-node && npm run test-browser && npm run test-262",
+        "test-262": "node tests/test262",
+        "test-browser": "node tests/browser",
+        "test-cli": "nodeunit tests/cli.js",
+        "test-node": "npm run test-unit && npm run test-cli && npm run test-regression",
+        "test-regression": "nodeunit tests/regression",
+        "test-unit": "nodeunit tests/unit",
+        "test": "npm run test-node && npm run test-browser",
+        "compile-src": "babel src --out-dir src --require babel-polyfill --presets env",
+        "compile-tests": "babel tests --out-dir tests --require babel-polyfill --presets env",
+        "compile-scripts": "babel scripts --out-dir scripts --require babel-polyfill --presets env",
+        "compile-testsunit": "babel tests\\unit --out-dir tests\\unit --require babel-polyfill --presets env",
+        "compile-examples": "babel examples --out-dir examples --require babel-polyfill --presets env",
+        "compile-srcreporters": "babel src\\reporters --out-dir src\\reporters --require babel-polyfill --presets env",
+        "compile-teststest262": "babel tests\\test262 --out-dir tests\\test262 --require babel-polyfill --presets env",
+        "compile-srcplatforms": "babel src\\platforms --out-dir src\\platforms --require babel-polyfill --presets env",
+        "compile-testshelpers": "babel tests\\helpers --out-dir tests\\helpers --require babel-polyfill --presets env",
+        "compile-data": "babel data --out-dir data --require babel-polyfill --presets env",
+        "compile-testshelpersbrowser": "babel tests\\helpers\\browser --out-dir tests\\helpers\\browser --require babel-polyfill --presets env",
+        "compile-1_script": "npm run compile-src && npm run compile-tests && npm run compile-scripts && npm run compile-testsunit && npm run compile-examples && npm run compile-srcreporters && npm run compile-teststest262 && npm run compile-srcplatforms && npm run compile-testshelpers && npm run compile-data && npm run compile-testshelpersbrowser",
+        "compile": "npm run compile-1_script"
+    },
+    "main": "./src/jshint.js",
+    "dependencies": {
+        "cli": "~1.0.0",
+        "console-browserify": "1.1.x",
+        "exit": "0.1.x",
+        "htmlparser2": "3.8.x",
+        "lodash": "~4.17.11",
+        "minimatch": "~3.0.2",
+        "shelljs": "0.3.x",
+        "strip-json-comments": "1.0.x"
+    },
+    "devDependencies": {
+        "async": "~2.1.2",
+        "browserify": "9.x",
+        "conventional-changelog": "0.4.x",
+        "conventional-github-releaser": "0.4.x",
+        "coveralls": "2.11.x",
+        "istanbul": "0.3.x",
+        "jscs": "1.11.x",
+        "mock-stdin": "0.3.x",
+        "nodeunit": "0.9.x",
+        "phantom": "~4.0.1",
+        "phantomjs-prebuilt": "~2.1.7",
+        "regenerate": "1.2.x",
+        "results-interpreter": "~1.0.0",
+        "sinon": "1.12.x",
+        "test262-stream": "~1.2.0",
+        "unicode-5.2.0": "^0.7.5",
+        "unicode-11.0.0": "0.7.x",
+        "babel-cli": "latest",
+        "babel-core": "latest",
+        "babel-plugin-add-module-exports": "latest",
+        "babel-plugin-transform-es2015-modules-commonjs": "latest",
+        "babel-polyfill": "latest",
+        "babel-plugin-transform-object-rest-spread": "latest",
+        "babel-preset-env": "latest"
+    },
+    "license": "(MIT AND JSON)",
+    "preferGlobal": true,
+    "files": [
+        "bin",
+        "data",
+        "dist",
+        "src"
+    ]
 }

@@ -1,15 +1,17 @@
+import ext_browserify_browserify from "browserify";
+import ext_path_path from "path";
 "use strict";
 
-var browserify = require("browserify");
-var path       = require("path");
-var version    = require("../package.json").version;
+var version    = null;
 
-var srcDir     = path.join(__dirname, "../src");
+var srcDir     = ext_path_path.join(__dirname, "../src");
 
 var targets = ["web", "rhino"];
 
-module.exports = function(target, done) {
-  var bundle = browserify();
+var encapsulated_anonymus;
+
+encapsulated_anonymus = function(target, done) {
+  var bundle = ext_browserify_browserify();
 
   done = done || function() {};
 

@@ -1,5 +1,5 @@
+import { NameStack as namestack_NameStackjs } from "./name-stack.js";
 "use strict";
-var NameStack = require("./name-stack.js");
 
 var state = {
   syntax: {},
@@ -175,9 +175,11 @@ var state = {
     this.cache = {}; // Node.JS doesn't have Map. Sniff.
     this.ignoredLines = {};
     this.forinifcheckneeded = false;
-    this.nameStack = new NameStack();
+    this.nameStack = new namestack_NameStackjs();
     this.inClassBody = false;
   }
 };
 
-exports.state = state;
+state_state = state;
+var state_state;
+export { state_state as state };

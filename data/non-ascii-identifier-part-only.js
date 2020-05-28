@@ -2,4 +2,6 @@ var str = '183,768,769,770,771,772,773,774,775,776,777,778,779,780,781,782,783,7
 var arr = str.split(',').map(function(code) {
   return parseInt(code, 10);
 });
-module.exports = arr;
+var nonasciiidentifierpartonly_arr;
+nonasciiidentifierpartonly_arr = arr;
+export { nonasciiidentifierpartonly_arr as arr };

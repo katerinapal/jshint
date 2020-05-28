@@ -1,3 +1,4 @@
+import { JSHINT as _JSHINT } from "../..";
 /**
  * Helper for JSHint-tests.
  * Export itself as function in setup.testhelper to
@@ -31,13 +32,13 @@
 
 'use strict';
 
-var JSHINT = require("../..").JSHINT;
+var JSHINT = _JSHINT.JSHINT;
 
-if (exports.setup === undefined || exports.setup === null) {
-  exports.setup = {};
+if (setup_setup === undefined || setup_setup === null) {
+  setup_setup = {};
 }
 
-exports.setup.testRun = function (test, name) {
+setup_setup.testRun = function (test, name) {
   var definedErrors = [];
 
   var helperObj = {
@@ -213,3 +214,5 @@ exports.setup.testRun = function (test, name) {
 
   return helperObj;
 };
+var setup_setup;
+export { setup_setup as setup };

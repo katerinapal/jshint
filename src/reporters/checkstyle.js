@@ -92,3 +92,4 @@ module.exports =
     console.log(out.join("\n"));
   }
 };
+export { checkstylejs_checkstylejs as checkstylejs };

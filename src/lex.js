@@ -1,19 +1,21 @@
+import ext_lodash__ from "lodash";
+import ext_events_events from "events";
+import { regjs as reg_regjsjs } from "./reg.js";
+import { state as statejs_state } from "./state.js";
+import { asciiidentifierdatajs as dataasciiidentifierdata_asciiidentifierdatajsjs } from "../data/ascii-identifier-data.js";
+import { arr as datanonasciiidentifierstart_arrjs } from "../data/non-ascii-identifier-start.js";
+import { arr as datanonasciiidentifierpartonly_arrjs } from "../data/non-ascii-identifier-part-only.js";
+import { es5identifiernamesjs as dataes5identifiernamesjs_es5identifiernamesjs } from "../data/es5-identifier-names.js";
 /*
  * Lexical analysis and token construction.
  */
 
 "use strict";
 
-var _      = require("lodash");
-var events = require("events");
-var reg    = require("./reg.js");
-var state  = require("./state.js").state;
+var state  = statejs_state.state;
 
-var unicodeData = require("../data/ascii-identifier-data.js");
-var asciiIdentifierStartTable = unicodeData.asciiIdentifierStartTable;
-var asciiIdentifierPartTable = unicodeData.asciiIdentifierPartTable;
-var nonAsciiIdentifierStartTable = require("../data/non-ascii-identifier-start.js");
-var nonAsciiIdentifierPartTable = require("../data/non-ascii-identifier-part-only.js");
+var asciiIdentifierStartTable = dataasciiidentifierdata_asciiidentifierdatajsjs.asciiIdentifierStartTable;
+var asciiIdentifierPartTable = dataasciiidentifierdata_asciiidentifierdatajsjs.asciiIdentifierPartTable;
 // Loading of this module is deferred as an optimization for ES2015 input
 var es5IdentifierNames;
 
@@ -115,7 +117,7 @@ function Lexer(source) {
     lines[0] = "";
   }
 
-  this.emitter = new events.EventEmitter();
+  this.emitter = new ext_events_events.EventEmitter();
   this.source = source;
   this.setLines(lines);
   this.prereg = true;
@@ -600,11 +602,11 @@ Lexer.prototype = {
     var char, value;
 
     function isNonAsciiIdentifierStart(code) {
-      return nonAsciiIdentifierStartTable.indexOf(code) > -1;
+      return datanonasciiidentifierstart_arrjs.indexOf(code) > -1;
     }
 
     function isNonAsciiIdentifierPart(code) {
-      return isNonAsciiIdentifierStart(code) || nonAsciiIdentifierPartTable.indexOf(code) > -1;
+      return isNonAsciiIdentifierStart(code) || datanonasciiidentifierpartonly_arrjs.indexOf(code) > -1;
     }
 
     var readUnicodeEscapeSequence = function() {
@@ -710,7 +712,7 @@ Lexer.prototype = {
     value = removeEscapeSequences(id);
 
     if (!state.inES6(true)) {
-      es5IdentifierNames = require("../data/es5-identifier-names.js");
+      es5IdentifierNames = dataes5identifiernamesjs_es5identifiernamesjs;
 
       if (!es5IdentifierNames.test(value)) {
         this.triggerAsync(
@@ -1859,13 +1861,13 @@ Lexer.prototype = {
     var inputTrimmed = this.input.trim();
 
     var startsWith = function() {
-      return _.some(arguments, function(prefix) {
+      return ext_lodash__.some(arguments, function(prefix) {
         return inputTrimmed.indexOf(prefix) === 0;
       });
     };
 
     var endsWith = function() {
-      return _.some(arguments, function(suffix) {
+      return ext_lodash__.some(arguments, function(suffix) {
         return inputTrimmed.indexOf(suffix, inputTrimmed.length - suffix.length) !== -1;
       });
     };
@@ -1958,7 +1960,7 @@ Lexer.prototype = {
           this.prereg = true;
         }
 
-        if (_.has(state.syntax, value)) {
+        if (ext_lodash__.has(state.syntax, value)) {
           obj = Object.create(state.syntax[value] || state.syntax["(error)"]);
         }
       }
@@ -2171,5 +2173,8 @@ Lexer.prototype = {
   }
 };
 
-exports.Lexer = Lexer;
-exports.Context = Context;
+Lexer_Lexer = Lexer;
+var Context;
+Context = Context;
+var Lexer_Lexer;
+export { Lexer_Lexer as Lexer };

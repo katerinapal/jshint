@@ -4,12 +4,12 @@
 
 // Identifiers provided by the ECMAScript standard.
 
-exports.reservedVars = {
+reservedVars_reservedVars = {
   NaN       : false,
   undefined : false
 };
 
-exports.ecmaIdentifiers = {
+ecmaIdentifiers_ecmaIdentifiers = {
   3: {
     Array              : false,
     Boolean            : false,
@@ -71,7 +71,7 @@ exports.ecmaIdentifiers = {
 
 // Global variables commonly provided by a web browser environment.
 
-exports.browser = {
+browser_browser = {
   Audio                : false,
   Blob                 : false,
   addEventListener     : false, // EventTarget
@@ -446,7 +446,7 @@ exports.browser = {
   XPathResult          : false
 };
 
-exports.devel = {
+devel_devel = {
   alert  : false,
   confirm: false,
   console: false,
@@ -455,7 +455,7 @@ exports.devel = {
   prompt : false
 };
 
-exports.worker = {
+worker_worker = {
   addEventListener    : true, // EventTarget
   atob                : true, // WindowOrWorkerGlobalScope
   btoa                : true, // WindowOrWorkerGlobalScope
@@ -476,14 +476,14 @@ exports.worker = {
 };
 
 // Widely adopted global names that are not part of ECMAScript standard
-exports.nonstandard = {
+nonstandard_nonstandard = {
   escape  : false,
   unescape: false
 };
 
 // Globals provided by popular JavaScript environments.
 
-exports.couch = {
+couch_couch = {
   "require" : false,
   respond   : false,
   getRow    : false,
@@ -497,7 +497,7 @@ exports.couch = {
   provides  : false
 };
 
-exports.node = {
+node_node = {
   __filename    : false,
   __dirname     : false,
   arguments     : false,
@@ -521,7 +521,7 @@ exports.node = {
   clearImmediate: true  // v0.9.1+
 };
 
-exports.browserify = {
+browserify_browserify = {
   __filename    : false,
   __dirname     : false,
   global        : false,
@@ -532,7 +532,7 @@ exports.browserify = {
   process       : true
 };
 
-exports.phantom = {
+phantom_phantom = {
   phantom      : true,
   require      : true,
   WebPage      : true,
@@ -540,7 +540,7 @@ exports.phantom = {
   exports      : true  // v1.7+
 };
 
-exports.qunit = {
+qunit_qunit = {
   asyncTest      : false,
   deepEqual      : false,
   equal          : false,
@@ -562,7 +562,7 @@ exports.qunit = {
   "throws"       : false
 };
 
-exports.rhino = {
+rhino_rhino = {
   arguments    : false,
   defineClass  : false,
   deserialize  : false,
@@ -587,7 +587,7 @@ exports.rhino = {
   version      : false
 };
 
-exports.shelljs = {
+shelljs_shelljs = {
   target       : false,
   echo         : false,
   exit         : false,
@@ -615,7 +615,7 @@ exports.shelljs = {
   tempdir      : false
 };
 
-exports.typed = {
+typed_typed = {
   ArrayBuffer         : false,
   ArrayBufferView     : false,
   DataView            : false,
@@ -630,7 +630,7 @@ exports.typed = {
   Uint8ClampedArray   : false
 };
 
-exports.wsh = {
+wsh_wsh = {
   ActiveXObject            : true,
   Enumerator               : true,
   GetObject                : true,
@@ -646,7 +646,7 @@ exports.wsh = {
 
 // Globals provided by popular JavaScript libraries.
 
-exports.dojo = {
+dojo_dojo = {
   dojo     : false,
   dijit    : false,
   dojox    : false,
@@ -654,12 +654,12 @@ exports.dojo = {
   "require": false
 };
 
-exports.jquery = {
+jquery_jquery = {
   "$"    : false,
   jQuery : false
 };
 
-exports.mootools = {
+mootools_mootools = {
   "$"           : false,
   "$$"          : false,
   Asset         : false,
@@ -707,7 +707,7 @@ exports.mootools = {
   Window        : false
 };
 
-exports.prototypejs = {
+prototypejs_prototypejs = {
   "$"               : false,
   "$$"              : false,
   "$A"              : false,
@@ -748,13 +748,13 @@ exports.prototypejs = {
   Scriptaculous     : false
 };
 
-exports.yui = {
+yui_yui = {
   YUI       : false,
   Y         : false,
   YUI_config: false
 };
 
-exports.mocha = {
+mocha_mocha = {
   // Global (for config etc.)
   mocha       : false,
   // BDD
@@ -777,7 +777,7 @@ exports.mocha = {
   suiteTeardown : false
 };
 
-exports.jasmine = {
+jasmine_jasmine = {
   jasmine     : false,
   describe    : false,
   xdescribe   : false,
@@ -803,3 +803,47 @@ exports.jasmine = {
   // Jasmine 2.6
   spyOnProperty: false
 };
+var reservedVars_reservedVars;
+export { reservedVars_reservedVars as reservedVars };
+var ecmaIdentifiers_ecmaIdentifiers;
+export { ecmaIdentifiers_ecmaIdentifiers as ecmaIdentifiers };
+var browser_browser;
+export { browser_browser as browser };
+var devel_devel;
+export { devel_devel as devel };
+var worker_worker;
+export { worker_worker as worker };
+var nonstandard_nonstandard;
+export { nonstandard_nonstandard as nonstandard };
+var couch_couch;
+export { couch_couch as couch };
+var node_node;
+export { node_node as node };
+var browserify_browserify;
+export { browserify_browserify as browserify };
+var phantom_phantom;
+export { phantom_phantom as phantom };
+var qunit_qunit;
+export { qunit_qunit as qunit };
+var rhino_rhino;
+export { rhino_rhino as rhino };
+var shelljs_shelljs;
+export { shelljs_shelljs as shelljs };
+var typed_typed;
+export { typed_typed as typed };
+var wsh_wsh;
+export { wsh_wsh as wsh };
+var dojo_dojo;
+export { dojo_dojo as dojo };
+var jquery_jquery;
+export { jquery_jquery as jquery };
+var mootools_mootools;
+export { mootools_mootools as mootools };
+var prototypejs_prototypejs;
+export { prototypejs_prototypejs as prototypejs };
+var yui_yui;
+export { yui_yui as yui };
+var mocha_mocha;
+export { mocha_mocha as mocha };
+var jasmine_jasmine;
+export { jasmine_jasmine as jasmine };

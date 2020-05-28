@@ -1,9 +1,10 @@
+import ext_fs_fs from "fs";
 /*jshint node:true */
 
 'use strict';
 
-var fs = require('fs');
-
-exports.fixture = function (name) {
-  return fs.readFileSync(__dirname + '/../unit/fixtures/' + name).toString();
+fixture_fixture = function (name) {
+  return ext_fs_fs.readFileSync(__dirname + '/../unit/fixtures/' + name).toString();
 };
+var fixture_fixture;
+export { fixture_fixture as fixture };

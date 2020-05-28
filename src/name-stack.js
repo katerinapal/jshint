@@ -1,3 +1,4 @@
+var namestack_NameStack = NameStack;
 /**
  * The NameStack class is used to approximate function name inference as
  * introduced by ECMAScript 2015. In that edition, the `name` property of
@@ -91,4 +92,4 @@ NameStack.prototype.infer = function() {
   return prefix + nameToken.value;
 };
 
-module.exports = NameStack;
+export { namestack_NameStack as NameStack };

@@ -1,16 +1,18 @@
+import ext_lodash__ from "lodash";
+import ext_fs_fs from "fs";
+import ext_cli_cli from "cli";
+import ext_path_path from "path";
+import ext_shelljs_shjs from "shelljs";
+import ext_minimatch_minimatch from "minimatch";
+import ext_htmlparser2_htmlparser from "htmlparser2";
+import ext_exit_exit from "exit";
+import ext_stripjsoncomments_stripJsonComments from "strip-json-comments";
+import { JSHINT as jshintjs_JSHINT } from "./jshint.js";
+import { defaultjs as reportersdefault_defaultjs } from "./reporters/default";
 "use strict";
 
-var _                 = require("lodash");
-var fs                = require("fs");
-var cli               = require("cli");
-var path              = require("path");
-var shjs              = require("shelljs");
-var minimatch         = require("minimatch");
-var htmlparser        = require("htmlparser2");
-var exit              = require("exit");
-var stripJsonComments = require("strip-json-comments");
-var JSHINT            = require("./jshint.js").JSHINT;
-var defReporter       = require("./reporters/default").reporter;
+var JSHINT            = jshintjs_JSHINT.JSHINT;
+var defReporter       = reportersdefault_defaultjs.reporter;
 
 var OPTIONS = {
   "config": ["c", "Custom configuration file", "string", false ],
@@ -79,7 +81,7 @@ function deprecated(text, alt) {
  * @returns {string} a path to the config file
  */
 function findConfig(file) {
-  var dir  = path.dirname(path.resolve(file));
+  var dir  = ext_path_path.dirname(ext_path_path.resolve(file));
   var envs = getHomeDir();
   var proj = findFile(".jshintrc", dir);
   var home;
@@ -88,9 +90,9 @@ function findConfig(file) {
     return proj;
 
   else if (envs) {
-    home = path.normalize(path.join(envs, ".jshintrc"));
+    home = ext_path_path.normalize(ext_path_path.join(envs, ".jshintrc"));
 
-    if (shjs.test("-e", home))
+    if (ext_shelljs_shjs.test("-e", home))
       return home;
   }
 
@@ -109,7 +111,7 @@ function getHomeDir() {
 
   while (paths.length) {
     homePath = paths.shift();
-    if (fs.existsSync(homePath)) {
+    if (ext_fs_fs.existsSync(homePath)) {
       return homePath;
     }
   }
@@ -124,7 +126,7 @@ function getHomeDir() {
  * @returns {object} config object
  */
 function loadNpmConfig(file) {
-  var dir = path.dirname(path.resolve(file));
+  var dir = ext_path_path.dirname(ext_path_path.resolve(file));
   var fp  = findFile("package.json", dir);
 
   if (!fp)
@@ -171,14 +173,14 @@ var findFileResults = {};
 function findFile(name, cwd) {
   cwd = cwd || process.cwd();
 
-  var filename = path.normalize(path.join(cwd, name));
+  var filename = ext_path_path.normalize(ext_path_path.join(cwd, name));
   if (findFileResults[filename] !== undefined) {
     return findFileResults[filename];
   }
 
-  var parent = path.resolve(cwd, "../");
+  var parent = ext_path_path.resolve(cwd, "../");
 
-  if (shjs.test("-e", filename)) {
+  if (ext_shelljs_shjs.test("-e", filename)) {
     findFileResults[filename] = filename;
     return filename;
   }
@@ -204,7 +206,7 @@ function loadIgnores(params) {
     return [];
   }
 
-  var lines = (file ? shjs.cat(file) : "").split("\n");
+  var lines = (file ? ext_shelljs_shjs.cat(file) : "").split("\n");
   var exclude = params.exclude || "";
   lines.unshift.apply(lines, exclude.split(","));
 
@@ -214,9 +216,9 @@ function loadIgnores(params) {
     })
     .map(function(line) {
       if (line[0] === "!")
-        return "!" + path.resolve(path.dirname(file), line.substr(1).trim());
+        return "!" + ext_path_path.resolve(ext_path_path.dirname(file), line.substr(1).trim());
 
-      return path.join(path.dirname(file), line.trim());
+      return ext_path_path.join(ext_path_path.dirname(file), line.trim());
     });
 }
 
@@ -230,15 +232,15 @@ function loadIgnores(params) {
  */
 function isIgnored(fp, patterns) {
   return patterns.some(function(ip) {
-    if (minimatch(path.resolve(fp), ip, { nocase: true, dot: true })) {
+    if (ext_minimatch_minimatch(ext_path_path.resolve(fp), ip, { nocase: true, dot: true })) {
       return true;
     }
 
-    if (path.resolve(fp) === ip) {
+    if (ext_path_path.resolve(fp) === ip) {
       return true;
     }
 
-    if (shjs.test("-d", fp) && ip.match(/^[^\/\\]*[\/\\]?$/) &&
+    if (ext_shelljs_shjs.test("-d", fp) && ip.match(/^[^\/\\]*[\/\\]?$/) &&
       fp.match(new RegExp("^" + ip + ".*"))) {
       return true;
     }
@@ -318,7 +320,7 @@ function extract(code, when) {
     js.push(data); // Collect JavaScript code.
   }
 
-  var parser = new htmlparser.Parser({ onopentag: onopen, onclosetag: onclose, ontext: ontext });
+  var parser = new ext_htmlparser2_htmlparser.Parser({ onopentag: onopen, onclosetag: onclose, ontext: ontext });
   parser.parseComplete(code);
 
   return js.join("");
@@ -401,7 +403,7 @@ function extractOffsets(code, when) {
     });
   }
 
-  var parser = new htmlparser.Parser({ onopentag: onopen, onclosetag: onclose, ontext: ontext });
+  var parser = new ext_htmlparser2_htmlparser.Parser({ onopentag: onopen, onclosetag: onclose, ontext: ontext });
   parser.parseComplete(code);
   return offsets;
 }
@@ -420,15 +422,15 @@ function collect(fp, files, ignores, ext) {
     return;
   }
 
-  if (!shjs.test("-e", fp)) {
-    cli.error("Can't open " + fp);
+  if (!ext_shelljs_shjs.test("-e", fp)) {
+    ext_cli_cli.error("Can't open " + fp);
     return;
   }
 
-  if (shjs.test("-d", fp)) {
-    shjs.ls(fp).forEach(function(item) {
-      var itempath = path.join(fp, item);
-      if (shjs.test("-d", itempath) || item.match(ext)) {
+  if (ext_shelljs_shjs.test("-d", fp)) {
+    ext_shelljs_shjs.ls(fp).forEach(function(item) {
+      var itempath = ext_path_path.join(fp, item);
+      if (ext_shelljs_shjs.test("-d", itempath) || item.match(ext)) {
         collect(itempath, files, ignores, ext);
       }
     });
@@ -458,9 +460,9 @@ function lint(code, results, config, data, file) {
 
   if (config.prereq) {
     config.prereq.forEach(function(fp) {
-      fp = path.join(config.dirname, fp);
-      if (shjs.test("-e", fp))
-        buffer.push(shjs.cat(fp));
+      fp = ext_path_path.join(config.dirname, fp);
+      if (ext_shelljs_shjs.test("-e", fp))
+        buffer.push(ext_shelljs_shjs.cat(fp));
     });
     delete config.prereq;
   }
@@ -472,13 +474,13 @@ function lint(code, results, config, data, file) {
 
   if (config.overrides) {
     if (file) {
-      _.each(config.overrides, function(options, pattern) {
-        if (minimatch(path.normalize(file), pattern, { nocase: true, matchBase: true })) {
+      ext_lodash__.each(config.overrides, function(options, pattern) {
+        if (ext_minimatch_minimatch(ext_path_path.normalize(file), pattern, { nocase: true, matchBase: true })) {
           if (options.globals) {
-            globals = _.extend(globals || {}, options.globals);
+            globals = ext_lodash__.extend(globals || {}, options.globals);
             delete options.globals;
           }
-          _.extend(config, options);
+          ext_lodash__.extend(config, options);
         }
       });
     }
@@ -510,7 +512,7 @@ function lint(code, results, config, data, file) {
 
 var exports = {
   extract: extract,
-  exit: exit,
+  exit: ext_exit_exit,
 
   /**
    * Returns a configuration file or nothing, if it can't be found.
@@ -530,19 +532,19 @@ var exports = {
       return {};
     }
 
-    if (!shjs.test("-e", fp)) {
-      cli.error("Can't find config file: " + fp);
+    if (!ext_shelljs_shjs.test("-e", fp)) {
+      ext_cli_cli.error("Can't find config file: " + fp);
       exports.exit(1);
     }
 
     try {
-      var config = JSON.parse(stripJsonComments(shjs.cat(fp)));
-      config.dirname = path.dirname(fp);
+      var config = JSON.parse(ext_stripjsoncomments_stripJsonComments(ext_shelljs_shjs.cat(fp)));
+      config.dirname = ext_path_path.dirname(fp);
 
       if (config['extends']) {
-        var baseConfig = exports.loadConfig(path.resolve(config.dirname, config['extends']));
-        config = _.merge({}, baseConfig, config, function(a, b) {
-          if (_.isArray(a)) {
+        var baseConfig = exports.loadConfig(ext_path_path.resolve(config.dirname, config['extends']));
+        config = ext_lodash__.merge({}, baseConfig, config, function(a, b) {
+          if (ext_lodash__.isArray(a)) {
             return a.concat(b);
           }
         });
@@ -551,7 +553,7 @@ var exports = {
 
       return config;
     } catch (err) {
-      cli.error("Can't parse config file: " + fp + "\nError:" + err);
+      ext_cli_cli.error("Can't parse config file: " + fp + "\nError:" + err);
       exports.exit(1);
     }
   },
@@ -573,7 +575,7 @@ var exports = {
 
     var ignores = !opts.ignores ? loadIgnores({ cwd: opts.cwd }) :
                                   opts.ignores.map(function(target) {
-                                    return path.resolve(target);
+                                    return ext_path_path.resolve(target);
                                   });
 
     opts.args.forEach(function(target) {
@@ -617,10 +619,10 @@ var exports = {
     // without a filename.  If there is no opts.filename, filename remains
     // undefined and lint() is effectively called with 4 parameters.
     if (opts.filename) {
-      filename = path.resolve(opts.filename);
+      filename = ext_path_path.resolve(opts.filename);
     }
     if (opts.useStdin && opts.ignores.indexOf(filename) === -1) {
-      cli.withStdin(function(code) {
+      ext_cli_cli.withStdin(function(code) {
         var config = opts.config;
 
         if (filename && !config) {
@@ -645,9 +647,9 @@ var exports = {
       var errors = [];
 
       try {
-        code = shjs.cat(file);
+        code = ext_shelljs_shjs.cat(file);
       } catch (err) {
-        cli.error("Can't open " + file);
+        ext_cli_cli.error("Can't open " + file);
         exports.exit(1);
       }
 
@@ -689,13 +691,13 @@ var exports = {
    * @param {object} args, arguments in the process.argv format.
    */
   interpret: function(args) {
-    cli.setArgv(args);
-    cli.options = {};
+    ext_cli_cli.setArgv(args);
+    ext_cli_cli.options = {};
 
-    cli.enable("version", "glob", "help");
-    cli.setApp(path.resolve(__dirname + "/../package.json"));
+    ext_cli_cli.enable("version", "glob", "help");
+    ext_cli_cli.setApp(ext_path_path.resolve(__dirname + "/../package.json"));
 
-    var options = cli.parse(OPTIONS);
+    var options = ext_cli_cli.parse(OPTIONS);
     // Use config file if specified
     var config;
     if (options.config) {
@@ -727,7 +729,7 @@ var exports = {
 
     // Custom reporter
     case options.reporter !== undefined:
-      options.reporter = path.resolve(process.cwd(), options.reporter);
+      options.reporter = ext_path_path.resolve(process.cwd(), options.reporter);
     }
 
     var reporter;
@@ -735,7 +737,7 @@ var exports = {
       reporter = loadReporter(options.reporter);
 
       if (reporter === null) {
-        cli.error("Can't load reporter file: " + options.reporter);
+        ext_cli_cli.error("Can't load reporter file: " + options.reporter);
         exports.exit(1);
       }
     }
@@ -754,7 +756,7 @@ var exports = {
     }
 
     done(exports.run({
-      args:       cli.args,
+      args:       ext_cli_cli.args,
       config:     config,
       reporter:   reporter,
       ignores:    loadIgnores({ exclude: options.exclude, excludePath: options["exclude-path"] }),
@@ -769,3 +771,4 @@ var exports = {
 };
 
 module.exports = exports;
+export { clijs_clijs as clijs };

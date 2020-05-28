@@ -1,12 +1,14 @@
+import { JSHINT as _JSHINT } from "../..";
+import ext_fs_fs from "fs";
+import { setup as helperstesthelper_setup } from "../helpers/testhelper";
 /**
  * Tests for the environmental (browser, jquery, etc.) options
  */
 
 "use strict";
 
-var JSHINT  = require("../..").JSHINT;
-var fs      = require('fs');
-var TestRun = require("../helpers/testhelper").setup.testRun;
+var JSHINT  = _JSHINT.JSHINT;
+var TestRun = helperstesthelper_setup.setup.testRun;
 
 function wrap(globals) {
   return 'void [ ' + globals.join(',') + ' ];';
@@ -40,13 +42,15 @@ function globalsImplied(test, globals, options) {
   test.equal(implieds.length, globals.length);
 }
 
+var node;
+
 /*
  * Option `node` predefines Node.js (v 0.5.9) globals
  *
  * More info:
  *  + http://nodejs.org/docs/v0.5.9/api/globals.html
  */
-exports.node = function (test) {
+node = function (test) {
   // Node environment assumes `globalstrict`
   var globalStrict = [
     '"use strict";',
@@ -95,7 +99,9 @@ exports.node = function (test) {
   test.done();
 };
 
-exports.typed = function (test) {
+var typed;
+
+typed = function (test) {
   var globals = [
     "ArrayBuffer",
     "ArrayBufferView",
@@ -119,8 +125,10 @@ exports.typed = function (test) {
   test.done();
 };
 
-exports.es5 = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/es5.js", "utf8");
+var es5;
+
+es5 = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/es5.js", "utf8");
 
   TestRun(test)
     .addError(3, 6, "Extra comma. (it breaks older versions of IE)")
@@ -192,13 +200,15 @@ exports.es5 = function (test) {
 
   // Make sure that JSHint parses getters/setters as function expressions
   // (https://github.com/jshint/jshint/issues/96)
-  src = fs.readFileSync(__dirname + "/fixtures/es5.funcexpr.js", "utf8");
+  src = ext_fs_fs.readFileSync(__dirname + "/fixtures/es5.funcexpr.js", "utf8");
   TestRun(test).test(src, {  }); // es5
 
   test.done();
 };
 
-exports.phantom = function (test) {
+var phantom;
+
+phantom = function (test) {
   // Phantom environment assumes `globalstrict`
   var globalStrict = [
     '"use strict";',
@@ -216,7 +226,9 @@ exports.phantom = function (test) {
   test.done();
 };
 
-exports.globals = function (test) {
+var globals;
+
+globals = function (test) {
   var src = [
     "/* global first */",
     "var first;"
@@ -301,8 +313,10 @@ exports.globals = function (test) {
   test.done();
 };
 
-exports.shelljs = function (test) {
-  var src = fs.readFileSync(__dirname + '/fixtures/shelljs.js', 'utf8');
+var shelljs;
+
+shelljs = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + '/fixtures/shelljs.js', 'utf8');
 
   TestRun(test, 1)
     .addError(1, 1, "'target' is not defined.")
@@ -341,8 +355,10 @@ exports.shelljs = function (test) {
   test.done();
 };
 
-exports.browser = function (test) {
-  var src = fs.readFileSync(__dirname + '/fixtures/browser.js', 'utf8');
+var browser;
+
+browser = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + '/fixtures/browser.js', 'utf8');
 
   TestRun(test)
     .addError(2, 9, "'atob' is not defined.")
@@ -367,7 +383,9 @@ exports.browser = function (test) {
   test.done();
 };
 
-exports.couch = function (test) {
+var couch;
+
+couch = function (test) {
 
   var globals = [
     "require",
@@ -389,7 +407,9 @@ exports.couch = function (test) {
   test.done();
 };
 
-exports.qunit = function (test) {
+var qunit;
+
+qunit = function (test) {
 
   var globals = [
     "asyncTest",
@@ -418,7 +438,9 @@ exports.qunit = function (test) {
   test.done();
 };
 
-exports.rhino = function (test) {
+var rhino;
+
+rhino = function (test) {
 
   var globals = [
     "arguments",
@@ -451,7 +473,9 @@ exports.rhino = function (test) {
   test.done();
 };
 
-exports.prototypejs = function (test) {
+var prototypejs;
+
+prototypejs = function (test) {
 
   var globals = [
     "$",
@@ -500,7 +524,9 @@ exports.prototypejs = function (test) {
   test.done();
 };
 
-exports.dojo = function (test) {
+var dojo;
+
+dojo = function (test) {
 
   var globals = [
     "dojo",
@@ -516,7 +542,9 @@ exports.dojo = function (test) {
   test.done();
 };
 
-exports.nonstandard = function (test) {
+var nonstandard;
+
+nonstandard = function (test) {
 
   var globals = [
     "escape",
@@ -529,7 +557,9 @@ exports.nonstandard = function (test) {
   test.done();
 };
 
-exports.jasmine = function (test) {
+var jasmine;
+
+jasmine = function (test) {
 
   var globals = [
     "jasmine",
@@ -560,7 +590,9 @@ exports.jasmine = function (test) {
   test.done();
 };
 
-exports.mootools = function (test) {
+var mootools;
+
+mootools = function (test) {
 
   var globals = [
     "$",
@@ -616,7 +648,9 @@ exports.mootools = function (test) {
   test.done();
 };
 
-exports.worker = function (test) {
+var worker;
+
+worker = function (test) {
 
   var globals = [
     "importScripts",
@@ -631,7 +665,9 @@ exports.worker = function (test) {
   test.done();
 };
 
-exports.wsh = function (test) {
+var wsh;
+
+wsh = function (test) {
 
   var globals = [
     "ActiveXObject",
@@ -653,7 +689,9 @@ exports.wsh = function (test) {
   test.done();
 };
 
-exports.yui = function (test) {
+var yui;
+
+yui = function (test) {
 
   var globals = [
     "YUI",
@@ -667,7 +705,9 @@ exports.yui = function (test) {
   test.done();
 };
 
-exports.mocha = function (test) {
+var mocha;
+
+mocha = function (test) {
 
   var globals = [
     "mocha",

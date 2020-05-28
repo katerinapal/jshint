@@ -1,3 +1,5 @@
+import { JSHINT as _JSHINT } from "../..";
+import { setup as helperstesthelper_setup } from "../helpers/testhelper";
 /**
  * The JSHint API does not allow for un-registering "modules", and the Nodeunit
  * API does not support per-group setup/teardown logic. These deficiencies
@@ -11,8 +13,8 @@
  */
 "use strict";
 
-var JSHINT  = require("../..").JSHINT;
-var TestRun = require("../helpers/testhelper").setup.testRun;
+var JSHINT  = _JSHINT.JSHINT;
+var TestRun = helperstesthelper_setup.setup.testRun;
 
 var firstRun = true;
 var testContext = null;
@@ -26,7 +28,8 @@ var suiteSetup = function (done) {
 
   done();
 };
-exports.setUp = function (done) {
+var setUp;
+setUp = function (done) {
   testContext = this;
 
   if (firstRun) {
@@ -37,10 +40,13 @@ exports.setUp = function (done) {
 
   done();
 };
-exports.tearDown = function (done) {
+var tearDown;
+tearDown = function (done) {
   testContext = null;
   done();
 };
+
+var test for GH-1103;
 
 exports["test for GH-1103"] = function (test) {
   var code = [ "var ohnoes = 42;" ];
@@ -68,7 +74,9 @@ exports["test for GH-1103"] = function (test) {
   delete Array.prototype.ohnoes;
 };
 
-exports.identifiers = function (test) {
+var identifiers;
+
+identifiers = function (test) {
   var src = [
     "var x = {",
     "  y: 23,",

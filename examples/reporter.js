@@ -19,3 +19,4 @@ module.exports = {
     }
   }
 };
+export { reporterjs_reporterjs as reporterjs };

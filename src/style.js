@@ -1,6 +1,6 @@
 "use strict";
 
-exports.register = function(linter) {
+register_register = function(linter) {
   // Check for properties named __proto__. This special property was
   // deprecated and then re-introduced for ES6.
 
@@ -142,3 +142,5 @@ exports.register = function(linter) {
     }
   });
 };
+var register_register;
+export { register_register as register };

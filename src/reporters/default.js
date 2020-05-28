@@ -32,3 +32,4 @@ module.exports = {
     }
   }
 };
+export { defaultjs_defaultjs as defaultjs };

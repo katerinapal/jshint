@@ -41,3 +41,4 @@ module.exports = {
    */
   tryClause: 32
 };
+export { prodparamsjs_prodparamsjs as prodparamsjs };

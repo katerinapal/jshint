@@ -54,3 +54,4 @@ module.exports =
     console.log(out.join("\n") + "\n");
   }
 };
+export { jslint_xmljs_jslint_xmljs as jslint_xmljs };

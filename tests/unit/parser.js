@@ -1,19 +1,22 @@
+import { JSHINT as _JSHINT } from "../..";
+import ext_fs_fs from "fs";
+import { setup as helperstesthelper_setup } from "../helpers/testhelper";
+import ext_path_path from "path";
 /**
  * Tests for the parser/tokenizer
  */
 
 "use strict";
 
-var JSHINT  = require("../..").JSHINT;
-var fs    = require('fs');
-var TestRun = require("../helpers/testhelper").setup.testRun;
-var path    = require("path");
+var JSHINT  = _JSHINT.JSHINT;
+var TestRun = helperstesthelper_setup.setup.testRun;
+var unsafe;
 
 /**
  * The warning for this input was intentionally disabled after research into
  * its justification produced no results.
  */
-exports.unsafe = function (test) {
+unsafe = function (test) {
   var code = [
     "var a\u000a = 'Here is a unsafe character';",
   ];
@@ -24,8 +27,10 @@ exports.unsafe = function (test) {
   test.done();
 };
 
-exports.peekOverDirectives = function (test) {
-  var code = fs.readFileSync(__dirname + "/fixtures/peek-over-directives.js", "utf8");
+var peekOverDirectives;
+
+peekOverDirectives = function (test) {
+  var code = ext_fs_fs.readFileSync(__dirname + "/fixtures/peek-over-directives.js", "utf8");
 
   TestRun(test)
     // Within object literal
@@ -62,7 +67,9 @@ exports.peekOverDirectives = function (test) {
   test.done();
 };
 
-exports.other = function (test) {
+var other;
+
+other = function (test) {
   var code = [
     "\\",
     "!",
@@ -93,7 +100,9 @@ exports.other = function (test) {
   test.done();
 };
 
-exports.confusingOps = function (test) {
+var confusingOps;
+
+confusingOps = function (test) {
   var code = [
     "var a = 3 - -3;",
     "var b = 3 + +3;",
@@ -116,7 +125,9 @@ exports.confusingOps = function (test) {
   test.done();
 };
 
-exports.division = function (test) {
+var division;
+
+division = function (test) {
   var run;
   var code = [
     'var a=4,b=4,i=2;',
@@ -133,7 +144,9 @@ exports.division = function (test) {
   test.done();
 };
 
-exports.plusplus = function (test) {
+var plusplus;
+
+plusplus = function (test) {
   var run;
   var code = [
     "var a = ++[2];",
@@ -169,7 +182,9 @@ exports.plusplus = function (test) {
   test.done();
 };
 
-exports.assignment = function (test) {
+var assignment;
+
+assignment = function (test) {
   var code = [
     "function test() {",
     "  arguments.length = 2;",
@@ -202,7 +217,9 @@ exports.assignment = function (test) {
   test.done();
 };
 
-exports.relations = function (test) {
+var relations;
+
+relations = function (test) {
   var code = [
     "var a = 2 === NaN;",
     "var b = NaN == 2;",
@@ -235,7 +252,9 @@ exports.relations = function (test) {
   test.done();
 };
 
-exports.options = function (test) {
+var options;
+
+options = function (test) {
   var code = [
     "/*member a*/",
     "/*members b*/",
@@ -274,12 +293,14 @@ exports.options = function (test) {
   run.test(code, {esnext: true});
   run.test(code, {moz: true});
 
-  TestRun(test).test(fs.readFileSync(__dirname + "/fixtures/gh988.js", "utf8"));
+  TestRun(test).test(ext_fs_fs.readFileSync(__dirname + "/fixtures/gh988.js", "utf8"));
 
   test.done();
 };
 
-exports.emptyDirectives = function (test) {
+var emptyDirectives;
+
+emptyDirectives = function (test) {
   TestRun(test)
     .addError(1, 1, "Bad option value.")
     .test('/* global */');
@@ -320,32 +341,40 @@ exports.emptyDirectives = function (test) {
   test.done();
 };
 
+var jshint option comments single line;
+
 exports["jshint option comments single line"] = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/gh1768-1.js", "utf8");
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/gh1768-1.js", "utf8");
 
   TestRun(test).test(src);
 
   test.done();
 };
+
+var jshint option comments single line, leading and trailing space;
 
 exports["jshint option comments single line, leading and trailing space"] = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/gh1768-2.js", "utf8");
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/gh1768-2.js", "utf8");
 
   TestRun(test).test(src);
 
   test.done();
 };
+
+var jshint option comments multi line;
 
 exports["jshint option comments multi line"] = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/gh1768-3.js", "utf8");
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/gh1768-3.js", "utf8");
 
   TestRun(test).test(src);
 
   test.done();
 };
 
+var jshint option comments multi line, leading and trailing space;
+
 exports["jshint option comments multi line, leading and trailing space"] = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/gh1768-4.js", "utf8");
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/gh1768-4.js", "utf8");
 
   TestRun(test)
     .addError(4, 1, "'foo' is not defined.")
@@ -354,8 +383,10 @@ exports["jshint option comments multi line, leading and trailing space"] = funct
   test.done();
 };
 
+var jshint option comments multi line/option;
+
 exports["jshint option comments multi line/option"] = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/gh1768-5.js", "utf8");
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/gh1768-5.js", "utf8");
 
   TestRun(test)
     .addError(3, 1, "'foo' is not defined.")
@@ -364,8 +395,10 @@ exports["jshint option comments multi line/option"] = function (test) {
   test.done();
 };
 
+var jshint option comments multi line/option, leading and trailing space;
+
 exports["jshint option comments multi line/option, leading and trailing space"] = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/gh1768-6.js", "utf8");
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/gh1768-6.js", "utf8");
 
   TestRun(test)
     .addError(4, 1, "'foo' is not defined.")
@@ -374,8 +407,10 @@ exports["jshint option comments multi line/option, leading and trailing space"] 
   test.done();
 };
 
+var jshint option inline comments, leading and trailing tabs and spaces;
+
 exports["jshint option inline comments, leading and trailing tabs and spaces"] = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/inline-tabs-spaces.js", "utf8");
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/inline-tabs-spaces.js", "utf8");
 
   TestRun(test)
     .addError(3, 9, "'x' is defined but never used.")
@@ -386,7 +421,9 @@ exports["jshint option inline comments, leading and trailing tabs and spaces"] =
   test.done();
 };
 
-exports.shebang = function (test) {
+var shebang;
+
+shebang = function (test) {
   var code = [
     "#!test",
     "var a = 'xxx';",
@@ -408,7 +445,9 @@ exports.shebang = function (test) {
   test.done();
 };
 
-exports.shebangImpliesNode = function (test) {
+var shebangImpliesNode;
+
+shebangImpliesNode = function (test) {
   var code = [
     "#!usr/bin/env node",
     "require('module');",
@@ -418,7 +457,9 @@ exports.shebangImpliesNode = function (test) {
   test.done();
 };
 
-exports.numbers = function (test) {
+var numbers;
+
+numbers = function (test) {
   /*jshint maxlen: 300*/
 
   var code = [
@@ -505,7 +546,9 @@ exports.numbers = function (test) {
   test.done();
 };
 
-exports.comments = function (test) {
+var comments;
+
+comments = function (test) {
   var code = [
     "/*",
     "/* nested */",
@@ -523,7 +566,7 @@ exports.comments = function (test) {
 
   var src = "/* this is a comment /* with nested slash-start */";
   TestRun(test).test(src);
-  TestRun(test).test(fs.readFileSync(__dirname + "/fixtures/gruntComment.js", "utf8"));
+  TestRun(test).test(ext_fs_fs.readFileSync(__dirname + "/fixtures/gruntComment.js", "utf8"));
 
   TestRun(test)
     .addError(1, 2, "Unmatched '{'.")
@@ -533,9 +576,11 @@ exports.comments = function (test) {
   test.done();
 };
 
-exports.regexp = {};
+var regexp;
 
-exports.regexp.basic = function (test) {
+regexp = {};
+
+regexp.basic = function (test) {
   var code = [
     "var a1 = /\\\x1f/;",
     "var a2 = /[\\\x1f]/;",
@@ -655,7 +700,7 @@ exports.regexp.basic = function (test) {
   test.done();
 };
 
-exports.regexp.uFlag = function (test) {
+regexp.uFlag = function (test) {
   // Flag validity
   TestRun(test)
     .addError(1, 9, "'Unicode RegExp flag' is only available in ES6 (use 'esversion: 6').")
@@ -771,7 +816,7 @@ exports.regexp.uFlag = function (test) {
   test.done();
 };
 
-exports.regexp.yFlag = function (test) {
+regexp.yFlag = function (test) {
   // Flag validity
   TestRun(test)
     .addError(1, 9, "'Sticky RegExp flag' is only available in ES6 (use 'esversion: 6').")
@@ -787,7 +832,7 @@ exports.regexp.yFlag = function (test) {
   test.done();
 };
 
-exports.regexp.dotAll = function (test) {
+regexp.dotAll = function (test) {
   TestRun(test, "flag presence - disallowed in editions prior to 2018")
     .addError(1, 6, "'DotAll RegExp flag' is only available in ES9 (use 'esversion: 9').")
     .addError(2, 6, "'DotAll RegExp flag' is only available in ES9 (use 'esversion: 9').")
@@ -838,7 +883,7 @@ exports.regexp.dotAll = function (test) {
   test.done();
 };
 
-exports.regexp.regressions = function (test) {
+regexp.regressions = function (test) {
   // GH-536
   TestRun(test).test("str /= 5;", {es3: true}, { str: true });
   TestRun(test).test("str /= 5;", {}, { str: true }); // es5
@@ -875,7 +920,9 @@ exports.regexp.regressions = function (test) {
   test.done();
 };
 
-exports.regexpSticky = function (test) {
+var regexpSticky;
+
+regexpSticky = function (test) {
  TestRun(test)
    .addError(1, 11, "'Sticky RegExp flag' is only available in ES6 (use 'esversion: 6').")
    .test("var exp = /./y;", { esversion: 5 });
@@ -903,7 +950,9 @@ exports.regexpSticky = function (test) {
  test.done();
 };
 
-exports.strings = function (test) {
+var strings;
+
+strings = function (test) {
   var code = [
     "var a = '\u0012\\r';",
     "var b = \'\\g\';",
@@ -926,7 +975,9 @@ exports.strings = function (test) {
   test.done();
 };
 
-exports.badStrings = function (test) {
+var badStrings;
+
+badStrings = function (test) {
   var code = [
     "var a = '\\uNOTHEX';",
     "void '\\u0000';",
@@ -950,7 +1001,9 @@ exports.badStrings = function (test) {
   test.done();
 };
 
-exports.ownProperty = function (test) {
+var ownProperty;
+
+ownProperty = function (test) {
   var code = [
     "var obj = { hasOwnProperty: false };",
     "obj.hasOwnProperty = true;",
@@ -971,8 +1024,10 @@ exports.ownProperty = function (test) {
   test.done();
 };
 
-exports.json = {};
-exports.json.dflt = function (test) {
+var json;
+
+json = {};
+json.dflt = function (test) {
   var code = [
     '{',
     '  a: 2,',
@@ -1004,7 +1059,7 @@ exports.json.dflt = function (test) {
   test.done();
 };
 
-exports.json.deep = function (test) {
+json.deep = function (test) {
   var code = [
     '{',
     '  "key" : {',
@@ -1028,7 +1083,7 @@ exports.json.deep = function (test) {
   test.done();
 }
 
-exports.json.errors = function (test) {
+json.errors = function (test) {
   var objTrailingComma = [
     '{ "key" : "value", }',
   ];
@@ -1206,7 +1261,7 @@ exports.json.errors = function (test) {
 }
 
 // Regression test for gh-2488
-exports.json.semicolon = function (test) {
+json.semicolon = function (test) {
   TestRun(test)
     .test("{ \"attr\": \";\" }");
 
@@ -1216,8 +1271,10 @@ exports.json.semicolon = function (test) {
   test.done();
 };
 
-exports.comma = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/comma.js", "utf8");
+var comma;
+
+comma = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/comma.js", "utf8");
 
   TestRun(test)
     .addError(2, 92, "Expected an assignment or function call and instead saw an expression.")
@@ -1239,7 +1296,7 @@ exports.comma = function (test) {
   // Regression test (GH-56)
   TestRun(test)
     .addError(4, 65, "Expected an assignment or function call and instead saw an expression.")
-    .test(fs.readFileSync(__dirname + "/fixtures/gh56.js", "utf8"));
+    .test(ext_fs_fs.readFileSync(__dirname + "/fixtures/gh56.js", "utf8"));
 
   // Regression test (GH-363)
   TestRun(test)
@@ -1259,6 +1316,8 @@ exports.comma = function (test) {
 
   test.done();
 };
+
+var gh-2587;
 
 exports["gh-2587"] = function (test) {
 
@@ -1337,7 +1396,9 @@ exports["gh-2587"] = function (test) {
   test.done();
 };
 
-exports.badAssignments = function (test) {
+var badAssignments;
+
+badAssignments = function (test) {
   TestRun(test)
     .addError(1, 5, "Bad assignment.")
     .test([
@@ -1365,8 +1426,10 @@ exports.badAssignments = function (test) {
   test.done();
 };
 
-exports.withStatement = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/with.js", "utf8");
+var withStatement;
+
+withStatement = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/with.js", "utf8");
   var run;
 
   run = TestRun(test)
@@ -1387,8 +1450,10 @@ exports.withStatement = function (test) {
   test.done();
 };
 
-exports.blocks = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/blocks.js", "utf8");
+var blocks;
+
+blocks = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/blocks.js", "utf8");
 
   var run = TestRun(test)
     .addError(31, 5, "Unmatched \'{\'.")
@@ -1401,11 +1466,13 @@ exports.blocks = function (test) {
   test.done();
 };
 
-exports.functionCharacterLocation = function (test) {
+var functionCharacterLocation;
+
+functionCharacterLocation = function (test) {
   var i;
-  var src = fs.readFileSync(__dirname + "/fixtures/nestedFunctions.js", "utf8");
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/nestedFunctions.js", "utf8");
   var locations = JSON.parse(
-    fs.readFileSync(
+    ext_fs_fs.readFileSync(
       __dirname + "/fixtures/nestedFunctions-locations.js", "utf8"
     )
   );
@@ -1424,8 +1491,10 @@ exports.functionCharacterLocation = function (test) {
   test.done();
 };
 
-exports.exported = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/exported.js", "utf8");
+var exported;
+
+exported = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/exported.js", "utf8");
 
   var run = TestRun(test)
     .addError(5, 7, "'unused' is defined but never used.")
@@ -1471,8 +1540,10 @@ exports.exported = function (test) {
   test.done();
 };
 
-exports.testIdentifiers = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/identifiers.js", "utf8");
+var testIdentifiers;
+
+testIdentifiers = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/identifiers.js", "utf8");
 
   TestRun(test).test(src, {es3: true});
   var run = TestRun(test)
@@ -1519,7 +1590,9 @@ exports.testIdentifiers = function (test) {
   test.done();
 };
 
-exports.badIdentifiers = function (test) {
+var badIdentifiers;
+
+badIdentifiers = function (test) {
   var badUnicode = [
     "var \\uNOTHEX;"
   ];
@@ -1549,13 +1622,17 @@ exports.badIdentifiers = function (test) {
   test.done();
 };
 
+var regression for GH-878;
+
 exports["regression for GH-878"] = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/gh878.js", "utf8");
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/gh878.js", "utf8");
 
   TestRun(test).test(src, {es3: true});
 
   test.done();
 };
+
+var regression for GH-910;
 
 exports["regression for GH-910"] = function (test) {
   var src = "(function () { if (true) { foo.bar + } })();";
@@ -1575,7 +1652,9 @@ exports["regression for GH-910"] = function (test) {
   test.done();
 };
 
-exports.testHtml = function (test) {
+var testHtml;
+
+testHtml = function (test) {
   var html = "<html><body>Hello World</body></html>";
   TestRun(test)
     .addError(1, 1, "Expected an identifier and instead saw '<'.")
@@ -1586,6 +1665,8 @@ exports.testHtml = function (test) {
     .test(html, {});
   test.done();
 };
+
+var destructuring var in function scope;
 
 exports["destructuring var in function scope"] = function (test) {
   var code = [
@@ -1640,6 +1721,8 @@ exports["destructuring var in function scope"] = function (test) {
   test.done();
 };
 
+var destructuring var as moz;
+
 exports["destructuring var as moz"] = function (test) {
   var code = [
     "var [ a, b, c ] = [ 1, 2, 3 ];",
@@ -1667,6 +1750,8 @@ exports["destructuring var as moz"] = function (test) {
   test.done();
 };
 
+var destructuring var as esnext;
+
 exports["destructuring var as esnext"] = function (test) {
   var code = [
     "var [ a, b, c ] = [ 1, 2, 3 ];",
@@ -1693,6 +1778,8 @@ exports["destructuring var as esnext"] = function (test) {
 
   test.done();
 };
+
+var destructuring var as es5;
 
 exports["destructuring var as es5"] = function (test) {
   var code = [
@@ -1729,6 +1816,8 @@ exports["destructuring var as es5"] = function (test) {
   test.done();
 };
 
+var destructuring var as legacy JS;
+
 exports["destructuring var as legacy JS"] = function (test) {
   var code = [
     "var [ a, b, c ] = [ 1, 2, 3 ];",
@@ -1763,6 +1852,8 @@ exports["destructuring var as legacy JS"] = function (test) {
 
   test.done();
 };
+
+var destructuring var errors;
 
 exports["destructuring var errors"] = function (test) {
   var code = [
@@ -1800,6 +1891,8 @@ exports["destructuring var errors"] = function (test) {
 
   test.done();
 };
+
+var destructuring const as moz;
 
 exports["destructuring const as moz"] = function (test) {
   var code = [
@@ -1839,6 +1932,8 @@ exports["destructuring const as moz"] = function (test) {
   test.done();
 };
 
+var destructuring const as esnext;
+
 exports["destructuring const as esnext"] = function (test) {
   var code = [
     "const [ a, b, c ] = [ 1, 2, 3 ];",
@@ -1876,6 +1971,8 @@ exports["destructuring const as esnext"] = function (test) {
 
   test.done();
 };
+
+var destructuring const as es5;
 
 exports["destructuring const as es5"] = function (test) {
   var code = [
@@ -1927,6 +2024,8 @@ exports["destructuring const as es5"] = function (test) {
   test.done();
 };
 
+var destructuring const as legacy JS;
+
 exports["destructuring const as legacy JS"] = function (test) {
   var code = [
     "const [ a, b, c ] = [ 1, 2, 3 ];",
@@ -1977,6 +2076,8 @@ exports["destructuring const as legacy JS"] = function (test) {
   test.done();
 };
 
+var destructuring const errors;
+
 exports["destructuring const errors"] = function (test) {
   var code = [
     "const [ a, b, c ] = [ 1, 2, 3 ];",
@@ -2014,6 +2115,8 @@ exports["destructuring const errors"] = function (test) {
   test.done();
 };
 
+var destructuring globals as moz;
+
 exports["destructuring globals as moz"] = function (test) {
   var code = [
     "var a, b, c, d, h, w, o;",
@@ -2040,6 +2143,8 @@ exports["destructuring globals as moz"] = function (test) {
 
   test.done();
 };
+
+var destructuring globals as esnext;
 
 exports["destructuring globals as esnext"] = function (test) {
   var code = [
@@ -2071,6 +2176,8 @@ exports["destructuring globals as esnext"] = function (test) {
 
   test.done();
 };
+
+var destructuring globals as es5;
 
 exports["destructuring globals as es5"] = function (test) {
   var code = [
@@ -2111,6 +2218,8 @@ exports["destructuring globals as es5"] = function (test) {
   test.done();
 };
 
+var destructuring globals as legacy JS;
+
 exports["destructuring globals as legacy JS"] = function (test) {
   var code = [
     "var a, b, c, d, h, w, o;",
@@ -2149,6 +2258,8 @@ exports["destructuring globals as legacy JS"] = function (test) {
 
   test.done();
 };
+
+var destructuring globals with syntax error;
 
 exports["destructuring globals with syntax error"] = function (test) {
   var code = [
@@ -2223,6 +2334,8 @@ exports["destructuring globals with syntax error"] = function (test) {
   test.done();
 };
 
+var destructuring assign of empty values as moz;
+
 exports["destructuring assign of empty values as moz"] = function (test) {
   var code = [
     "var [ a ] = [ 1, 2 ];",
@@ -2241,6 +2354,8 @@ exports["destructuring assign of empty values as moz"] = function (test) {
   test.done();
 };
 
+var destructuring assign of empty values as esnext;
+
 exports["destructuring assign of empty values as esnext"] = function (test) {
   var code = [
     "var [ a ] = [ 1, 2 ];",
@@ -2258,6 +2373,8 @@ exports["destructuring assign of empty values as esnext"] = function (test) {
 
   test.done();
 };
+
+var destructuring assign of empty values as es5;
 
 exports["destructuring assign of empty values as es5"] = function (test) {
   var code = [
@@ -2280,6 +2397,8 @@ exports["destructuring assign of empty values as es5"] = function (test) {
   test.done();
 };
 
+var destructuring assign of empty values as JS legacy;
+
 exports["destructuring assign of empty values as JS legacy"] = function (test) {
   var code = [
     "var [ a ] = [ 1, 2 ];",
@@ -2301,6 +2420,8 @@ exports["destructuring assign of empty values as JS legacy"] = function (test) {
 
   test.done();
 };
+
+var destructuring assignment default values;
 
 exports["destructuring assignment default values"] = function (test) {
   var code = [
@@ -2334,6 +2455,8 @@ exports["destructuring assignment default values"] = function (test) {
 
   test.done();
 };
+
+var destructuring assignment of valid simple assignment targets;
 
 exports["destructuring assignment of valid simple assignment targets"] = function (test) {
   TestRun(test)
@@ -2379,6 +2502,8 @@ exports["destructuring assignment of valid simple assignment targets"] = functio
   test.done();
 };
 
+var non-identifier PropertyNames in object destructuring;
+
 exports["non-identifier PropertyNames in object destructuring"] = function (test) {
   var code = [
     "var { ['x' + 2]: a = 3, 0: b } = { x2: 1, 0: 2 };",
@@ -2401,6 +2526,8 @@ exports["non-identifier PropertyNames in object destructuring"] = function (test
   test.done();
 };
 
+var empty destructuring;
+
 exports["empty destructuring"] = function (test) {
   var code = [
     "var {} = {};",
@@ -2421,6 +2548,8 @@ exports["empty destructuring"] = function (test) {
   test.done();
 };
 
+var array element assignment inside array;
+
 exports["array element assignment inside array"] = function (test) {
   var code = [
     "var a1 = {};",
@@ -2432,6 +2561,8 @@ exports["array element assignment inside array"] = function (test) {
 
   test.done();
 };
+
+var let statement as moz;
 
 exports["let statement as moz"] = function (test) {
   var code = [
@@ -2452,6 +2583,8 @@ exports["let statement as moz"] = function (test) {
 
   test.done();
 };
+
+var let statement as esnext;
 
 exports["let statement as esnext"] = function (test) {
   var code = [
@@ -2476,6 +2609,8 @@ exports["let statement as esnext"] = function (test) {
   test.done();
 };
 
+var let statement as es5;
+
 exports["let statement as es5"] = function (test) {
   var code = [
     "let x = 1;",
@@ -2499,6 +2634,8 @@ exports["let statement as es5"] = function (test) {
   test.done();
 };
 
+var let statement as legacy JS;
+
 exports["let statement as legacy JS"] = function (test) {
   var code = [
     "let x = 1;",
@@ -2521,6 +2658,8 @@ exports["let statement as legacy JS"] = function (test) {
 
   test.done();
 };
+
+var let statement out of scope as moz;
 
 exports["let statement out of scope as moz"] = function (test) {
   var code = [
@@ -2546,6 +2685,8 @@ exports["let statement out of scope as moz"] = function (test) {
   test.done();
 };
 
+var let statement out of scope as esnext;
+
 exports["let statement out of scope as esnext"] = function (test) {
   var code = [
     "let x = 1;",
@@ -2569,6 +2710,8 @@ exports["let statement out of scope as esnext"] = function (test) {
 
   test.done();
 };
+
+var let statement out of scope as es5;
 
 exports["let statement out of scope as es5"] = function (test) {
   var code = [
@@ -2597,6 +2740,8 @@ exports["let statement out of scope as es5"] = function (test) {
   test.done();
 };
 
+var let statement out of scope as legacy JS;
+
 exports["let statement out of scope as legacy JS"] = function (test) {
   var code = [
     "let x = 1;",
@@ -2624,6 +2769,8 @@ exports["let statement out of scope as legacy JS"] = function (test) {
   test.done();
 };
 
+var let statement in functions as moz;
+
 exports["let statement in functions as moz"] = function (test) {
   var code = [
     "let x = 1;",
@@ -2646,6 +2793,8 @@ exports["let statement in functions as moz"] = function (test) {
   test.done();
 };
 
+var let statement in functions as esnext;
+
 exports["let statement in functions as esnext"] = function (test) {
   var code = [
     "let x = 1;",
@@ -2667,6 +2816,8 @@ exports["let statement in functions as esnext"] = function (test) {
 
   test.done();
 };
+
+var let statement in functions as es5;
 
 exports["let statement in functions as es5"] = function (test) {
   var code = [
@@ -2693,6 +2844,8 @@ exports["let statement in functions as es5"] = function (test) {
   test.done();
 };
 
+var let statement in functions as legacy JS;
+
 exports["let statement in functions as legacy JS"] = function (test) {
   var code = [
     "let x = 1;",
@@ -2717,6 +2870,8 @@ exports["let statement in functions as legacy JS"] = function (test) {
 
   test.done();
 };
+
+var let statement not in scope as moz;
 
 exports["let statement not in scope as moz"] = function (test) {
   var code = [
@@ -2746,6 +2901,8 @@ exports["let statement not in scope as moz"] = function (test) {
   test.done();
 };
 
+var let statement not in scope as esnext;
+
 exports["let statement not in scope as esnext"] = function (test) {
   var code = [
     "let x = 1;",
@@ -2773,6 +2930,8 @@ exports["let statement not in scope as esnext"] = function (test) {
 
   test.done();
 };
+
+var let statement not in scope as es5;
 
 exports["let statement not in scope as es5"] = function (test) {
   var code = [
@@ -2806,6 +2965,8 @@ exports["let statement not in scope as es5"] = function (test) {
   test.done();
 };
 
+var let statement not in scope as legacy JS;
+
 exports["let statement not in scope as legacy JS"] = function (test) {
   var code = [
     "let x = 1;",
@@ -2838,6 +2999,8 @@ exports["let statement not in scope as legacy JS"] = function (test) {
   test.done();
 };
 
+var let statement in for loop as moz;
+
 exports["let statement in for loop as moz"] = function (test) {
   var code = [
     "var obj={foo: 'bar', bar: 'foo'};",
@@ -2863,6 +3026,8 @@ exports["let statement in for loop as moz"] = function (test) {
 
   test.done();
 };
+
+var let statement in for loop as esnext;
 
 exports["let statement in for loop as esnext"] = function (test) {
   var code = [
@@ -2892,6 +3057,8 @@ exports["let statement in for loop as esnext"] = function (test) {
 
   test.done();
 };
+
+var let statement in for loop as es5;
 
 exports["let statement in for loop as es5"] = function (test) {
   var code = [
@@ -2925,6 +3092,8 @@ exports["let statement in for loop as es5"] = function (test) {
   test.done();
 };
 
+var let statement in for loop as legacy JS;
+
 exports["let statement in for loop as legacy JS"] = function (test) {
   var code = [
     "var obj={foo: 'bar', bar: 'foo'};",
@@ -2956,6 +3125,8 @@ exports["let statement in for loop as legacy JS"] = function (test) {
 
   test.done();
 };
+
+var let statement in destructured for loop as moz;
 
 exports["let statement in destructured for loop as moz"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
@@ -2992,6 +3163,8 @@ exports["let statement in destructured for loop as moz"] = function (test) {
   test.done();
 };
 
+var let statement in destructured for loop as esnext;
+
 exports["let statement in destructured for loop as esnext"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
   var code = [
@@ -3026,6 +3199,8 @@ exports["let statement in destructured for loop as esnext"] = function (test) {
 
   test.done();
 };
+
+var let statement in destructured for loop as es5;
 
 exports["let statement in destructured for loop as es5"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
@@ -3063,6 +3238,8 @@ exports["let statement in destructured for loop as es5"] = function (test) {
   test.done();
 };
 
+var let statement in destructured for loop as legacy JS;
+
 exports["let statement in destructured for loop as legacy JS"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
   var code = [
@@ -3099,6 +3276,8 @@ exports["let statement in destructured for loop as legacy JS"] = function (test)
   test.done();
 };
 
+var let statement (as seen in jetpack);
+
 exports["let statement (as seen in jetpack)"] = function (test) {
   // Example taken from jetpack/addons sdk library from Mozilla project
   var code = [
@@ -3122,6 +3301,8 @@ exports["let statement (as seen in jetpack)"] = function (test) {
            predef: ["require", "xferable", "options"]});
   test.done();
 };
+
+var let statement (as seen in jetpack) as esnext;
 
 exports["let statement (as seen in jetpack) as esnext"] = function (test) {
   // Example taken from jetpack/addons sdk library from Mozilla project
@@ -3156,6 +3337,8 @@ exports["let statement (as seen in jetpack) as esnext"] = function (test) {
            predef: ["require", "xferable", "options"]});
   test.done();
 };
+
+var let statement (as seen in jetpack) as es5;
 
 exports["let statement (as seen in jetpack) as es5"] = function (test) {
   // Example taken from jetpack/addons sdk library from Mozilla project
@@ -3193,6 +3376,8 @@ exports["let statement (as seen in jetpack) as es5"] = function (test) {
   test.done();
 };
 
+var let statement (as seen in jetpack) as legacy JS;
+
 exports["let statement (as seen in jetpack) as legacy JS"] = function (test) {
   // Example taken from jetpack/addons sdk library from Mozilla project
   var code = [
@@ -3229,6 +3414,8 @@ exports["let statement (as seen in jetpack) as legacy JS"] = function (test) {
   test.done();
 };
 
+var let block and let expression;
+
 exports["let block and let expression"] = function (test) {
   // Example taken from jetpack/addons sdk library from Mozilla project
   var code = [
@@ -3244,6 +3431,8 @@ exports["let block and let expression"] = function (test) {
     .test(code, {moz: true, unused: true, undef: true, predef: ["print"]});
   test.done();
 };
+
+var let block and let expression as esnext;
 
 exports["let block and let expression as esnext"] = function (test) {
   // Example taken from jetpack/addons sdk library from Mozilla project
@@ -3287,6 +3476,8 @@ exports["let block and let expression as esnext"] = function (test) {
   test.done();
 };
 
+var let block and let expression as es5;
+
 exports["let block and let expression as es5"] = function (test) {
   // Example taken from jetpack/addons sdk library from Mozilla project
   var code = [
@@ -3321,6 +3512,8 @@ exports["let block and let expression as es5"] = function (test) {
     .test(code, {unused: true, undef: true, predef: ["print"]}); // es5
   test.done();
 };
+
+var let block and let expression as legacy JS;
 
 exports["let block and let expression as legacy JS"] = function (test) {
   // Example taken from jetpack/addons sdk library from Mozilla project
@@ -3357,6 +3550,8 @@ exports["let block and let expression as legacy JS"] = function (test) {
   test.done();
 };
 
+var make sure let variables are not treated as globals;
+
 exports["make sure let variables are not treated as globals"] = function (test) {
   // This is a regression test for GH-1362
   var code = [
@@ -3378,6 +3573,8 @@ exports["make sure let variables are not treated as globals"] = function (test) 
   TestRun(test).test(code, { esnext: true, browser: true });
   test.done();
 };
+
+var make sure var variables can shadow let variables;
 
 exports["make sure var variables can shadow let variables"] = function (test) {
   // This is a regression test for GH-1394
@@ -3409,6 +3606,8 @@ exports["make sure var variables can shadow let variables"] = function (test) {
   test.done();
 };
 
+var make sure let variables in the closure of functions shadow predefined globals;
+
 exports["make sure let variables in the closure of functions shadow predefined globals"] = function (test) {
   var code = [
     "function x() {",
@@ -3422,6 +3621,8 @@ exports["make sure let variables in the closure of functions shadow predefined g
   TestRun(test).test(code, { esnext: true, predef: { foo: false } });
   test.done();
 };
+
+var make sure let variables in the closure of blocks shadow predefined globals;
 
 exports["make sure let variables in the closure of blocks shadow predefined globals"] = function (test) {
   var code = [
@@ -3437,6 +3638,8 @@ exports["make sure let variables in the closure of blocks shadow predefined glob
   test.done();
 };
 
+var make sure variables may shadow globals in functions after they are referenced;
+
 exports["make sure variables may shadow globals in functions after they are referenced"] = function (test) {
   var code = [
     "var foo;",
@@ -3449,6 +3652,8 @@ exports["make sure variables may shadow globals in functions after they are refe
   TestRun(test).test(code);
   test.done();
 };
+
+var test block scope redefines globals only outside of blocks;
 
 exports["test block scope redefines globals only outside of blocks"] = function (test) {
   var code = [
@@ -3463,6 +3668,8 @@ exports["test block scope redefines globals only outside of blocks"] = function 
     .test(code, { esnext: true, browser: true });
   test.done();
 };
+
+var test destructuring function as moz;
 
 exports["test destructuring function as moz"] = function (test) {
   // Example from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
@@ -3483,6 +3690,8 @@ exports["test destructuring function as moz"] = function (test) {
   test.done();
 };
 
+var test destructuring function as esnext;
+
 exports["test destructuring function as esnext"] = function (test) {
   // Example from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
   var code = [
@@ -3501,6 +3710,8 @@ exports["test destructuring function as esnext"] = function (test) {
 
   test.done();
 };
+
+var test destructuring function as es5;
 
 exports["test destructuring function as es5"] = function (test) {
   // Example from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
@@ -3523,6 +3734,8 @@ exports["test destructuring function as es5"] = function (test) {
   test.done();
 };
 
+var test destructuring function as legacy JS;
+
 exports["test destructuring function as legacy JS"] = function (test) {
   // Example from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
   var code = [
@@ -3544,6 +3757,8 @@ exports["test destructuring function as legacy JS"] = function (test) {
   test.done();
 };
 
+var destructuring function default values;
+
 exports["destructuring function default values"] = function (test) {
   var code = [
     "function a([ b = 2, c = 2 ] = []) {}",
@@ -3559,6 +3774,8 @@ exports["destructuring function default values"] = function (test) {
 
   test.done();
 };
+
+var non-simple parameter list strict transition;
 
 exports["non-simple parameter list strict transition"] = function (test) {
   var noTransitionNonStrict = [
@@ -3706,6 +3923,8 @@ exports["non-simple parameter list strict transition"] = function (test) {
   test.done();
 };
 
+var non var destructuring assignment statement;
+
 exports["non var destructuring assignment statement"] = function (test) {
   var codeValid = [
     "let b;",
@@ -3756,6 +3975,8 @@ exports["non var destructuring assignment statement"] = function (test) {
 
 };
 
+var invalid for each;
+
 exports["invalid for each"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
   var code = [
@@ -3770,6 +3991,8 @@ exports["invalid for each"] = function (test) {
 
   test.done();
 };
+
+var invalid for each as esnext;
 
 exports["invalid for each as esnext"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
@@ -3786,6 +4009,8 @@ exports["invalid for each as esnext"] = function (test) {
 
   test.done();
 };
+
+var invalid for each as ES5;
 
 exports["invalid for each as ES5"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
@@ -3804,6 +4029,8 @@ exports["invalid for each as ES5"] = function (test) {
   test.done();
 };
 
+var invalid for each as legacy JS;
+
 exports["invalid for each as legacy JS"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
   var code = [
@@ -3819,6 +4046,8 @@ exports["invalid for each as legacy JS"] = function (test) {
 
   test.done();
 };
+
+var esnext generator;
 
 exports["esnext generator"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
@@ -3853,6 +4082,8 @@ exports["esnext generator"] = function (test) {
   test.done();
 };
 
+var esnext generator as moz extension;
+
 exports["esnext generator as moz extension"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
   var code = [
@@ -3874,6 +4105,8 @@ exports["esnext generator as moz extension"] = function (test) {
 
   test.done();
 };
+
+var esnext generator as es5;
 
 exports["esnext generator as es5"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
@@ -3899,6 +4132,8 @@ exports["esnext generator as es5"] = function (test) {
   test.done();
 };
 
+var esnext generator as legacy JS;
+
 exports["esnext generator as legacy JS"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
   var code = [
@@ -3923,6 +4158,8 @@ exports["esnext generator as legacy JS"] = function (test) {
   test.done();
 };
 
+var esnext generator without yield;
+
 exports["esnext generator without yield"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
   var code = [
@@ -3945,6 +4182,8 @@ exports["esnext generator without yield"] = function (test) {
   test.done();
 };
 
+var esnext generator without yield and check turned off;
+
 exports["esnext generator without yield and check turned off"] = function (test) {
   var code = [
     "function* emptyGenerator() {}",
@@ -3956,6 +4195,8 @@ exports["esnext generator without yield and check turned off"] = function (test)
 
   test.done();
 };
+
+var esnext generator with yield delegation, gh-1544;
 
 exports["esnext generator with yield delegation, gh-1544"] = function(test) {
   var code = [
@@ -3978,6 +4219,8 @@ exports["esnext generator with yield delegation, gh-1544"] = function(test) {
   test.done();
 };
 
+var mozilla generator;
+
 exports["mozilla generator"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
   var code = [
@@ -3997,6 +4240,8 @@ exports["mozilla generator"] = function (test) {
 
   test.done();
 };
+
+var mozilla generator as esnext;
 
 exports["mozilla generator as esnext"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
@@ -4025,6 +4270,8 @@ exports["mozilla generator as esnext"] = function (test) {
   test.done();
 };
 
+var yield expression within try-catch;
+
 exports["yield expression within try-catch"] = function (test) {
   // see issue: https://github.com/jshint/jshint/issues/1505
   var code = [
@@ -4045,6 +4292,8 @@ exports["yield expression within try-catch"] = function (test) {
   test.done();
 };
 
+var catch block no curlies;
+
 exports["catch block no curlies"] = function (test) {
   var code = [
     "try {} catch(e) e.toString();"
@@ -4055,6 +4304,8 @@ exports["catch block no curlies"] = function (test) {
 
   test.done();
 };
+
+var strict violation - use of arguments and eval;
 
 exports["strict violation - use of arguments and eval"] = function (test) {
   var code = [
@@ -4165,6 +4416,8 @@ exports["strict violation - use of arguments and eval"] = function (test) {
   test.done();
 };
 
+var mozilla generator as es5;
+
 exports["mozilla generator as es5"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
   var code = [
@@ -4187,6 +4440,8 @@ exports["mozilla generator as es5"] = function (test) {
 
   test.done();
 };
+
+var mozilla generator as legacy JS;
 
 exports["mozilla generator as legacy JS"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
@@ -4211,6 +4466,8 @@ exports["mozilla generator as legacy JS"] = function (test) {
   test.done();
 };
 
+var array comprehension;
+
 exports["array comprehension"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
   var code = [
@@ -4233,6 +4490,8 @@ exports["array comprehension"] = function (test) {
 
   test.done();
 };
+
+var array comprehension unused and undefined;
 
 exports["array comprehension unused and undefined"] = function (test) {
   var code = [
@@ -4264,6 +4523,8 @@ exports["array comprehension unused and undefined"] = function (test) {
   test.done();
 };
 
+var gh-1856 mistakenly identified as array comprehension;
+
 exports["gh-1856 mistakenly identified as array comprehension"] = function (test) {
   var code = [
     "function main(value) {",
@@ -4283,6 +4544,8 @@ exports["gh-1856 mistakenly identified as array comprehension"] = function (test
   test.done();
 };
 
+var gh-1413 wrongly detected as array comprehension;
+
 exports["gh-1413 wrongly detected as array comprehension"] = function (test) {
   var code = [
     "var a = {};",
@@ -4294,6 +4557,8 @@ exports["gh-1413 wrongly detected as array comprehension"] = function (test) {
 
   test.done();
 };
+
+var moz-style array comprehension;
 
 exports["moz-style array comprehension"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
@@ -4314,6 +4579,8 @@ exports["moz-style array comprehension"] = function (test) {
   test.done();
 };
 
+var array comprehension with for..of;
+
 exports["array comprehension with for..of"] = function (test) {
   // example adapted from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
   var code = [
@@ -4332,6 +4599,8 @@ exports["array comprehension with for..of"] = function (test) {
 
   test.done();
 };
+
+var moz-style array comprehension with for..of;
 
 exports["moz-style array comprehension with for..of"] = function (test) {
   // example adapted from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
@@ -4352,6 +4621,8 @@ exports["moz-style array comprehension with for..of"] = function (test) {
   test.done();
 };
 
+var array comprehension with unused variables;
+
 exports["array comprehension with unused variables"] = function (test) {
   var code = [
     "var ret = [for (i of unknown) i];",
@@ -4364,6 +4635,8 @@ exports["array comprehension with unused variables"] = function (test) {
   test.done();
 };
 
+var moz-style array comprehension with unused variables;
+
 exports["moz-style array comprehension with unused variables"] = function (test) {
   var code = [
     "var ret = [i for (i of unknown)];",
@@ -4375,6 +4648,8 @@ exports["moz-style array comprehension with unused variables"] = function (test)
 
   test.done();
 };
+
+var moz-style array comprehension as esnext;
 
 exports["moz-style array comprehension as esnext"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
@@ -4404,6 +4679,8 @@ exports["moz-style array comprehension as esnext"] = function (test) {
   test.done();
 };
 
+var array comprehension as es5;
+
 exports["array comprehension as es5"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
   var code = [
@@ -4427,6 +4704,8 @@ exports["array comprehension as es5"] = function (test) {
 
   test.done();
 };
+
+var moz-style array comprehension as es5;
 
 exports["moz-style array comprehension as es5"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
@@ -4455,6 +4734,8 @@ exports["moz-style array comprehension as es5"] = function (test) {
   test.done();
 };
 
+var array comprehension as legacy JS;
+
 exports["array comprehension as legacy JS"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
   var code = [
@@ -4477,6 +4758,8 @@ exports["array comprehension as legacy JS"] = function (test) {
 
   test.done();
 };
+
+var moz-style array comprehension as legacy JS;
 
 exports["moz-style array comprehension as legacy JS"] = function (test) {
   // example taken from https://developer.mozilla.org/en-US/docs/JavaScript/New_in_JavaScript/1.7
@@ -4505,6 +4788,8 @@ exports["moz-style array comprehension as legacy JS"] = function (test) {
   test.done();
 };
 
+var array comprehension with dest array at global scope;
+
 exports['array comprehension with dest array at global scope'] = function (test) {
   var code = [
     "[for ([i, j] of [[0,0], [1,1], [2,2]]) [i, j] ];",
@@ -4517,6 +4802,8 @@ exports['array comprehension with dest array at global scope'] = function (test)
   test.done();
 };
 
+var moz-style array comprehension with dest array at global scope;
+
 exports['moz-style array comprehension with dest array at global scope'] = function (test) {
   var code = [
     "[ [i, j] for each ([i, j] in [[0,0], [1,1], [2,2]])];",
@@ -4528,6 +4815,8 @@ exports['moz-style array comprehension with dest array at global scope'] = funct
 
   test.done();
 };
+
+var moz-style array comprehension with dest array at global scope as esnext;
 
 exports['moz-style array comprehension with dest array at global scope as esnext'] = function (test) {
   var code = [
@@ -4547,6 +4836,8 @@ exports['moz-style array comprehension with dest array at global scope as esnext
   test.done();
 };
 
+var array comprehension with dest array at global scope as es5;
+
 exports['array comprehension with dest array at global scope as es5'] = function (test) {
   var code = [
     "[for ([i, j] of [[0,0], [1,1], [2,2]]) [i, j] ];",
@@ -4561,6 +4852,8 @@ exports['array comprehension with dest array at global scope as es5'] = function
 
   test.done();
 };
+
+var moz-style array comprehension with dest array at global scope as es5;
 
 exports['moz-style array comprehension with dest array at global scope as es5'] = function (test) {
   var code = [
@@ -4583,6 +4876,8 @@ exports['moz-style array comprehension with dest array at global scope as es5'] 
   test.done();
 };
 
+var array comprehension with dest array at global scope as JS legacy;
+
 exports['array comprehension with dest array at global scope as JS legacy'] = function (test) {
   var code = [
     "[for ([i, j] of [[0,0], [1,1], [2,2]]) [i, j] ];",
@@ -4597,6 +4892,8 @@ exports['array comprehension with dest array at global scope as JS legacy'] = fu
 
   test.done();
 };
+
+var moz-style array comprehension with dest array at global scope as JS legacy;
 
 exports['moz-style array comprehension with dest array at global scope as JS legacy'] = function (test) {
   var code = [
@@ -4619,6 +4916,8 @@ exports['moz-style array comprehension with dest array at global scope as JS leg
   test.done();
 };
 
+var array comprehension imbrication with dest array;
+
 exports["array comprehension imbrication with dest array"] = function (test) {
   var code = [
     "[for ([i, j] of [for ([a, b] of [[2,2], [3,4]]) [a, b] ]) [i, j] ];"
@@ -4629,6 +4928,8 @@ exports["array comprehension imbrication with dest array"] = function (test) {
 
   test.done();
 };
+
+var moz-style array comprehension imbrication with dest array;
 
 exports["moz-style array comprehension imbrication with dest array"] = function (test) {
   var code = [
@@ -4641,6 +4942,8 @@ exports["moz-style array comprehension imbrication with dest array"] = function 
   test.done();
 };
 
+var moz-style array comprehension imbrication with dest array using for..of;
+
 exports["moz-style array comprehension imbrication with dest array using for..of"] = function (test) {
   var code = [
     "[ [i, j] for ([i, j] of [[a, b] for ([a, b] of [[2,2], [3,4]])]) ];"
@@ -4651,6 +4954,8 @@ exports["moz-style array comprehension imbrication with dest array using for..of
 
   test.done();
 };
+
+var moz-style array comprehension imbrication with dest array as esnext;
 
 exports["moz-style array comprehension imbrication with dest array as esnext"] = function (test) {
   var code = [
@@ -4666,6 +4971,8 @@ exports["moz-style array comprehension imbrication with dest array as esnext"] =
   test.done();
 };
 
+var array comprehension imbrication with dest array as es5;
+
 exports["array comprehension imbrication with dest array as es5"] = function (test) {
   var code = [
     "[for ([i, j] of [for ([a, b] of [[2,2], [3,4]]) [a, b] ]) [i, j] ];"
@@ -4678,6 +4985,8 @@ exports["array comprehension imbrication with dest array as es5"] = function (te
   test.done();
 };
 
+var moz-style array comprehension imbrication with dest array as es5;
+
 exports["moz-style array comprehension imbrication with dest array as es5"] = function (test) {
   var code = [
     "[for ([i, j] of [for ([a, b] of [[2,2], [3,4]]) [a, b] ]) [i, j] ];"
@@ -4689,6 +4998,8 @@ exports["moz-style array comprehension imbrication with dest array as es5"] = fu
 
   test.done();
 };
+
+var array comprehension imbrication with dest array as legacy JS;
 
 exports["array comprehension imbrication with dest array as legacy JS"] = function (test) {
   var code = [
@@ -4707,6 +5018,8 @@ exports["array comprehension imbrication with dest array as legacy JS"] = functi
   test.done();
 };
 
+var moz-style array comprehension imbrication with dest array as legacy JS;
+
 exports["moz-style array comprehension imbrication with dest array as legacy JS"] = function (test) {
   var code = [
     "[ [i, j] for each ([i, j] in [[a, b] for each ([a, b] in [[2,2], [3,4]])]) ];"
@@ -4724,6 +5037,8 @@ exports["moz-style array comprehension imbrication with dest array as legacy JS"
   test.done();
 };
 
+var no false positive array comprehension;
+
 exports["no false positive array comprehension"] = function (test) {
   var code = [
     "var foo = []; for (let i in [1,2,3]) { print(i); }"
@@ -4733,6 +5048,8 @@ exports["no false positive array comprehension"] = function (test) {
 
   test.done();
 };
+
+var try catch filters;
 
 exports["try catch filters"] = function (test) {
   var code = [
@@ -4748,6 +5065,8 @@ exports["try catch filters"] = function (test) {
 
   test.done();
 };
+
+var try catch filters as esnext;
 
 exports["try catch filters as esnext"] = function (test) {
   var code = [
@@ -4766,6 +5085,8 @@ exports["try catch filters as esnext"] = function (test) {
   test.done();
 };
 
+var try catch filters as es5;
+
 exports["try catch filters as es5"] = function (test) {
   var code = [
     "try {",
@@ -4782,6 +5103,8 @@ exports["try catch filters as es5"] = function (test) {
 
   test.done();
 };
+
+var try catch filters as legacy JS;
 
 exports["try catch filters as legacy JS"] = function (test) {
   var code = [
@@ -4800,6 +5123,8 @@ exports["try catch filters as legacy JS"] = function (test) {
   test.done();
 };
 
+var function closure expression;
+
 exports["function closure expression"] = function (test) {
   var code = [
     "let (arr = [1,2,3]) {",
@@ -4811,6 +5136,8 @@ exports["function closure expression"] = function (test) {
 
   test.done();
 };
+
+var function closure expression as esnext;
 
 exports["function closure expression as esnext"] = function (test) {
   var code = [
@@ -4825,6 +5152,8 @@ exports["function closure expression as esnext"] = function (test) {
   test.done();
 };
 
+var function closure expression as es5;
+
 exports["function closure expression as es5"] = function (test) {
   var code = [
     "var arr = [1,2,3];",
@@ -4838,6 +5167,8 @@ exports["function closure expression as es5"] = function (test) {
   test.done();
 };
 
+var function closure expression as legacy JS;
+
 exports["function closure expression as legacy JS"] = function (test) {
   var code = [
     "var arr = [1,2,3];",
@@ -4850,6 +5181,8 @@ exports["function closure expression as legacy JS"] = function (test) {
 
   test.done();
 };
+
+var for of as esnext;
 
 exports["for of as esnext"] = function (test) {
   var code = [
@@ -4910,6 +5243,8 @@ exports["for of as esnext"] = function (test) {
 
   test.done();
 };
+
+var for of as es5;
 
 exports["for of as es5"] = function (test) {
   var code = [
@@ -4977,6 +5312,8 @@ exports["for of as es5"] = function (test) {
   test.done();
 };
 
+var for of as legacy JS;
+
 exports["for of as legacy JS"] = function (test) {
   var code = [
     "for (let x of [1,2,3,4]) {",
@@ -5043,6 +5380,8 @@ exports["for of as legacy JS"] = function (test) {
   test.done();
 };
 
+var array destructuring for of as esnext;
+
 exports["array destructuring for of as esnext"] = function (test) {
   var basic = [
     "for ([i, v] of [[0, 1],[1, 2],[2, 3],[3, 4]]) print(i + '=' + v);",
@@ -5097,6 +5436,8 @@ exports["array destructuring for of as esnext"] = function (test) {
 
   test.done();
 };
+
+var array destructuring for of as es5;
 
 exports["array destructuring for of as es5"] = function (test) {
   var basic = [
@@ -5201,6 +5542,8 @@ exports["array destructuring for of as es5"] = function (test) {
   test.done();
 };
 
+var array destructuring for of as legacy JS;
+
 exports["array destructuring for of as legacy JS"] = function (test) {
   var basic = [
     "for ([i, v] of [[0, 1],[1, 2],[2, 3],[3, 4]]) print(i + '=' + v);",
@@ -5304,6 +5647,8 @@ exports["array destructuring for of as legacy JS"] = function (test) {
   test.done();
 };
 
+var object destructuring for of as esnext;
+
 exports["object destructuring for of as esnext"] = function (test) {
   var basic = [
     "var obj1 = { key: 'a', data: { value: 1 } };",
@@ -5368,6 +5713,8 @@ exports["object destructuring for of as esnext"] = function (test) {
 
   test.done();
 };
+
+var object destructuring for of as es5;
 
 exports["object destructuring for of as es5"] = function (test) {
   var basic = [
@@ -5482,6 +5829,8 @@ exports["object destructuring for of as es5"] = function (test) {
   test.done();
 };
 
+var object destructuring for of as legacy JS;
+
 exports["object destructuring for of as legacy JS"] = function (test) {
   var basic = [
     "var obj1 = { key: 'a', data: { value: 1 } };",
@@ -5595,6 +5944,8 @@ exports["object destructuring for of as legacy JS"] = function (test) {
   test.done();
 };
 
+var try multi-catch for moz extensions;
+
 exports["try multi-catch for moz extensions"] = function (test) {
   var code = [
     "try {",
@@ -5612,6 +5963,8 @@ exports["try multi-catch for moz extensions"] = function (test) {
 
   test.done();
 };
+
+var try multi-catch as esnext;
 
 exports["try multi-catch as esnext"] = function (test) {
   var code = [
@@ -5633,6 +5986,8 @@ exports["try multi-catch as esnext"] = function (test) {
   test.done();
 };
 
+var try multi-catch as es5;
+
 exports["try multi-catch as es5"] = function (test) {
   var code = [
     "try {",
@@ -5652,6 +6007,8 @@ exports["try multi-catch as es5"] = function (test) {
 
   test.done();
 };
+
+var try multi-catch as legacy JS;
 
 exports["try multi-catch as legacy JS"] = function (test) {
   var code = [
@@ -5673,6 +6030,8 @@ exports["try multi-catch as legacy JS"] = function (test) {
 
   test.done();
 };
+
+var no let not directly within a block;
 
 exports["no let not directly within a block"] = function (test) {
   var code = [
@@ -5711,6 +6070,8 @@ exports["no let not directly within a block"] = function (test) {
   test.done();
 };
 
+var no const not directly within a block;
+
 exports["no const not directly within a block"] = function (test) {
   var code = [
     "if (true) const x = 1;",
@@ -5737,6 +6098,8 @@ exports["no const not directly within a block"] = function (test) {
   test.done();
 };
 
+var test: let declared directly within block;
+
 exports["test: let declared directly within block"] = function (test) {
   var code = [
     "for (let i;;){",
@@ -5757,6 +6120,8 @@ exports["test: let declared directly within block"] = function (test) {
 
   test.done();
 };
+
+var test: let is directly within nested block;
 
 exports["test: let is directly within nested block"] = function (test) {
   var code   = [
@@ -5792,6 +6157,8 @@ exports["test: let is directly within nested block"] = function (test) {
   test.done();
 };
 
+var regression test for crash from GH-964;
+
 exports["regression test for crash from GH-964"] = function (test) {
   var code = [
     "function test(a, b) {",
@@ -5807,8 +6174,10 @@ exports["regression test for crash from GH-964"] = function (test) {
   test.done();
 };
 
-exports.ASI = {};
-exports.ASI.gh950 = function (test) {
+var ASI;
+
+ASI = {};
+ASI.gh950 = function (test) {
   var code = [
     "var a = b",
     "instanceof c;",
@@ -5873,7 +6242,7 @@ exports.ASI.gh950 = function (test) {
 
 // gh-3037 - weird behaviour (yield related)
 // https://github.com/jshint/jshint/issues/3037
-exports.ASI.followingYield = function (test) {
+ASI.followingYield = function (test) {
   var code = [
     "function* g() {",
     "  void 0",
@@ -5891,7 +6260,7 @@ exports.ASI.followingYield = function (test) {
   test.done();
 };
 
-exports.ASI.followingPostfix = function (test) {
+ASI.followingPostfix = function (test) {
   var code = [
     "x++",
     "void 0;",
@@ -5909,6 +6278,8 @@ exports.ASI.followingPostfix = function (test) {
 
   test.done();
 };
+
+var fat arrows support;
 
 exports["fat arrows support"] = function (test) {
   var code = [
@@ -6026,6 +6397,8 @@ exports["fat arrows support"] = function (test) {
   test.done();
 };
 
+var fat arrow nested function scoping;
+
 exports["fat arrow nested function scoping"] = function (test) {
   var code = [
     "(() => {",
@@ -6058,12 +6431,16 @@ exports["fat arrow nested function scoping"] = function (test) {
   test.done();
 };
 
+var default arguments in fat arrow functions;
+
 exports["default arguments in fat arrow functions"] = function (test) {
   TestRun(test)
     .test("(x = 0) => { return x; };", { expr: true, unused: true, esnext: true });
 
   test.done();
 };
+
+var expressions in place of arrow function parameters;
 
 exports["expressions in place of arrow function parameters"] = function (test) {
   TestRun(test)
@@ -6072,6 +6449,8 @@ exports["expressions in place of arrow function parameters"] = function (test) {
 
   test.done();
 };
+
+var arrow function parameter containing semicolon (gh-3002);
 
 exports["arrow function parameter containing semicolon (gh-3002)"] = function (test) {
   TestRun(test)
@@ -6082,7 +6461,7 @@ exports["arrow function parameter containing semicolon (gh-3002)"] = function (t
   test.done();
 };
 
-var conciseMethods = exports.conciseMethods = {};
+var var conciseMethods;, conciseMethods = conciseMethods = {};
 
 conciseMethods.basicSupport = function (test) {
   var code = [
@@ -6186,6 +6565,8 @@ conciseMethods.uniqueFormalParameters = function (test) {
   test.done();
 };
 
+var object short notation: basic;
+
 exports["object short notation: basic"] = function (test) {
   var code = [
     "var foo = 42;",
@@ -6210,6 +6591,8 @@ exports["object short notation: basic"] = function (test) {
   test.done();
 };
 
+var object short notation: mixed;
+
 exports["object short notation: mixed"] = function (test) {
   var code = [
     "var b = 1, c = 2;",
@@ -6228,6 +6611,8 @@ exports["object short notation: mixed"] = function (test) {
 
   test.done();
 };
+
+var object ComputedPropertyName;
 
 exports["object ComputedPropertyName"] = function (test) {
   var code = [
@@ -6285,6 +6670,8 @@ exports["object ComputedPropertyName"] = function (test) {
 
   test.done();
 };
+
+var spread & rest operator support;
 
 exports["spread & rest operator support"] = function (test) {
   var code = [
@@ -6366,6 +6753,8 @@ exports["spread & rest operator support"] = function (test) {
 
   test.done();
 };
+
+var parameter destructuring with rest;
 
 exports["parameter destructuring with rest"] = function (test) {
   var code = [
@@ -6464,6 +6853,8 @@ exports["parameter destructuring with rest"] = function (test) {
   test.done();
 };
 
+var test for GH-1010;
+
 exports["test for GH-1010"] = function (test) {
   var code = [
     "var x = 20, y, z; if(x < 30) y=7, z=2; else y=5;"
@@ -6478,7 +6869,9 @@ exports["test for GH-1010"] = function (test) {
   test.done();
 };
 
-exports.classes = function (test) {
+var classes;
+
+classes = function (test) {
   var cdecl = "// cdecl";
   var cexpr = "// cexpr";
   var cdeclAssn = "// cdeclAssn";
@@ -6611,6 +7004,8 @@ exports.classes = function (test) {
 
   test.done();
 };
+
+var class and method naming;
 
 exports["class and method naming"] = function (test) {
   var code = [
@@ -6765,6 +7160,8 @@ exports["class and method naming"] = function (test) {
   test.done();
 };
 
+var computed class methods aren't duplicate;
+
 exports["computed class methods aren't duplicate"] = function (test) {
   var code = [
     "const obj = {};",
@@ -6787,6 +7184,8 @@ exports["computed class methods aren't duplicate"] = function (test) {
   test.done();
 };
 
+var class method UniqueFormalParameters;
+
 exports["class method UniqueFormalParameters"] = function (test) {
   TestRun(test, "adjacent")
     .addError(1, 18, "'a' has already been declared.")
@@ -6798,6 +7197,8 @@ exports["class method UniqueFormalParameters"] = function (test) {
 
   test.done();
 };
+
+var class method this;
 
 exports["class method this"] = function (test) {
   var code = [
@@ -6821,7 +7222,9 @@ exports["class method this"] = function (test) {
   test.done();
 };
 
-exports.classNewcap = function (test) {
+var classNewcap;
+
+classNewcap = function (test) {
   var code = [
     "class C {",
     "  m() {",
@@ -6839,7 +7242,9 @@ exports.classNewcap = function (test) {
   test.done();
 };
 
-exports.classExpression = function (test) {
+var classExpression;
+
+classExpression = function (test) {
   var code = [
     "void class MyClass {",
     "  constructor() { MyClass = null; }",
@@ -6865,9 +7270,11 @@ exports.classExpression = function (test) {
   test.done();
 };
 
-exports.super = {};
+var super;
 
-exports.super.invalid = function (test) {
+super = {};
+
+super.invalid = function (test) {
   TestRun(test, "as identifier")
     .addError(3, 10, "Unexpected ';'.")
     .addError(3, 5, "Expected an assignment or function call and instead saw an expression.")
@@ -6882,7 +7289,7 @@ exports.super.invalid = function (test) {
   test.done();
 };
 
-exports.super.superProperty = function (test) {
+super.superProperty = function (test) {
   TestRun(test, "bracket notation")
     .addError(3, 14, "Expected an assignment or function call and instead saw an expression.")
     .addError(4, 20, "['ab'] is better written in dot notation.")
@@ -6973,7 +7380,7 @@ exports.super.superProperty = function (test) {
   test.done();
 };
 
-exports.super.superCall = function (test) {
+super.superCall = function (test) {
   TestRun(test)
     .test([
       "class C {",
@@ -7057,7 +7464,10 @@ exports.super.superCall = function (test) {
 };
 
 
-exports.functionReassignment = function (test) {
+var functionReassignment;
+
+
+functionReassignment = function (test) {
   var src = [
     "function f() {}",
     "f = null;",
@@ -7098,7 +7508,9 @@ exports.functionReassignment = function (test) {
   test.done();
 };
 
-exports.functionNotOverwritten = function (test) {
+var functionNotOverwritten;
+
+functionNotOverwritten = function (test) {
   var code = [
     "function x() {",
     "  x = 1;",
@@ -7112,7 +7524,9 @@ exports.functionNotOverwritten = function (test) {
   test.done();
 };
 
-exports.classExpressionThis = function (test) {
+var classExpressionThis;
+
+classExpressionThis = function (test) {
   var code = [
     "void class MyClass {",
     "  constructor() { return this; }",
@@ -7129,7 +7543,9 @@ exports.classExpressionThis = function (test) {
   test.done();
 };
 
-exports.classElementEmpty = function (test) {
+var classElementEmpty;
+
+classElementEmpty = function (test) {
   var code = [
     "class A {",
     "  ;",
@@ -7153,7 +7569,9 @@ exports.classElementEmpty = function (test) {
   test.done();
 };
 
-exports.invalidClasses = function (test) {
+var invalidClasses;
+
+invalidClasses = function (test) {
   // Regression test for GH-2324
   TestRun(test)
     .addError(1, 11, "Class properties must be methods. Expected '(' but instead saw ''.")
@@ -7175,6 +7593,8 @@ exports.invalidClasses = function (test) {
 
   test.done();
 };
+
+var test for GH-1018;
 
 exports["test for GH-1018"] = function (test) {
   var code = [
@@ -7201,6 +7621,8 @@ exports["test for GH-1018"] = function (test) {
   test.done();
 };
 
+var test warnings for assignments in conditionals;
+
 exports["test warnings for assignments in conditionals"] = function (test) {
   var code = [
     "if (a = b) { }",
@@ -7219,6 +7641,8 @@ exports["test warnings for assignments in conditionals"] = function (test) {
 
   test.done();
 };
+
+var test for GH-1089;
 
 exports["test for GH-1089"] = function (test) {
   var code = [
@@ -7246,6 +7670,8 @@ exports["test for GH-1089"] = function (test) {
   test.done();
 };
 
+var test for GH-1105;
+
 exports["test for GH-1105"] = function (test) {
   var code = [
     "while (true) {",
@@ -7259,6 +7685,8 @@ exports["test for GH-1105"] = function (test) {
   run.test(code);
   test.done();
 };
+
+var test for crash with invalid condition;
 
 exports["test for crash with invalid condition"] = function (test) {
   var code = [
@@ -7296,8 +7724,10 @@ exports["test for crash with invalid condition"] = function (test) {
   test.done();
 };
 
+var test 'yield' in compound expressions.;
+
 exports["test 'yield' in compound expressions."] = function (test) {
-  var code = fs.readFileSync(path.join(__dirname, "./fixtures/yield-expressions.js"), "utf8");
+  var code = ext_fs_fs.readFileSync(ext_path_path.join(__dirname, "./fixtures/yield-expressions.js"), "utf8");
 
   var run = TestRun(test);
 
@@ -7369,6 +7799,8 @@ exports["test 'yield' in compound expressions."] = function (test) {
 
   test.done();
 };
+
+var test 'yield' in invalid positions;
 
 exports["test 'yield' in invalid positions"] = function (test) {
   var testRun = TestRun(test, "as an invalid operand")
@@ -7491,6 +7923,8 @@ exports["test 'yield' in invalid positions"] = function (test) {
   test.done();
 };
 
+var test for GH-387;
+
 exports["test for GH-387"] = function (test) {
   var code = [
     "var foo = a",
@@ -7504,6 +7938,8 @@ exports["test for GH-387"] = function (test) {
 
   test.done();
 };
+
+var test for line breaks with 'yield';
 
 exports["test for line breaks with 'yield'"] = function (test) {
   var code = [
@@ -7605,8 +8041,10 @@ exports["test for line breaks with 'yield'"] = function (test) {
   test.done();
 };
 
+var yieldRegExp;
+
 // Regression test for gh-2956
-exports.yieldRegExp = function (test) {
+yieldRegExp = function (test) {
   var code = [
     "function* g() {",
     "  yield /./;",
@@ -7656,9 +8094,11 @@ exports.yieldRegExp = function (test) {
   test.done();
 };
 
-exports.unreachable = {
+var unreachable;
+
+unreachable = {
   "regression for GH-1227": function (test) {
-    var src = fs.readFileSync(__dirname + "/fixtures/gh1227.js", "utf8");
+    var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/gh1227.js", "utf8");
 
     TestRun(test)
       .addError(14, 3, "Unreachable 'return' after 'return'.")
@@ -7759,6 +8199,8 @@ exports.unreachable = {
   }
 };
 
+var test for 'break' in switch case + curly braces;
+
 exports["test for 'break' in switch case + curly braces"] = function (test) {
   var code = [
     "switch (foo) {",
@@ -7781,6 +8223,8 @@ exports["test for 'break' in switch case + curly braces"] = function (test) {
 
   test.done();
 };
+
+var test for 'break' in switch case in loop + curly braces;
 
 exports["test for 'break' in switch case in loop + curly braces"] = function (test) {
   var code = [
@@ -7808,6 +8252,8 @@ exports["test for 'break' in switch case in loop + curly braces"] = function (te
   test.done();
 };
 
+var allow expression with a comma in switch case condition;
+
 exports["allow expression with a comma in switch case condition"] = function (test) {
   var code = [
     "switch (false) {",
@@ -7819,9 +8265,11 @@ exports["allow expression with a comma in switch case condition"] = function (te
   test.done();
 };
 
-exports.ignoreDirective = {};
+var ignoreDirective;
 
-exports.ignoreDirective["should be a good option and only accept start, end or line as values"] = function (test) {
+ignoreDirective = {};
+
+ignoreDirective["should be a good option and only accept start, end or line as values"] = function (test) {
   var code = [
     "/*jshint ignore:start*/",
     "/*jshint ignore:end*/",
@@ -7836,8 +8284,8 @@ exports.ignoreDirective["should be a good option and only accept start, end or l
   test.done();
 };
 
-exports.ignoreDirective["should allow the linter to skip blocked-out lines to continue finding errors in the rest of the code"] = function (test) {
-  var code = fs.readFileSync(__dirname + "/fixtures/gh826.js", "utf8");
+ignoreDirective["should allow the linter to skip blocked-out lines to continue finding errors in the rest of the code"] = function (test) {
+  var code = ext_fs_fs.readFileSync(__dirname + "/fixtures/gh826.js", "utf8");
 
   /**
    * This test previously asserted the issuance of warning W041.
@@ -7850,7 +8298,7 @@ exports.ignoreDirective["should allow the linter to skip blocked-out lines to co
   test.done();
 };
 
-exports.ignoreDirective["should ignore lines that appear to end with multiline comment endings (GH-1691)"] = function(test) {
+ignoreDirective["should ignore lines that appear to end with multiline comment endings (GH-1691)"] = function(test) {
   var code = [
     "/*jshint ignore: start*/",
     "var a = {",
@@ -7867,7 +8315,7 @@ exports.ignoreDirective["should ignore lines that appear to end with multiline c
   test.done();
 };
 
-exports.ignoreDirective["should ignore lines that end with a multi-line comment (GH-1396)"] = function(test) {
+ignoreDirective["should ignore lines that end with a multi-line comment (GH-1396)"] = function(test) {
   var code = [
     "/*jshint ignore:start */",
     "var a; /* following comment */",
@@ -7880,7 +8328,7 @@ exports.ignoreDirective["should ignore lines that end with a multi-line comment 
   test.done();
 };
 
-exports.ignoreDirective["should ignore multi-line comments"] = function(test) {
+ignoreDirective["should ignore multi-line comments"] = function(test) {
   var code = [
     "/*jshint ignore:start */",
     "/*",
@@ -7896,7 +8344,7 @@ exports.ignoreDirective["should ignore multi-line comments"] = function(test) {
   test.done();
 };
 
-exports.ignoreDirective["should be detected even with leading and/or trailing whitespace"] = function (test) {
+ignoreDirective["should be detected even with leading and/or trailing whitespace"] = function (test) {
   var code = [
     "  /*jshint ignore:start */",     // leading whitespace
     "   if (true) { alert('sup') }", // should be ignored
@@ -7915,7 +8363,7 @@ exports.ignoreDirective["should be detected even with leading and/or trailing wh
 };
 
 // gh-2411 /* jshint ignore:start */ stopped working.
-exports.ignoreDirective["should apply to lines lexed during lookahead operations"] = function (test) {
+ignoreDirective["should apply to lines lexed during lookahead operations"] = function (test) {
   var code = [
     "void [function () {",
     "  /* jshint ignore:start */",
@@ -7941,11 +8389,15 @@ exports.ignoreDirective["should apply to lines lexed during lookahead operations
   test.done();
 };
 
+var should be able to ignore a single line with a trailing comment: // jshint:ignore;
+
 exports["should be able to ignore a single line with a trailing comment: // jshint:ignore"] = function (test) {
-  var code = fs.readFileSync(__dirname + "/fixtures/gh870.js", "utf8");
+  var code = ext_fs_fs.readFileSync(__dirname + "/fixtures/gh870.js", "utf8");
   TestRun(test).test(code, { unused: true });
   test.done();
 };
+
+var regression test for GH-1431;
 
 exports["regression test for GH-1431"] = function (test) {
   // The code is invalid but it should not crash JSHint.
@@ -7959,6 +8411,8 @@ exports["regression test for GH-1431"] = function (test) {
 
   test.done();
 };
+
+var jshint ignore:start/end should be detected using single line comments;
 
 exports["jshint ignore:start/end should be detected using single line comments"] = function (test) {
   var code = [
@@ -7975,8 +8429,10 @@ exports["jshint ignore:start/end should be detected using single line comments"]
   test.done();
 };
 
+var test destructuring function parameters as es5;
+
 exports["test destructuring function parameters as es5"] = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/destparam.js", "utf8");
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/destparam.js", "utf8");
   TestRun(test)
     .addError(4, 7, "'destructuring binding' is available in ES6 (use 'esversion: 6') or Mozilla JS extensions (use moz).")
     .addError(4, 14, "'arrow function syntax (=>)' is only available in ES6 (use 'esversion: 6').")
@@ -8025,8 +8481,10 @@ exports["test destructuring function parameters as es5"] = function (test) {
   test.done();
 };
 
+var test destructuring function parameters as legacy JS;
+
 exports["test destructuring function parameters as legacy JS"] = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/destparam.js", "utf8");
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/destparam.js", "utf8");
   TestRun(test)
     .addError(4, 7, "'destructuring binding' is available in ES6 (use 'esversion: 6') or Mozilla JS extensions (use moz).")
     .addError(4, 14, "'arrow function syntax (=>)' is only available in ES6 (use 'esversion: 6').")
@@ -8075,6 +8533,8 @@ exports["test destructuring function parameters as legacy JS"] = function (test)
   test.done();
 };
 
+var test for parentheses in odd-numbered token;
+
 exports["test for parentheses in odd-numbered token"] = function (test) {
   var code = [
     "let f, b;",
@@ -8088,6 +8548,8 @@ exports["test for parentheses in odd-numbered token"] = function (test) {
   test.done();
 };
 
+var regression crash from GH-1573;
+
 exports["regression crash from GH-1573"] = function (test) {
   TestRun(test)
     .addError(1, 2, "Expected an identifier and instead saw 'var'.")
@@ -8100,16 +8562,22 @@ exports["regression crash from GH-1573"] = function (test) {
   test.done();
 };
 
+var make sure we don't throw errors on removed options;
+
 exports["make sure we don't throw errors on removed options"] = function (test) {
   TestRun(test).test("a();", { nomen: true, onevar: true, passfail: true, white: true });
   test.done();
 };
+
+var 'for of' shouldn't be subject to 'for in' rules;
 
 exports["'for of' shouldn't be subject to 'for in' rules"] = function (test) {
   TestRun(test)
     .test("for (let x of [1, 2, 3]) { console.log(x); }", { forin: true, esnext: true });
   test.done();
 };
+
+var enforcement of `forin` option should be tolerant of invalid syntax;
 
 // See gh-3099, "TypeError: Cannot read property 'type' of undefined"
 exports["enforcement of `forin` option should be tolerant of invalid syntax"] = function (test) {
@@ -8126,10 +8594,14 @@ exports["enforcement of `forin` option should be tolerant of invalid syntax"] = 
   test.done();
 };
 
+var Ignore strings containing braces within array literal declarations;
+
 exports["Ignore strings containing braces within array literal declarations"] = function (test) {
   TestRun(test).test("var a = [ '[' ];");
   test.done();
 };
+
+var gh-1016: don't issue W088 if identifier is outside of blockscope;
 
 exports["gh-1016: don't issue W088 if identifier is outside of blockscope"] = function (test) {
   var code = [
@@ -8163,7 +8635,9 @@ exports["gh-1016: don't issue W088 if identifier is outside of blockscope"] = fu
   test.done();
 };
 
-exports.testES6UnusedExports = function (test) {
+var testES6UnusedExports;
+
+testES6UnusedExports = function (test) {
   var code = [
     "export {",
     "  varDefinedLater,",
@@ -8200,7 +8674,9 @@ exports.testES6UnusedExports = function (test) {
   test.done();
 };
 
-exports.testES6BlockExports = function (test) {
+var testES6BlockExports;
+
+testES6BlockExports = function (test) {
   var code = [
     "var broken = true;",
     "var broken2 = false;",
@@ -8246,7 +8722,9 @@ exports.testES6BlockExports = function (test) {
   test.done();
 };
 
-exports.testES6BlockImports = function (test) {
+var testES6BlockImports;
+
+testES6BlockImports = function (test) {
   var code = [
     "{",
     " import x from './m.js';",
@@ -8273,7 +8751,9 @@ exports.testES6BlockImports = function (test) {
   test.done();
 };
 
-exports.testStrictDirectiveASI = function (test) {
+var testStrictDirectiveASI;
+
+testStrictDirectiveASI = function (test) {
   var options = { strict: true, asi: true, globalstrict: true };
 
   TestRun(test, 1)
@@ -8367,7 +8847,9 @@ exports.testStrictDirectiveASI = function (test) {
   test.done();
 };
 
-exports.dereferenceDelete = function (test) {
+var dereferenceDelete;
+
+dereferenceDelete = function (test) {
   TestRun(test)
     .addError(1, 7, "Expected an identifier and instead saw '.'.")
     .addError(1, 8, "Missing semicolon.")
@@ -8376,7 +8858,9 @@ exports.dereferenceDelete = function (test) {
   test.done();
 };
 
-exports.trailingCommaInObjectBindingPattern = function (test) {
+var trailingCommaInObjectBindingPattern;
+
+trailingCommaInObjectBindingPattern = function (test) {
   var code = [
     'function fn(O) {',
     '  var {a, b, c,} = O;',
@@ -8391,7 +8875,10 @@ exports.trailingCommaInObjectBindingPattern = function (test) {
 };
 
 
-exports.trailingCommaInObjectBindingPatternParameters = function (test) {
+var trailingCommaInObjectBindingPatternParameters;
+
+
+trailingCommaInObjectBindingPatternParameters = function (test) {
   var code = [
     'function fn({a, b, c,}) { }',
     'fn({ a: 1, b: 2, c: 3 });'
@@ -8404,7 +8891,10 @@ exports.trailingCommaInObjectBindingPatternParameters = function (test) {
 };
 
 
-exports.trailingCommaInArrayBindingPattern = function (test) {
+var trailingCommaInArrayBindingPattern;
+
+
+trailingCommaInArrayBindingPattern = function (test) {
   var code = [
     'function fn(O) {',
     '  var [a, b, c,] = O;',
@@ -8419,7 +8909,10 @@ exports.trailingCommaInArrayBindingPattern = function (test) {
 };
 
 
-exports.trailingCommaInArrayBindingPatternParameters = function (test) {
+var trailingCommaInArrayBindingPatternParameters;
+
+
+trailingCommaInArrayBindingPatternParameters = function (test) {
   var code = [
     'function fn([a, b, c,]) { }',
     'fn([1, 2, 3]);'
@@ -8431,7 +8924,9 @@ exports.trailingCommaInArrayBindingPatternParameters = function (test) {
   test.done();
 };
 
-exports.testGH1879 = function (test) {
+var testGH1879;
+
+testGH1879 = function (test) {
   var code = [
     "function Foo() {",
     "  return;",
@@ -8447,7 +8942,9 @@ exports.testGH1879 = function (test) {
   test.done();
 };
 
-exports.commaAfterRestElementInArrayBindingPattern = function (test) {
+var commaAfterRestElementInArrayBindingPattern;
+
+commaAfterRestElementInArrayBindingPattern = function (test) {
   var code = [
     'function fn(O) {',
     '  var [a, b, ...c,] = O;',
@@ -8465,7 +8962,10 @@ exports.commaAfterRestElementInArrayBindingPattern = function (test) {
 };
 
 
-exports.commaAfterRestElementInArrayBindingPatternParameters = function (test) {
+var commaAfterRestElementInArrayBindingPatternParameters;
+
+
+commaAfterRestElementInArrayBindingPatternParameters = function (test) {
   var code = [
     'function fn([a, b, ...c,]) { }',
     'function fn2([...c,]) { }',
@@ -8482,7 +8982,10 @@ exports.commaAfterRestElementInArrayBindingPatternParameters = function (test) {
 };
 
 
-exports.commaAfterRestParameter = function (test) {
+var commaAfterRestParameter;
+
+
+commaAfterRestParameter = function (test) {
   var code = [
     'function fn(a, b, ...c, d) { }',
     'function fn2(...a, b) { }',
@@ -8499,7 +9002,10 @@ exports.commaAfterRestParameter = function (test) {
 };
 
 
-exports.restParameterWithDefault = function (test) {
+var restParameterWithDefault;
+
+
+restParameterWithDefault = function (test) {
   TestRun(test)
     .addError(1, 17, "Rest parameter does not a support default value.")
     .test("function f(...x = 0) {}", { esversion: 6 });
@@ -8508,7 +9014,10 @@ exports.restParameterWithDefault = function (test) {
 };
 
 
-exports.extraRestOperator = function (test) {
+var extraRestOperator;
+
+
+extraRestOperator = function (test) {
   TestRun(test)
     .addError(1, 23, "Unexpected '...'.")
     .test('function fn([a, b, ......c]) { }', { esnext: true });
@@ -8557,7 +9066,10 @@ exports.extraRestOperator = function (test) {
 };
 
 
-exports.restOperatorWithoutIdentifier = function (test) {
+var restOperatorWithoutIdentifier;
+
+
+restOperatorWithoutIdentifier = function (test) {
   var code = [
     'function fn([a, b, ...]) { }',
     'function fn2([...]) { }',
@@ -8636,7 +9148,9 @@ exports.restOperatorWithoutIdentifier = function (test) {
   test.done();
 };
 
-exports.invalidSpread = function (test) {
+var invalidSpread;
+
+invalidSpread = function (test) {
   TestRun(test)
     .addError(1, 6, "Expected an identifier and instead saw '...'.")
     .addError(1, 9, "Missing semicolon.")
@@ -8646,7 +9160,9 @@ exports.invalidSpread = function (test) {
   test.done();
 };
 
-exports.getAsIdentifierProp = function (test) {
+var getAsIdentifierProp;
+
+getAsIdentifierProp = function (test) {
   TestRun(test)
     .test('var get; var obj = { get };', { esnext: true });
 
@@ -8680,7 +9196,9 @@ exports.getAsIdentifierProp = function (test) {
   test.done();
 };
 
-exports.invalidParams = function (test) {
+var invalidParams;
+
+invalidParams = function (test) {
   TestRun(test)
     .addError(1, 11, "Expected an identifier and instead saw '!'.")
     .addError(1, 11, "Unrecoverable syntax error. (100% scanned).")
@@ -8689,8 +9207,10 @@ exports.invalidParams = function (test) {
   test.done();
 };
 
+var functionKeyword;
+
 // Regression test for gh-2362
-exports.functionKeyword = function (test) {
+functionKeyword = function (test) {
   TestRun(test)
     .addError(1, 1, "Missing name in function declaration.")
     .addError(1, 1, "Expected '(' and instead saw ''.")
@@ -8700,7 +9220,9 @@ exports.functionKeyword = function (test) {
   test.done();
 };
 
-exports.nonGeneratorAfterGenerator = function (test) {
+var nonGeneratorAfterGenerator;
+
+nonGeneratorAfterGenerator = function (test) {
   var run;
   var code = [
     'var obj = {',
@@ -8719,6 +9241,8 @@ exports.nonGeneratorAfterGenerator = function (test) {
 
   test.done();
 };
+
+var new.target;
 
 exports["new.target"] = function (test) {
   var code = [
@@ -8811,8 +9335,10 @@ exports["new.target"] = function (test) {
   test.done();
 };
 
+var lazyIdentifierChecks;
+
 // gh2656: "[Regression] 2.9.0 warns about proto deprecated even if proto:true"
-exports.lazyIdentifierChecks = function (test) {
+lazyIdentifierChecks = function (test) {
   var src = [
     "var o = [",
     "  function() {",
@@ -8847,8 +9373,10 @@ exports.lazyIdentifierChecks = function (test) {
   test.done();
 };
 
-exports.parsingCommas = function (test) {
-  var src = fs.readFileSync(__dirname + '/fixtures/parsingCommas.js', 'utf8');
+var parsingCommas;
+
+parsingCommas = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + '/fixtures/parsingCommas.js', 'utf8');
 
   TestRun(test)
     .addError(2, 12, "Expected an identifier and instead saw ','.")
@@ -8866,7 +9394,9 @@ exports.parsingCommas = function (test) {
   test.done();
 };
 
-exports.instanceOfLiterals = function (test) {
+var instanceOfLiterals;
+
+instanceOfLiterals = function (test) {
   var code = [
     "var x;",
     "var y = [x];",
@@ -8933,7 +9463,9 @@ exports.instanceOfLiterals = function (test) {
   test.done();
 };
 
-exports.forInExpr = function (test) {
+var forInExpr;
+
+forInExpr = function (test) {
   TestRun(test)
     .test([
       "for (var x in [], []) {}"
@@ -8952,7 +9484,9 @@ exports.forInExpr = function (test) {
   test.done();
 };
 
-exports.octalEscape = function (test) {
+var octalEscape;
+
+octalEscape = function (test) {
   TestRun(test)
     .addError(3, 8, "Octal literals are not allowed in strict mode.")
     .addError(4, 8, "Octal literals are not allowed in strict mode.")
@@ -8992,9 +9526,11 @@ exports.octalEscape = function (test) {
   test.done();
 };
 
+var lookaheadBeyondEnd;
+
 // See gh-3004, "Starting jsdoc comment causes 'Unclosed regular expression'
 // error"
-exports.lookaheadBeyondEnd = function (test) {
+lookaheadBeyondEnd = function (test) {
   TestRun(test)
     .addError(1, 7, "Unmatched '{'.")
     .addError(1, 7, "Unrecoverable syntax error. (100% scanned).")
@@ -9002,6 +9538,8 @@ exports.lookaheadBeyondEnd = function (test) {
 
   test.done();
 };
+
+var regression test for GH-3230;
 
 // In releases prior to 2.9.6, JSHint would not terminate when given the source
 // code in the following tests.
@@ -9028,7 +9566,10 @@ exports["regression test for GH-3230"] = function (test) {
 };
 
 
-exports.unicode8 = function (test) {
+var unicode8;
+
+
+unicode8 = function (test) {
   TestRun(test)
     .addError(1, 5, "'unicode 8' is only available in ES6 (use 'esversion: 6').")
     .test("var Ϳ;", {esversion: 5});
@@ -9039,9 +9580,11 @@ exports.unicode8 = function (test) {
   test.done();
 };
 
-exports.exponentiation = {};
+var exponentiation;
 
-exports.exponentiation.esversion = function (test) {
+exponentiation = {};
+
+exponentiation.esversion = function (test) {
   var src = "x = 2 ** 3;";
 
   TestRun(test)
@@ -9058,7 +9601,7 @@ exports.exponentiation.esversion = function (test) {
   test.done();
 };
 
-exports.exponentiation.whitespace = function (test) {
+exponentiation.whitespace = function (test) {
   TestRun(test)
     .test([
       "2 ** 3;",
@@ -9085,7 +9628,7 @@ exports.exponentiation.whitespace = function (test) {
   test.done();
 };
 
-exports.exponentiation.leftPrecedence = function (test) {
+exponentiation.leftPrecedence = function (test) {
   TestRun(test, "UpdateExpressions")
     .test([
       "++x ** y;",
@@ -9128,7 +9671,7 @@ exports.exponentiation.leftPrecedence = function (test) {
   test.done();
 };
 
-exports.exponentiation.rightPrecedence = function (test) {
+exponentiation.rightPrecedence = function (test) {
   TestRun(test, "ExponentiationExpression")
     .test([
       "x ** x ** y;",
@@ -9152,7 +9695,7 @@ exports.exponentiation.rightPrecedence = function (test) {
   test.done();
 };
 
-exports.exponentiation.compoundAssignment = function (test) {
+exponentiation.compoundAssignment = function (test) {
   var src = [
       "x **= x;",
       "x**=x;",
@@ -9224,7 +9767,9 @@ exports.exponentiation.compoundAssignment = function (test) {
   test.done();
 };
 
-exports.letAsIdentifier = function (test) {
+var letAsIdentifier;
+
+letAsIdentifier = function (test) {
   TestRun(test, "variable binding")
     .test([
       "var let;",
@@ -9299,7 +9844,9 @@ exports.letAsIdentifier = function (test) {
   test.done();
 };
 
-exports.trailingParameterComma = function(test) {
+var trailingParameterComma;
+
+trailingParameterComma = function(test) {
   var code = 'function f(x,) {}';
 
   TestRun(test, 'declaration in ES5')
@@ -9317,7 +9864,9 @@ exports.trailingParameterComma = function(test) {
   test.done();
 };
 
-exports.trailingArgumentsComma = function(test) {
+var trailingArgumentsComma;
+
+trailingArgumentsComma = function(test) {
   TestRun(test, "valid - not supported in ES7")
     .addError(1, 4, "'Trailing comma in arguments lists' is only available in ES8 (use 'esversion: 8').")
     .test("f(0,);", { esversion: 7 })
@@ -9349,9 +9898,11 @@ exports.trailingArgumentsComma = function(test) {
   test.done();
 };
 
-exports.asyncFunctions = {};
+var asyncFunctions;
 
-exports.asyncFunctions.asyncIdentifier = function (test) {
+asyncFunctions = {};
+
+asyncFunctions.asyncIdentifier = function (test) {
   var code = [
     "var async;",
     "{ let async; }",
@@ -9403,7 +9954,7 @@ exports.asyncFunctions.asyncIdentifier = function (test) {
   test.done();
 };
 
-exports.asyncFunctions.awaitIdentifier = function (test) {
+asyncFunctions.awaitIdentifier = function (test) {
   var code = [
     "var await;",
     "{ let await; }",
@@ -9487,7 +10038,7 @@ exports.asyncFunctions.awaitIdentifier = function (test) {
   test.done();
 };
 
-exports.asyncFunctions.expression = function (test) {
+asyncFunctions.expression = function (test) {
   TestRun(test, "Statement position")
     .addError(1, 15, "Missing name in function declaration.")
     .test("async function() {}", { esversion: 8 });
@@ -9506,7 +10057,7 @@ exports.asyncFunctions.expression = function (test) {
   test.done();
 };
 
-exports.asyncFunctions.awaitOperator = function (test) {
+asyncFunctions.awaitOperator = function (test) {
   TestRun(test, "Operands")
     .test([
       "void async function() {",
@@ -9529,7 +10080,7 @@ exports.asyncFunctions.awaitOperator = function (test) {
   test.done();
 };
 
-exports.asyncFunctions.arrow = function (test) {
+asyncFunctions.arrow = function (test) {
   TestRun(test, "Statement position")
     .addError(1, 14, "Expected an assignment or function call and instead saw an expression.")
     .addError(2, 13, "Expected an assignment or function call and instead saw an expression.")
@@ -9570,7 +10121,7 @@ exports.asyncFunctions.arrow = function (test) {
   test.done();
 };
 
-exports.asyncFunctions.declaration = function (test) {
+asyncFunctions.declaration = function (test) {
   TestRun(test)
     .addError(1, 1, "'async functions' is only available in ES8 (use 'esversion: 8').")
     .test("async function f() {}", { esversion: 7 });
@@ -9589,7 +10140,7 @@ exports.asyncFunctions.declaration = function (test) {
   test.done();
 };
 
-exports.asyncFunctions.objectMethod = function (test) {
+asyncFunctions.objectMethod = function (test) {
   var code = [
     "void { async m() {} };",
     "void { async 'm'() {} };",
@@ -9637,7 +10188,7 @@ exports.asyncFunctions.objectMethod = function (test) {
   test.done();
 };
 
-exports.asyncFunctions.classMethod = function (test) {
+asyncFunctions.classMethod = function (test) {
   var code = [
     "void class { async m() {} };",
     "void class { async 'm'() {} };",
@@ -9689,9 +10240,11 @@ exports.asyncFunctions.classMethod = function (test) {
   test.done();
 };
 
-exports.asyncGenerators = {};
+var asyncGenerators;
 
-exports.asyncGenerators.expression = function (test) {
+asyncGenerators = {};
+
+asyncGenerators.expression = function (test) {
   TestRun(test, "Statement position")
     .addError(1, 18, "Missing name in function declaration.")
     .test("async function * () { await 0; yield 0; }", { esversion: 9 });
@@ -9714,7 +10267,7 @@ exports.asyncGenerators.expression = function (test) {
   test.done();
 };
 
-exports.asyncGenerators.declaration = function (test) {
+asyncGenerators.declaration = function (test) {
   TestRun(test)
     .addError(1, 1, "'async generators' is only available in ES9 (use 'esversion: 9').")
     .test("async function * f() { await 0; yield 0; }", { esversion: 8 });
@@ -9737,7 +10290,7 @@ exports.asyncGenerators.declaration = function (test) {
   test.done();
 };
 
-exports.asyncGenerators.method = function (test) {
+asyncGenerators.method = function (test) {
   TestRun(test)
     .addError(1, 14, "'async generators' is only available in ES9 (use 'esversion: 9').")
     .test("void { async * m() { await 0; yield 0; } };", { esversion: 8 });
@@ -9756,7 +10309,7 @@ exports.asyncGenerators.method = function (test) {
   test.done();
 };
 
-exports.asyncGenerators.classMethod = function (test) {
+asyncGenerators.classMethod = function (test) {
   TestRun(test)
     .addError(1, 19, "'async generators' is only available in ES9 (use 'esversion: 9').")
     .test("class C { async * m() { await 0; yield 0; } }", { esversion: 8 });
@@ -9780,7 +10333,9 @@ exports.asyncGenerators.classMethod = function (test) {
   test.done();
 };
 
-exports.asyncIteration = function (test) {
+var asyncIteration;
+
+asyncIteration = function (test) {
   TestRun(test, "inavailability in prior editions")
     .addError(2, 7, "'asynchronous iteration' is only available in ES9 (use 'esversion: 9').")
     .addError(3, 7, "'asynchronous iteration' is only available in ES9 (use 'esversion: 9').")

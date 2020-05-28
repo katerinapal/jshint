@@ -1,14 +1,18 @@
+import { JSHINT as _JSHINT } from "../..";
+import ext_fs_fs from "fs";
+import { setup as helperstesthelper_setup } from "../helpers/testhelper";
 "use strict";
 
-var JSHINT  = require("../..").JSHINT;
-var fs      = require('fs');
-var TestRun = require("../helpers/testhelper").setup.testRun;
+var JSHINT  = _JSHINT.JSHINT;
+var TestRun = helperstesthelper_setup.setup.testRun;
+
+var testCustomGlobals;
 
 /**
  * JSHint allows you to specify custom globals as a parameter to the JSHINT
  * function so it is not necessary to spam code with jshint-related comments
  */
-exports.testCustomGlobals = function (test) {
+testCustomGlobals = function (test) {
   var code   = '(function (test) { return [ fooGlobal, barGlobal ]; }());';
   var custom = { fooGlobal: false, barGlobal: false };
 
@@ -68,8 +72,10 @@ exports.testCustomGlobals = function (test) {
   test.done();
 };
 
-exports.testUnusedDefinedGlobals = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/unusedglobals.js", "utf8");
+var testUnusedDefinedGlobals;
+
+testUnusedDefinedGlobals = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/unusedglobals.js", "utf8");
 
   TestRun(test)
     .addError(2, 1, "'bar' is defined but never used.")
@@ -78,7 +84,9 @@ exports.testUnusedDefinedGlobals = function (test) {
   test.done();
 };
 
-exports.testImplieds = function (test) {
+var testImplieds;
+
+testImplieds = function (test) {
   var src = [
     "f = 0;",
     "(function() {",
@@ -109,7 +117,9 @@ exports.testImplieds = function (test) {
   test.done();
 };
 
-exports.testExportedDefinedGlobals = function (test) {
+var testExportedDefinedGlobals;
+
+testExportedDefinedGlobals = function (test) {
   var src = ["/*global foo, bar */",
     "export { bar, foo };"];
 
@@ -122,7 +132,9 @@ exports.testExportedDefinedGlobals = function (test) {
   test.done();
 };
 
-exports.testGlobalVarDeclarations = function (test) {
+var testGlobalVarDeclarations;
+
+testGlobalVarDeclarations = function (test) {
   var src = "var a;";
 
   TestRun(test).test(src, { es3: true }, {});
@@ -142,7 +154,9 @@ exports.testGlobalVarDeclarations = function (test) {
   test.done();
 };
 
-exports.globalDeclarations = function (test) {
+var globalDeclarations;
+
+globalDeclarations = function (test) {
   var src = "exports = module.exports = function (test) {};";
 
   // Test should pass
@@ -160,8 +174,10 @@ exports.globalDeclarations = function (test) {
   test.done();
 };
 
-exports.multilineGlobalDeclarations = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/multiline-global-declarations.js", "utf8");
+var multilineGlobalDeclarations;
+
+multilineGlobalDeclarations = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/multiline-global-declarations.js", "utf8");
 
   TestRun(test)
     .addError(12, 1, "'pi' is defined but never used.")
@@ -170,8 +186,10 @@ exports.multilineGlobalDeclarations = function (test) {
   test.done();
 };
 
+var testNewArray;
+
 /** Test that JSHint recognizes `new Array(<expr>)` as a valid expression */
-exports.testNewArray = function (test) {
+testNewArray = function (test) {
   var code  = 'new Array(1);';
   var code1 = 'new Array(v + 1);';
   var code2 = 'new Array("hello", "there", "chaps");';
@@ -187,8 +205,10 @@ exports.testNewArray = function (test) {
   test.done();
 };
 
+var testNewNonNativeArray;
+
 /** Test that JSHint recognizes `new foo.Array(<expr>)` as a valid expression #527 **/
-exports.testNewNonNativeArray = function (test) {
+testNewNonNativeArray = function (test) {
   var code  = 'new foo.Array();';
   var code1 = 'new foo.Array(1);';
   var code2 = 'new foo.Array(v + 1);';
@@ -202,7 +222,9 @@ exports.testNewNonNativeArray = function (test) {
   test.done();
 };
 
-exports.testNonNativeArray = function (test) {
+var testNonNativeArray;
+
+testNonNativeArray = function (test) {
   var code1 = 'foo.Array();';
   var code2 = 'foo.Array(v + 1);';
   var code3 = 'foo.Array("hello", "there", "chaps");';
@@ -215,8 +237,11 @@ exports.testNonNativeArray = function (test) {
 };
 
 
+var testNewObject;
+
+
 /** Test that JSHint recognizes `new Object(<expr>)` as a valid expression */
-exports.testNewObject = function (test) {
+testNewObject = function (test) {
   var code  = 'Object(1);';
   var code1 = 'new Object(1);';
 
@@ -234,8 +259,10 @@ exports.testNewObject = function (test) {
   test.done();
 };
 
+var testNewNonNativeObject;
+
 /** Test that JSHint recognizes `new foo.Object(<expr>)` as a valid expression #527 **/
-exports.testNewNonNativeObject = function (test) {
+testNewNonNativeObject = function (test) {
   var code  = 'new foo.Object();';
   var code1 = 'new foo.Object(1);';
   var code2 = 'foo.Object();';
@@ -250,6 +277,9 @@ exports.testNewNonNativeObject = function (test) {
 };
 
 
+var testUndefinedAsParam;
+
+
 /**
  * Test that JSHint allows `undefined` to be a function parameter.
  * It is a common pattern to protect against the case when somebody
@@ -257,7 +287,7 @@ exports.testNewNonNativeObject = function (test) {
  *
  * More info: https://gist.github.com/315916
  */
-exports.testUndefinedAsParam = function (test) {
+testUndefinedAsParam = function (test) {
   var code  = '(function (undefined) {}());';
   var code1 = 'var undefined = 1;';
 
@@ -271,17 +301,21 @@ exports.testUndefinedAsParam = function (test) {
   test.done();
 };
 
+var newLineAfterDot;
+
 /** Tests that JSHint accepts new line after a dot (.) operator */
-exports.newLineAfterDot = function (test) {
+newLineAfterDot = function (test) {
   TestRun(test).test([ "chain().chain().", "chain();" ]);
   test.done();
 };
+
+var noDelete;
 
 /**
  * JSHint does not tolerate deleting variables.
  * More info: http://perfectionkills.com/understanding-delete/
  */
-exports.noDelete = function (test) {
+noDelete = function (test) {
   TestRun(test)
     .addError(1, 21, 'Variables should not be deleted.')
     .test('delete NullReference;');
@@ -289,12 +323,14 @@ exports.noDelete = function (test) {
   test.done();
 };
 
+var switchFallThrough;
+
 /**
  * JSHint allows case statement fall through only when it is made explicit
  * using special comments.
  */
-exports.switchFallThrough = function (test) {
-  var src = fs.readFileSync(__dirname + '/fixtures/switchFallThrough.js', 'utf8');
+switchFallThrough = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + '/fixtures/switchFallThrough.js', 'utf8');
   TestRun(test)
     .addError(3, 18, "Expected a 'break' statement before 'case'.")
     .addError(40, 12, "Unexpected ':'.")
@@ -303,10 +339,12 @@ exports.switchFallThrough = function (test) {
   test.done();
 };
 
+var switchDefaultFirst;
+
 // GH-490: JSHint shouldn't require break before default if default is
 // the first switch statement.
-exports.switchDefaultFirst = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/switchDefaultFirst.js", "utf8");
+switchDefaultFirst = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/switchDefaultFirst.js", "utf8");
 
   TestRun(test)
     .addError(5, 16, "Expected a 'break' statement before 'default'.")
@@ -315,7 +353,9 @@ exports.switchDefaultFirst = function (test) {
   test.done();
 };
 
-exports.testVoid = function (test) {
+var testVoid;
+
+testVoid = function (test) {
   var code = [
     "void(0);",
     "void 0;",
@@ -326,8 +366,10 @@ exports.testVoid = function (test) {
   test.done();
 };
 
-exports.functionScopedOptions = function (test) {
-  var src = fs.readFileSync(__dirname + '/fixtures/functionScopedOptions.js', 'utf8');
+var functionScopedOptions;
+
+functionScopedOptions = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + '/fixtures/functionScopedOptions.js', 'utf8');
   TestRun(test)
     .addError(1, 1, "eval can be harmful.")
     .addError(8, 1, "eval can be harmful.")
@@ -336,23 +378,29 @@ exports.functionScopedOptions = function (test) {
   test.done();
 };
 
+var jslintOptions;
+
 /** JSHint should not only read jshint, but also jslint options */
-exports.jslintOptions = function (test) {
-  var src = fs.readFileSync(__dirname + '/fixtures/jslintOptions.js', 'utf8');
+jslintOptions = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + '/fixtures/jslintOptions.js', 'utf8');
   TestRun(test).test(src);
 
   test.done();
 };
 
-exports.jslintInverted = function (test) {
-  var src = fs.readFileSync(__dirname + '/fixtures/jslintInverted.js', 'utf8');
+var jslintInverted;
+
+jslintInverted = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + '/fixtures/jslintInverted.js', 'utf8');
   TestRun(test).test(src);
 
   test.done();
 };
 
-exports.jslintRenamed = function (test) {
-  var src = fs.readFileSync(__dirname + '/fixtures/jslintRenamed.js', 'utf8');
+var jslintRenamed;
+
+jslintRenamed = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + '/fixtures/jslintRenamed.js', 'utf8');
   TestRun(test)
     .addError(4, 9, "Expected '===' and instead saw '=='.")
     .test(src);
@@ -360,7 +408,9 @@ exports.jslintRenamed = function (test) {
   test.done();
 };
 
-exports.jslintSloppy = function (test) {
+var jslintSloppy;
+
+jslintSloppy = function (test) {
   var src = "/*jslint sloppy:true */ function test() { return 1; }";
 
   TestRun(test)
@@ -369,8 +419,10 @@ exports.jslintSloppy = function (test) {
   test.done();
 };
 
+var jslintUnrecognized;
+
 /** JSHint should ignore unrecognized jslint options */
-exports.jslintUnrecognized = function (test) {
+jslintUnrecognized = function (test) {
   var src = "/*jslint closure:true */ function test() { return 1; }";
 
   TestRun(test)
@@ -379,16 +431,20 @@ exports.jslintUnrecognized = function (test) {
   test.done();
 };
 
-exports.caseExpressions = function (test) {
-  var src = fs.readFileSync(__dirname + '/fixtures/caseExpressions.js', 'utf8');
+var caseExpressions;
+
+caseExpressions = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + '/fixtures/caseExpressions.js', 'utf8');
   TestRun(test)
     .test(src);
 
   test.done();
 };
 
-exports.returnStatement = function (test) {
-  var src = fs.readFileSync(__dirname + '/fixtures/return.js', 'utf8');
+var returnStatement;
+
+returnStatement = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + '/fixtures/return.js', 'utf8');
 
   TestRun(test)
     .addError(3, 15, "Did you mean to return a conditional instead of an assignment?")
@@ -400,8 +456,10 @@ exports.returnStatement = function (test) {
   test.done();
 };
 
-exports.argsInCatchReused = function (test) {
-  var src = fs.readFileSync(__dirname + '/fixtures/trycatch.js', 'utf8');
+var argsInCatchReused;
+
+argsInCatchReused = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + '/fixtures/trycatch.js', 'utf8');
   TestRun(test)
     .addError(6, 13, "'e' is already defined.")
     .addError(12, 9, "Do not assign to the exception parameter.")
@@ -412,7 +470,9 @@ exports.argsInCatchReused = function (test) {
   test.done();
 };
 
-exports.testRawOnError = function (test) {
+var testRawOnError;
+
+testRawOnError = function (test) {
   JSHINT(';', { maxerr: 1 });
   test.equal(JSHINT.errors[0].raw, 'Unnecessary semicolon.');
   test.equal(JSHINT.errors[1].raw, 'Too many errors.');
@@ -421,8 +481,10 @@ exports.testRawOnError = function (test) {
   test.done();
 };
 
-exports.yesEmptyStmt = function (test) {
-  var src = fs.readFileSync(__dirname + '/fixtures/emptystmt.js', 'utf8');
+var yesEmptyStmt;
+
+yesEmptyStmt = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + '/fixtures/emptystmt.js', 'utf8');
 
   TestRun(test)
     .addError(1, 4, "Expected an identifier and instead saw ';'.")
@@ -440,8 +502,10 @@ exports.yesEmptyStmt = function (test) {
   test.done();
 };
 
-exports.insideEval = function (test) {
-  var src = fs.readFileSync(__dirname + '/fixtures/insideEval.js', 'utf8');
+var insideEval;
+
+insideEval = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + '/fixtures/insideEval.js', 'utf8');
 
   TestRun(test)
     .addError(1, 1, "eval can be harmful.")
@@ -472,7 +536,9 @@ exports.insideEval = function (test) {
   test.done();
 };
 
-exports.escapedEvil = function (test) {
+var escapedEvil;
+
+escapedEvil = function (test) {
   var code = [
     "\\u0065val(\"'test'\");"
   ];
@@ -484,8 +550,10 @@ exports.escapedEvil = function (test) {
   test.done();
 };
 
+var noExcOnTooManyUndefined;
+
 // Regression test for GH-394.
-exports.noExcOnTooManyUndefined = function (test) {
+noExcOnTooManyUndefined = function (test) {
   var code = 'a(); b();';
 
   try {
@@ -502,8 +570,10 @@ exports.noExcOnTooManyUndefined = function (test) {
   test.done();
 };
 
-exports.defensiveSemicolon = function (test) {
-  var src = fs.readFileSync(__dirname + '/fixtures/gh-226.js', 'utf8');
+var defensiveSemicolon;
+
+defensiveSemicolon = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + '/fixtures/gh-226.js', 'utf8');
 
   TestRun(test)
     .addError(16, 1, "Unnecessary semicolon.")
@@ -513,8 +583,10 @@ exports.defensiveSemicolon = function (test) {
   test.done();
 };
 
+var iife;
+
 // Test different variants of IIFE
-exports.iife = function (test) {
+iife = function (test) {
   var iife = [
     '(function (test) { return; }());',
     '(function (test) { return; })();'
@@ -525,9 +597,11 @@ exports.iife = function (test) {
   test.done();
 };
 
+var invalidOptions;
+
 // Tests invalid options when they're passed as function arguments
 // For code that tests /*jshint ... */ see parser.js
-exports.invalidOptions = function (test) {
+invalidOptions = function (test) {
   TestRun(test)
     .addError(0, 0, "Bad option: 'invalid'.")
     .test("function test() {}", { es3: true, devel: true, invalid: true });
@@ -535,15 +609,19 @@ exports.invalidOptions = function (test) {
   test.done();
 };
 
-exports.multilineArray = function (test) {
-  var src = fs.readFileSync(__dirname + '/fixtures/gh-334.js', 'utf8');
+var multilineArray;
+
+multilineArray = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + '/fixtures/gh-334.js', 'utf8');
 
   TestRun(test).test(src);
 
   test.done();
 };
 
-exports.testInvalidSource = function (test) {
+var testInvalidSource;
+
+testInvalidSource = function (test) {
   TestRun(test)
     .addError(0, undefined, "Input is neither a string nor an array of strings.")
     .test(undefined);
@@ -565,7 +643,9 @@ exports.testInvalidSource = function (test) {
   test.done();
 };
 
-exports.testConstructor = function (test) {
+var testConstructor;
+
+testConstructor = function (test) {
   var code = "new Number(5);";
 
   TestRun(test)
@@ -575,7 +655,9 @@ exports.testConstructor = function (test) {
   test.done();
 };
 
-exports.missingRadix = function (test) {
+var missingRadix;
+
+missingRadix = function (test) {
   var code = "parseInt(20);";
 
   TestRun(test)
@@ -587,14 +669,18 @@ exports.missingRadix = function (test) {
   test.done();
 };
 
-exports.NumberNaN = function (test) {
+var NumberNaN;
+
+NumberNaN = function (test) {
   var code = "(function (test) { return Number.NaN; })();";
   TestRun(test).test(code, {es3: true});
 
   test.done();
 };
 
-exports.htmlEscapement = function (test) {
+var htmlEscapement;
+
+htmlEscapement = function (test) {
   TestRun(test).test("var a = '<\\!--';", {es3: true});
   TestRun(test)
     .test("var a = '\\!';", {es3: true});
@@ -602,8 +688,10 @@ exports.htmlEscapement = function (test) {
   test.done();
 };
 
+var testSparseArrays;
+
 // GH-551 regression test.
-exports.testSparseArrays = function (test) {
+testSparseArrays = function (test) {
   var src = "var arr = ['a',, null,, '',, undefined,,];";
 
   TestRun(test)
@@ -619,8 +707,10 @@ exports.testSparseArrays = function (test) {
   test.done();
 };
 
-exports.testReserved = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/reserved.js", "utf8");
+var testReserved;
+
+testReserved = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/reserved.js", "utf8");
 
   TestRun(test)
     .addError(1, 1, "Expected an identifier and instead saw 'volatile' (a reserved word).")
@@ -636,10 +726,12 @@ exports.testReserved = function (test) {
   test.done();
 };
 
+var testES5Reserved;
+
 // GH-744: Prohibit the use of reserved words as non-property
 // identifiers.
-exports.testES5Reserved = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/es5Reserved.js", "utf8");
+testES5Reserved = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/es5Reserved.js", "utf8");
 
   TestRun(test)
     .addError(2, 3, "Expected an identifier and instead saw 'default' (a reserved word).")
@@ -663,8 +755,10 @@ exports.testES5Reserved = function (test) {
   test.done();
 };
 
-exports.testCatchBlocks = function (test) {
-  var src = fs.readFileSync(__dirname + '/fixtures/gh247.js', 'utf8');
+var testCatchBlocks;
+
+testCatchBlocks = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + '/fixtures/gh247.js', 'utf8');
 
   TestRun(test)
     .addError(19, 13, "'w' is already defined.")
@@ -672,7 +766,7 @@ exports.testCatchBlocks = function (test) {
     .addError(36, 19, "'w2' used out of scope.")
     .test(src, { es3: true, undef: true, devel: true });
 
-  src = fs.readFileSync(__dirname + '/fixtures/gh618.js', 'utf8');
+  src = ext_fs_fs.readFileSync(__dirname + '/fixtures/gh618.js', 'utf8');
 
   TestRun(test)
     .addError(5, 11, "Value of 'x' may be overwritten in IE 8 and earlier.")
@@ -690,7 +784,9 @@ exports.testCatchBlocks = function (test) {
   test.done();
 };
 
-exports.testNumericParams = function (test) {
+var testNumericParams;
+
+testNumericParams = function (test) {
   TestRun(test)
     .test("/*jshint maxparams:4, indent:3, maxlen:false */");
 
@@ -701,7 +797,9 @@ exports.testNumericParams = function (test) {
   test.done();
 };
 
-exports.testForIn = function (test) {
+var testForIn;
+
+testForIn = function (test) {
   var src = [
     "(function (o) {",
     "for (var i in o) { i(); }",
@@ -795,8 +893,10 @@ exports.testForIn = function (test) {
   test.done();
 };
 
-exports.testRegexArray = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/regex_array.js", "utf8");
+var testRegexArray;
+
+testRegexArray = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/regex_array.js", "utf8");
 
   TestRun(test)
     .test(src, {es3: true});
@@ -804,8 +904,10 @@ exports.testRegexArray = function (test) {
   test.done();
 };
 
+var testUndefinedAssignment;
+
 // Regression test for GH-1070
-exports.testUndefinedAssignment = function (test) {
+testUndefinedAssignment = function (test) {
   var src = [
     "var x = undefined;",
     "const y = undefined;",
@@ -849,8 +951,10 @@ exports.testUndefinedAssignment = function (test) {
   test.done();
 };
 
-exports.testES6Modules = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/es6-import-export.js", "utf8");
+var testES6Modules;
+
+testES6Modules = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/es6-import-export.js", "utf8");
 
   var importConstErrors = [
     [51, 1, "Attempting to override '$' which is a constant."],
@@ -971,7 +1075,9 @@ exports.testES6Modules = function (test) {
   test.done();
 };
 
-exports.testES6ModulesNamedExportsAffectUnused = function (test) {
+var testES6ModulesNamedExportsAffectUnused;
+
+testES6ModulesNamedExportsAffectUnused = function (test) {
   // Named Exports should count as used
   var src1 = [
     "var a = {",
@@ -1007,7 +1113,9 @@ exports.testES6ModulesNamedExportsAffectUnused = function (test) {
   test.done();
 };
 
-exports.testConstRedeclaration = function (test) {
+var testConstRedeclaration;
+
+testConstRedeclaration = function (test) {
 
   // consts cannot be redeclared, but they can shadow
   var src = [
@@ -1038,6 +1146,8 @@ exports.testConstRedeclaration = function (test) {
   test.done();
 };
 
+var test typeof in TDZ;
+
 exports["test typeof in TDZ"] = function (test) {
 
   var src = [
@@ -1059,7 +1169,9 @@ exports["test typeof in TDZ"] = function (test) {
   test.done();
 };
 
-exports.testConstModification = function (test) {
+var testConstModification;
+
+testConstModification = function (test) {
 
   var src = [
     "const a = 1;",
@@ -1141,8 +1253,10 @@ exports.testConstModification = function (test) {
   test.done();
 };
 
+var class declaration export;
+
 exports["class declaration export"] = function (test) {
-  var source = fs.readFileSync(__dirname + "/fixtures/class-declaration.js", "utf8");
+  var source = ext_fs_fs.readFileSync(__dirname + "/fixtures/class-declaration.js", "utf8");
 
   TestRun(test).test(source, {
     esnext: true,
@@ -1151,9 +1265,11 @@ exports["class declaration export"] = function (test) {
 
   test.done();
 };
+
+var function declaration export;
 
 exports["function declaration export"] = function (test) {
-  var source = fs.readFileSync(__dirname + "/fixtures/function-declaration.js", "utf8");
+  var source = ext_fs_fs.readFileSync(__dirname + "/fixtures/function-declaration.js", "utf8");
 
   TestRun(test).test(source, {
     esnext: true,
@@ -1163,7 +1279,9 @@ exports["function declaration export"] = function (test) {
   test.done();
 };
 
-exports.classIsBlockScoped = function (test) {
+var classIsBlockScoped;
+
+classIsBlockScoped = function (test) {
   var code = [
     "new A();", // use in TDZ
     "class A {}",
@@ -1192,7 +1310,9 @@ exports.classIsBlockScoped = function (test) {
   test.done();
 };
 
-exports.testES6ModulesNamedExportsAffectUndef = function (test) {
+var testES6ModulesNamedExportsAffectUndef;
+
+testES6ModulesNamedExportsAffectUndef = function (test) {
   // The identifier "foo" is expected to have been defined in the scope
   // of this file in order to be exported.
   // The example below is roughly similar to this Common JS:
@@ -1214,7 +1334,9 @@ exports.testES6ModulesNamedExportsAffectUndef = function (test) {
   test.done();
 };
 
-exports.testES6ModulesThroughExportDoNotAffectUnused = function (test) {
+var testES6ModulesThroughExportDoNotAffectUnused;
+
+testES6ModulesThroughExportDoNotAffectUnused = function (test) {
   // "Through" exports do not alter the scope of this file, but instead pass
   // the exports from one source on through this source.
   // The example below is roughly similar to this Common JS:
@@ -1238,7 +1360,9 @@ exports.testES6ModulesThroughExportDoNotAffectUnused = function (test) {
   test.done();
 };
 
-exports.testES6ModulesThroughExportDoNotAffectUndef = function (test) {
+var testES6ModulesThroughExportDoNotAffectUndef;
+
+testES6ModulesThroughExportDoNotAffectUndef = function (test) {
   // "Through" exports do not alter the scope of this file, but instead pass
   // the exports from one source on through this source.
   // The example below is roughly similar to this Common JS:
@@ -1262,7 +1386,9 @@ exports.testES6ModulesThroughExportDoNotAffectUndef = function (test) {
   test.done();
 };
 
-exports.testES6ModulesDefaultExportsAffectUnused = function (test) {
+var testES6ModulesDefaultExportsAffectUnused;
+
+testES6ModulesDefaultExportsAffectUnused = function (test) {
   // Default Exports should count as used
   var src1 = [
     "var a = {",
@@ -1285,7 +1411,9 @@ exports.testES6ModulesDefaultExportsAffectUnused = function (test) {
   test.done();
 };
 
-exports.testES6ModulesDefaultExportAssignmentExpr = function (test) {
+var testES6ModulesDefaultExportAssignmentExpr;
+
+testES6ModulesDefaultExportAssignmentExpr = function (test) {
   // The identifier in the exported AssignmentExpression should not be
   // interpreted as a declaration.
   var src = [
@@ -1299,7 +1427,9 @@ exports.testES6ModulesDefaultExportAssignmentExpr = function (test) {
   test.done();
 };
 
-exports.testES6ModulesNameSpaceImportsAffectUnused = function (test) {
+var testES6ModulesNameSpaceImportsAffectUnused;
+
+testES6ModulesNameSpaceImportsAffectUnused = function (test) {
   var src = [
     "import * as angular from 'angular';"
   ];
@@ -1314,8 +1444,10 @@ exports.testES6ModulesNameSpaceImportsAffectUnused = function (test) {
   test.done();
 };
 
-exports.testES6TemplateLiterals = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/es6-template-literal.js", "utf8");
+var testES6TemplateLiterals;
+
+testES6TemplateLiterals = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/es6-template-literal.js", "utf8");
   var run = TestRun(test)
     .addError(14, 16, "Octal literals are not allowed in strict mode.")
     .addError(21, 20, "Unclosed template literal.");
@@ -1325,8 +1457,10 @@ exports.testES6TemplateLiterals = function (test) {
   test.done();
 };
 
-exports.testES6TaggedTemplateLiterals = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/es6-template-literal-tagged.js", "utf8");
+var testES6TaggedTemplateLiterals;
+
+testES6TaggedTemplateLiterals = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/es6-template-literal-tagged.js", "utf8");
   TestRun(test)
     .addError(16, 19, "Octal literals are not allowed in strict mode.")
     .addError(23, 23, "Unclosed template literal.")
@@ -1334,7 +1468,9 @@ exports.testES6TaggedTemplateLiterals = function (test) {
   test.done();
 };
 
-exports.testES6TemplateLiteralsUnused = function (test) {
+var testES6TemplateLiteralsUnused;
+
+testES6TemplateLiteralsUnused = function (test) {
   var src = [
     "var a = 'hello';",
     "alert(`${a} world`);"
@@ -1345,7 +1481,9 @@ exports.testES6TemplateLiteralsUnused = function (test) {
   test.done();
 };
 
-exports.testES6TaggedTemplateLiteralsUnused = function (test) {
+var testES6TaggedTemplateLiteralsUnused;
+
+testES6TaggedTemplateLiteralsUnused = function (test) {
   var src = [
     "function tag() {}",
     "var a = 'hello';",
@@ -1358,7 +1496,10 @@ exports.testES6TaggedTemplateLiteralsUnused = function (test) {
 };
 
 
-exports.testES6TemplateLiteralsUndef = function (test) {
+var testES6TemplateLiteralsUndef;
+
+
+testES6TemplateLiteralsUndef = function (test) {
   var src = [
     "/* global alert */",
     "alert(`${a} world`);"
@@ -1371,7 +1512,10 @@ exports.testES6TemplateLiteralsUndef = function (test) {
 };
 
 
-exports.testES6TaggedTemplateLiteralsUndef = function (test) {
+var testES6TaggedTemplateLiteralsUndef;
+
+
+testES6TaggedTemplateLiteralsUndef = function (test) {
   var src = [
     "/* global alert */",
     "alert(tag`${a} world`);"
@@ -1385,7 +1529,10 @@ exports.testES6TaggedTemplateLiteralsUndef = function (test) {
 };
 
 
-exports.testES6TemplateLiteralMultiline = function (test) {
+var testES6TemplateLiteralMultiline;
+
+
+testES6TemplateLiteralMultiline = function (test) {
   var src = [
     'let multiline = `',
     'this string spans',
@@ -1398,7 +1545,9 @@ exports.testES6TemplateLiteralMultiline = function (test) {
   test.done();
 };
 
-exports.testES6TemplateLiteralsAreNotDirectives = function (test) {
+var testES6TemplateLiteralsAreNotDirectives;
+
+testES6TemplateLiteralsAreNotDirectives = function (test) {
   var src = [
     "function fn() {",
     "`use strict`;",
@@ -1424,7 +1573,9 @@ exports.testES6TemplateLiteralsAreNotDirectives = function (test) {
   test.done();
 };
 
-exports.testES6TemplateLiteralReturnValue = function (test) {
+var testES6TemplateLiteralReturnValue;
+
+testES6TemplateLiteralReturnValue = function (test) {
   var src = [
     'function sayHello(to) {',
     '  return `Hello, ${to}!`;',
@@ -1446,7 +1597,9 @@ exports.testES6TemplateLiteralReturnValue = function (test) {
   test.done();
 };
 
-exports.testES6TemplateLiteralMultilineReturnValue = function (test) {
+var testES6TemplateLiteralMultilineReturnValue;
+
+testES6TemplateLiteralMultilineReturnValue = function (test) {
   var src = [
     'function sayHello(to) {',
     '  return `Hello, ',
@@ -1471,7 +1624,10 @@ exports.testES6TemplateLiteralMultilineReturnValue = function (test) {
 };
 
 
-exports.testES6TaggedTemplateLiteralMultilineReturnValue = function (test) {
+var testES6TaggedTemplateLiteralMultilineReturnValue;
+
+
+testES6TaggedTemplateLiteralMultilineReturnValue = function (test) {
   var src = [
     'function tag() {}',
     'function sayHello(to) {',
@@ -1498,7 +1654,10 @@ exports.testES6TaggedTemplateLiteralMultilineReturnValue = function (test) {
 };
 
 
-exports.testES6TemplateLiteralMultilineReturnValueWithFunctionCall = function (test) {
+var testES6TemplateLiteralMultilineReturnValueWithFunctionCall;
+
+
+testES6TemplateLiteralMultilineReturnValueWithFunctionCall = function (test) {
   var src = [
     'function sayHello() {',
     '  return `Helo',
@@ -1514,7 +1673,10 @@ exports.testES6TemplateLiteralMultilineReturnValueWithFunctionCall = function (t
 };
 
 
-exports.testES6TaggedTemplateLiteralMultilineReturnValueWithFunctionCall = function (test) {
+var testES6TaggedTemplateLiteralMultilineReturnValueWithFunctionCall;
+
+
+testES6TaggedTemplateLiteralMultilineReturnValueWithFunctionCall = function (test) {
   var src = [
     'function tag() {}',
     'function sayHello() {',
@@ -1531,7 +1693,10 @@ exports.testES6TaggedTemplateLiteralMultilineReturnValueWithFunctionCall = funct
 };
 
 
-exports.testMultilineReturnValueStringLiteral = function (test) {
+var testMultilineReturnValueStringLiteral;
+
+
+testMultilineReturnValueStringLiteral = function (test) {
   var src = [
     'function sayHello(to) {',
     '  return "Hello, \\',
@@ -1555,8 +1720,10 @@ exports.testMultilineReturnValueStringLiteral = function (test) {
   test.done();
 };
 
-exports.testES6ExportStarFrom = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/es6-export-star-from.js", "utf8");
+var testES6ExportStarFrom;
+
+testES6ExportStarFrom = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/es6-export-star-from.js", "utf8");
   TestRun(test)
     .addError(2, 10, "Expected 'from' and instead saw 'foo'.")
     .addError(2, 13, "Expected '(string)' and instead saw ';'.")
@@ -1566,9 +1733,11 @@ exports.testES6ExportStarFrom = function (test) {
   test.done();
 };
 
-exports.testPotentialVariableLeak = function (test) {
-  var a = fs.readFileSync(__dirname + "/fixtures/leak.js", "utf8");
-  var b = fs.readFileSync(__dirname + "/fixtures/gh1802.js", "utf8");
+var testPotentialVariableLeak;
+
+testPotentialVariableLeak = function (test) {
+  var a = ext_fs_fs.readFileSync(__dirname + "/fixtures/leak.js", "utf8");
+  var b = ext_fs_fs.readFileSync(__dirname + "/fixtures/gh1802.js", "utf8");
 
   // Real Error
   TestRun(test)
@@ -1584,8 +1753,10 @@ exports.testPotentialVariableLeak = function (test) {
   test.done();
 };
 
-exports.testDefaultArguments = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/default-arguments.js", "utf8");
+var testDefaultArguments;
+
+testDefaultArguments = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/default-arguments.js", "utf8");
   TestRun(test)
     .addError(14, 39, "'bar' is not defined.")
     .addError(14, 32, "'num3' was used before it was declared, which is illegal for 'param' variables.")
@@ -1626,7 +1797,9 @@ exports.testDefaultArguments = function (test) {
   test.done();
 };
 
-exports.testDuplicateParamNames = function (test) {
+var testDuplicateParamNames;
+
+testDuplicateParamNames = function (test) {
   var src = [
   "(function() {",
   "  (function(a, a) { // warns only with shadow",
@@ -1706,21 +1879,27 @@ exports.testDuplicateParamNames = function (test) {
   test.done();
 };
 
+var testClonePassedObjects;
+
 // Issue #1324: Make sure that we're not mutating passed options object.
-exports.testClonePassedObjects = function (test) {
+testClonePassedObjects = function (test) {
   var options = { predef: ["sup"] };
   JSHINT("", options);
   test.ok(options.predef.length == 1);
   test.done();
 };
 
-exports.testMagicProtoVariable = function (test) {
+var testMagicProtoVariable;
+
+testMagicProtoVariable = function (test) {
   JSHINT("__proto__ = 1;");
   test.done();
 };
 
+var testColumnNumAfterNonStrictComparison;
+
 // Issue #1371: column number at end of non-strict comparison (for usability reasons)
-exports.testColumnNumAfterNonStrictComparison = function (test) {
+testColumnNumAfterNonStrictComparison = function (test) {
   var src =  "if (1 == 1) {\n" +
         "  var foo = 2;\n" +
         "  if (1 != 1){\n" +
@@ -1735,7 +1914,10 @@ exports.testColumnNumAfterNonStrictComparison = function (test) {
 };
 
 
-exports.testArrayPrototypeExtensions = function (test) {
+var testArrayPrototypeExtensions;
+
+
+testArrayPrototypeExtensions = function (test) {
   Array.prototype.undefinedPrototypeProperty = undefined;
 
   JSHINT("var x = 123;\nlet y = 456;\nconst z = 123;");
@@ -1743,16 +1925,20 @@ exports.testArrayPrototypeExtensions = function (test) {
   test.done();
 };
 
+var testIncorrectJsonDetection;
+
 // Issue #1446, PR #1688
-exports.testIncorrectJsonDetection = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/mappingstart.js", "utf8");
+testIncorrectJsonDetection = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/mappingstart.js", "utf8");
   // Without the bug fix, a JSON lint error will be raised because the parser
   // thinks it is rendering JSON instead of JavaScript.
   TestRun(test).test(src);
   test.done();
 };
 
-exports.testEscapedReservedWords = function (test) {
+var testEscapedReservedWords;
+
+testEscapedReservedWords = function (test) {
   var code = [
     'var v\u0061r = 42;',
     'alert(va\u0072);'
@@ -1766,7 +1952,9 @@ exports.testEscapedReservedWords = function (test) {
   test.done();
 };
 
-exports.testUnnamedFuncStatement = function (test) {
+var testUnnamedFuncStatement;
+
+testUnnamedFuncStatement = function (test) {
   TestRun(test)
     .addError(1, 9, "Missing name in function declaration.")
     .test("function() {}");
@@ -1778,8 +1966,10 @@ exports.testUnnamedFuncStatement = function (test) {
   test.done();
 };
 
+var testUnCleanedForinifcheckneeded;
+
 // GH-1976 "Fixed set property 'type' of undefined in `if` blockstmt"
-exports.testUnCleanedForinifcheckneeded = function (test) {
+testUnCleanedForinifcheckneeded = function (test) {
   var forinCode = [
     "for (var key in a) {",
     "  console.log(key);",
@@ -1804,10 +1994,12 @@ exports.testUnCleanedForinifcheckneeded = function (test) {
   test.done();
 };
 
+var testPermitEvalAsKey;
+
 // gh-738 "eval" as an object key should not cause `W061` warnngs
-exports.testPermitEvalAsKey = function (test) {
-  var srcNode = fs.readFileSync(__dirname + "/fixtures/gh-738-node.js", "utf8");
-  var srcBrowser = fs.readFileSync(__dirname + "/fixtures/gh-738-browser.js", "utf8");
+testPermitEvalAsKey = function (test) {
+  var srcNode = ext_fs_fs.readFileSync(__dirname + "/fixtures/gh-738-node.js", "utf8");
+  var srcBrowser = ext_fs_fs.readFileSync(__dirname + "/fixtures/gh-738-browser.js", "utf8");
   // global calls to eval should still cause warning.
   // test a mixture of permitted and disallowed calls
   // `global#eval` in `node:true` should still cause warning
@@ -1835,9 +2027,11 @@ exports.testPermitEvalAsKey = function (test) {
 
 };
 
+var beginningArraysAreNotJSON;
+
 // gh-2194 jshint confusing arrays at beginning of file with JSON
-exports.beginningArraysAreNotJSON = function (test) {
-  var src = fs.readFileSync(__dirname + "/fixtures/gh-2194.js", "utf8");
+beginningArraysAreNotJSON = function (test) {
+  var src = ext_fs_fs.readFileSync(__dirname + "/fixtures/gh-2194.js", "utf8");
 
   TestRun(test)
   .test(src);
@@ -1846,7 +2040,9 @@ exports.beginningArraysAreNotJSON = function (test) {
 
 };
 
-exports.labelsOutOfScope = function (test) {
+var labelsOutOfScope;
+
+labelsOutOfScope = function (test) {
   var src = [
     "function a() {",
     "  if (true) {",
@@ -1896,7 +2092,9 @@ exports.labelsOutOfScope = function (test) {
   test.done();
 };
 
-exports.labelThroughCatch = function (test) {
+var labelThroughCatch;
+
+labelThroughCatch = function (test) {
   var src = [
     "function labelExample() {",
     "  'use strict';",
@@ -1922,7 +2120,9 @@ exports.labelThroughCatch = function (test) {
   test.done();
 };
 
-exports.labelDoesNotExistInGlobalScope = function (test) {
+var labelDoesNotExistInGlobalScope;
+
+labelDoesNotExistInGlobalScope = function (test) {
   var src = [
     "switch(1) {",
     "  case 1:",
@@ -1937,7 +2137,9 @@ exports.labelDoesNotExistInGlobalScope = function (test) {
   test.done();
 };
 
-exports.labeledBreakWithoutLoop = function (test) {
+var labeledBreakWithoutLoop;
+
+labeledBreakWithoutLoop = function (test) {
   var src = [
     "foo: {",
     "  break foo;",
@@ -1950,10 +2152,12 @@ exports.labeledBreakWithoutLoop = function (test) {
   test.done();
 };
 
+var labeledContinueWithoutLoop;
+
 // ECMAScript 5.1 § 12.7: labeled continue must refer to an enclosing
 // IterationStatement, as opposed to labeled break which is only required to
 // refer to an enclosing Statement.
-exports.labeledContinueWithoutLoop = function (test) {
+labeledContinueWithoutLoop = function (test) {
   var src = [
     "foo: switch (i) {",
     "  case 1:",
@@ -1968,7 +2172,9 @@ exports.labeledContinueWithoutLoop = function (test) {
   test.done();
 };
 
-exports.unlabeledBreakWithoutLoop = function(test) {
+var unlabeledBreakWithoutLoop;
+
+unlabeledBreakWithoutLoop = function(test) {
   var src = [
     "if (1 == 1) {",
     "  break;",
@@ -1982,7 +2188,9 @@ exports.unlabeledBreakWithoutLoop = function(test) {
   test.done();
 }
 
-exports.unlabeledContinueWithoutLoop = function(test) {
+var unlabeledContinueWithoutLoop;
+
+unlabeledContinueWithoutLoop = function(test) {
   var src = [
     "switch (i) {",
     "  case 1:",
@@ -1999,7 +2207,9 @@ exports.unlabeledContinueWithoutLoop = function(test) {
   test.done();
 }
 
-exports.labelsContinue = function (test) {
+var labelsContinue;
+
+labelsContinue = function (test) {
   var src = [
     "exists: while(true) {",
     "  if (false) {",
@@ -2016,7 +2226,9 @@ exports.labelsContinue = function (test) {
   test.done();
 };
 
-exports.catchWithNoParam = function (test) {
+var catchWithNoParam;
+
+catchWithNoParam = function (test) {
   var src = [
     "try{}catch(){}"
   ];
@@ -2028,7 +2240,9 @@ exports.catchWithNoParam = function (test) {
   test.done();
 };
 
-exports.tryWithoutCatch = function (test) {
+var tryWithoutCatch;
+
+tryWithoutCatch = function (test) {
   var src = [
     "try{}",
     "if (true) { console.log(); }"
@@ -2049,6 +2263,8 @@ exports.tryWithoutCatch = function (test) {
   test.done();
 };
 
+var gh-1920;
+
 exports["gh-1920"] = function (test) {
   var src = [
     "for (var key in objects) {",
@@ -2066,7 +2282,9 @@ exports["gh-1920"] = function (test) {
   test.done();
 };
 
-exports.duplicateProto = function (test) {
+var duplicateProto;
+
+duplicateProto = function (test) {
   var src = [
     "(function() {",
     "  var __proto__;",
@@ -2140,6 +2358,8 @@ exports.duplicateProto = function (test) {
   test.done();
 };
 
+var gh-2761;
+
 exports["gh-2761"] = function (test) {
   var code = [
     "/* global foo: false */",
@@ -2173,6 +2393,8 @@ exports["gh-2761"] = function (test) {
 
   test.done();
 };
+
+var gh-2838;
 
 exports["gh-2838"] = function (test) {
 
@@ -2216,6 +2438,8 @@ exports["gh-2838"] = function (test) {
   test.done();
 };
 
+var destructuring in setter parameter;
+
 exports["destructuring in setter parameter"] = function (test) {
 
   TestRun(test).test([
@@ -2227,6 +2451,8 @@ exports["destructuring in setter parameter"] = function (test) {
 
   test.done();
 };
+
+var TDZ within initializer of lexical declarations;
 
 exports["TDZ within initializer of lexical declarations"] = function(test) {
   var code = [
@@ -2267,6 +2493,8 @@ exports["TDZ within initializer of lexical declarations"] = function(test) {
   test.done();
 };
 
+var TDZ within class heritage definition;
+
 exports["TDZ within class heritage definition"] = function(test) {
   var code = [
     "let A = class extends A {};",
@@ -2293,6 +2521,8 @@ exports["TDZ within class heritage definition"] = function(test) {
 
   test.done();
 };
+
+var TDZ within for in/of head;
 
 exports["TDZ within for in/of head"] = function(test) {
   var code = [
@@ -2328,8 +2558,10 @@ exports["TDZ within for in/of head"] = function(test) {
   test.done();
 };
 
+var initializeCStyle;
+
 // regression test for gh-3370
-exports.initializeCStyle = function(test) {
+initializeCStyle = function(test) {
   TestRun(test)
     .test([
       "for (let x, y = x; ;) {}",
@@ -2339,7 +2571,9 @@ exports.initializeCStyle = function(test) {
   test.done();
 };
 
-exports.constWithoutInit = function(test) {
+var constWithoutInit;
+
+constWithoutInit = function(test) {
   TestRun(test, "single binding")
     .addError(1, 6, "const 'x' is initialized to 'undefined'.")
     .test([

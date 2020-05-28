@@ -1,24 +1,25 @@
 #! /usr/bin/env node
 
+import ext_path_path from "path";
+import ext_stream_stream from "stream";
+import ext_test262stream_Test262Stream from "test262-stream";
+import ext_resultsinterpreter_Interpreter from "results-interpreter";
+import { testjs as test_testjsjs } from "./test";
+import { reportjs as report_reportjsjs } from "./report";
+
 "use strict";
 
-var path = require("path");
-var Transform = require("stream").Transform;
+var Transform = ext_stream_stream.Transform;
 
-var Test262Stream = require("test262-stream");
-var Interpreter = require("results-interpreter");
-
-var runTest = require("./test");
-var report = require("./report");
-var expectationsFile = path.join(__dirname, "expectations.txt");
+var expectationsFile = ext_path_path.join(__dirname, "expectations.txt");
 var shouldUpdate = process.argv.indexOf("--update-expectations") > -1;
-var stream = new Test262Stream(path.join(__dirname, "test262"), {
+var stream = new ext_test262stream_Test262Stream(ext_path_path.join(__dirname, "test262"), {
   omitRuntime: true
 });
 var count = 0;
 
 function normalizePath(str) {
-  return str.split(path.sep).join(path.posix.sep);
+  return str.split(ext_path_path.sep).join(ext_path_path.posix.sep);
 }
 
 var results = new Transform({
@@ -33,11 +34,11 @@ var results = new Transform({
       id: normalizePath(test.file) + "(" + test.scenario + ")",
       expected: test.attrs.negative && test.attrs.negative.phase === "parse"
         ? "fail" : "pass",
-      actual: runTest(test) ? "pass": "fail"
+      actual: test_testjsjs(test) ? "pass": "fail"
     });
   }
 });
-var interpreter = new Interpreter(expectationsFile, {
+var interpreter = new ext_resultsinterpreter_Interpreter(expectationsFile, {
   outputFile: shouldUpdate ? expectationsFile : null
 });
 
@@ -62,6 +63,6 @@ stream.pipe(results)
     process.exitCode = 1;
   })
   .on("finish", function () {
-    report(this.summary);
+    report_reportjsjs(this.summary);
     process.exitCode = this.summary.passed ? 0 : 1;
   });

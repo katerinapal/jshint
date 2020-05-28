@@ -1,7 +1,6 @@
+import ext_lodash__ from "lodash";
+import ext_events_events from "events";
 "use strict";
-
-var _      = require("lodash");
-var events = require("events");
 
 // Used to denote membership in lookup tables (a primitive value such as `true`
 // would be silently rejected for the property name "__proto__" in some
@@ -54,13 +53,13 @@ var scopeManager = function(state, predefined, exported, declared) {
   var usedPredefinedAndGlobals = Object.create(null);
   var impliedGlobals = Object.create(null);
   var unuseds = [];
-  var emitter = new events.EventEmitter();
+  var emitter = new ext_events_events.EventEmitter();
 
   function warning(code, token) {
     emitter.emit("warning", {
       code: code,
       token: token,
-      data: _.slice(arguments, 2)
+      data: ext_lodash__.slice(arguments, 2)
     });
   }
 
@@ -68,7 +67,7 @@ var scopeManager = function(state, predefined, exported, declared) {
     emitter.emit("warning", {
       code: code,
       token: token,
-      data: _.slice(arguments, 2)
+      data: ext_lodash__.slice(arguments, 2)
     });
   }
 
@@ -270,7 +269,7 @@ var scopeManager = function(state, predefined, exported, declared) {
     },
 
     isPredefined: function(labelName) {
-      return !this.has(labelName) && _.has(_scopeStack[0]["(predefined)"], labelName);
+      return !this.has(labelName) && ext_lodash__.has(_scopeStack[0]["(predefined)"], labelName);
     },
 
     /**
@@ -480,7 +479,7 @@ var scopeManager = function(state, predefined, exported, declared) {
 
       _scopeStack.pop();
       if (isUnstackingFunctionBody) {
-        _currentFunctBody = _scopeStack[_.findLastIndex(_scopeStack, function(scope) {
+        _currentFunctBody = _scopeStack[ext_lodash__.findLastIndex(_scopeStack, function(scope) {
           // if function or if global (which is at the bottom so it will only return true if we call back)
           return scope["(isFuncBody)"] || scope["(type)"] === "global";
         })];
@@ -515,7 +514,7 @@ var scopeManager = function(state, predefined, exported, declared) {
       }
 
       // The variable was declared in the current scope
-      if (_.has(_current["(labels)"], labelName)) {
+      if (ext_lodash__.has(_current["(labels)"], labelName)) {
         _current["(labels)"][labelName].duplicated = true;
 
       // The variable was declared in an outer scope
@@ -531,7 +530,7 @@ var scopeManager = function(state, predefined, exported, declared) {
         _current["(params)"].push(labelName);
       }
 
-      if (_.has(_current["(usages)"], labelName)) {
+      if (ext_lodash__.has(_current["(usages)"], labelName)) {
         var usage = _current["(usages)"][labelName];
         // if its in a sub function it is not necessarily an error, just latedef
         if (usage["(onlyUsedSubFunction)"]) {
@@ -604,7 +603,7 @@ var scopeManager = function(state, predefined, exported, declared) {
      */
     getImpliedGlobals: function() {
       // jshint proto: true
-      var values = _.values(impliedGlobals);
+      var values = ext_lodash__.values(impliedGlobals);
       var hasProto = false;
 
       // If `__proto__` is an implied global variable, its entry in the lookup
@@ -668,17 +667,17 @@ var scopeManager = function(state, predefined, exported, declared) {
      */
     addExported: function(labelName) {
       var globalLabels = _scopeStack[0]["(labels)"];
-      if (_.has(declared, labelName)) {
+      if (ext_lodash__.has(declared, labelName)) {
         // remove the declared token, so we know it is used
         delete declared[labelName];
-      } else if (_.has(globalLabels, labelName)) {
+      } else if (ext_lodash__.has(globalLabels, labelName)) {
         globalLabels[labelName]["(unused)"] = false;
       } else {
         for (var i = 1; i < _scopeStack.length; i++) {
           var scope = _scopeStack[i];
           // if `scope.(type)` is not defined, it is a block scope
           if (!scope["(type)"]) {
-            if (_.has(scope["(labels)"], labelName) &&
+            if (ext_lodash__.has(scope["(labels)"], labelName) &&
                 !scope["(labels)"][labelName]["(blockscoped)"]) {
               scope["(labels)"][labelName]["(unused)"] = false;
               return;
@@ -739,7 +738,7 @@ var scopeManager = function(state, predefined, exported, declared) {
       var ishoisted = type === "function" || type === "generator function" ||
         type === "async function" || type === "import";
       var isexported    = (isblockscoped ? _current : _currentFunctBody)["(type)"] === "global" &&
-                          _.has(exported, labelName);
+                          ext_lodash__.has(exported, labelName);
 
       // outer shadow check (inner is only on non-block scoped)
       _checkOuterShadow(labelName, token);
@@ -1037,4 +1036,7 @@ var scopeManager = function(state, predefined, exported, declared) {
   return scopeManagerInst;
 };
 
-module.exports = scopeManager;
+var scopemanager_scopeManager;
+
+scopemanager_scopeManager = scopeManager;
+export { scopemanager_scopeManager as scopeManager };

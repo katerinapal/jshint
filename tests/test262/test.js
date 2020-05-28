@@ -1,6 +1,8 @@
+import { JSHINT as _JSHINT } from "../../";
+import ext_lodash_lodash from "lodash";
 "use strict";
-var JSHint = require("../../").JSHINT;
-var find = require("lodash").find;
+var JSHint = _JSHINT.JSHINT;
+var find = ext_lodash_lodash.find;
 
 /**
  * JSHint "error" messages generally indicate a parsing failure and "warning"
@@ -45,7 +47,7 @@ function isFailure(errors) {
   });
 }
 
-module.exports = function(test) {
+var exportedObject = function(test) {
   var isModule = !!test.attrs.flags.module;
 
   try {
@@ -56,3 +58,5 @@ module.exports = function(test) {
 
   return !isFailure(JSHint.data().errors);
 };
+
+export { exportedObject as testjs };

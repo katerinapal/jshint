@@ -1,52 +1,17 @@
-/*!
- * JSHint, by JSHint Community.
- *
- * This file (and this file only) is licensed under the same slightly modified
- * MIT license that JSLint is. It stops evil-doers everywhere:
- *
- *   Copyright (c) 2002 Douglas Crockford  (www.JSLint.com)
- *
- *   Permission is hereby granted, free of charge, to any person obtaining
- *   a copy of this software and associated documentation files (the "Software"),
- *   to deal in the Software without restriction, including without limitation
- *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *   and/or sell copies of the Software, and to permit persons to whom
- *   the Software is furnished to do so, subject to the following conditions:
- *
- *   The above copyright notice and this permission notice shall be included
- *   in all copies or substantial portions of the Software.
- *
- *   The Software shall be used for Good, not Evil.
- *
- *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- *   DEALINGS IN THE SOFTWARE.
- *
- */
-
-/*jshint quotmark:double */
-/*exported console */
-
-var _            = require("lodash");
-var events       = require("events");
-var vars         = require("./vars.js");
-var messages     = require("./messages.js");
-var Lexer        = require("./lex.js").Lexer;
-var reg          = require("./reg.js");
-var state        = require("./state.js").state;
-var style        = require("./style.js");
-var options      = require("./options.js");
-var scopeManager = require("./scope-manager.js");
-var prodParams   = require("./prod-params.js");
-
-// We need this module here because environments such as IE and Rhino
-// don't necessarilly expose the 'console' API and browserify uses
-// it to log things. It's a sad state of affair, really.
-var console = require("console-browserify");
+import ext_lodash__ from "lodash";
+import ext_events_events from "events";
+import { varsjs as vars_varsjsjs } from "./vars.js";
+import { messagesjs as messages_messagesjsjs } from "./messages.js";
+import { Lexer as lexjs_Lexer } from "./lex.js";
+import { regjs as reg_regjsjs } from "./reg.js";
+import { state as statejs_state } from "./state.js";
+import { register as style_registerjs } from "./style.js";
+import { optionsjs as options_optionsjsjs } from "./options.js";
+import { scopeManager as scopemanager_scopeManagerjs } from "./scope-manager.js";
+import { prodparamsjs as prodparams_prodparamsjsjs } from "./prod-params.js";
+import ext_consolebrowserify_console from "console-browserify";
+var Lexer        = lexjs_Lexer.Lexer;
+var state        = statejs_state.state;
 
 // We build the application inside a function so that we produce only a singleton
 // variable. That function will be invoked immediately, and its return value is
@@ -89,7 +54,7 @@ var JSHINT = (function() {
     urls,
 
     extraModules = [],
-    emitter = new events.EventEmitter();
+    emitter = new ext_events_events.EventEmitter();
 
   function checkOption(name, isStable, t) {
     var type, validNames;
@@ -109,7 +74,7 @@ var JSHINT = (function() {
     }
 
     if (validNames.indexOf(name) === -1) {
-      if (t.type !== "jslint" && !_.has(options.removed, name)) {
+      if (t.type !== "jslint" && !ext_lodash__.has(options.removed, name)) {
         error("E001", t, type, name);
         return false;
       }
@@ -177,7 +142,7 @@ var JSHINT = (function() {
       }
     }
 
-    if (token.id === "await" && (!(context & prodParams.async) && !state.option.module)) {
+    if (token.id === "await" && (!(context & prodparams_prodparamsjsjs.async) && !state.option.module)) {
       return false;
     }
 
@@ -193,7 +158,7 @@ var JSHINT = (function() {
 
   function combine(dest, src) {
     Object.keys(src).forEach(function(name) {
-      if (_.has(JSHINT.blacklist, name)) return;
+      if (ext_lodash__.has(JSHINT.blacklist, name)) return;
       dest[name] = src[name];
     });
   }
@@ -377,8 +342,8 @@ var JSHINT = (function() {
   function removeIgnoredMessages() {
     var ignored = state.ignoredLines;
 
-    if (_.isEmpty(ignored)) return;
-    JSHINT.errors = _.reject(JSHINT.errors, function(err) { return ignored[err.line] });
+    if (ext_lodash__.isEmpty(ignored)) return;
+    JSHINT.errors = ext_lodash__.reject(JSHINT.errors, function(err) { return ignored[err.line] });
   }
 
   function warning(code, t, a, b, c, d) {
@@ -501,7 +466,7 @@ var JSHINT = (function() {
       combine(predefined, predef);
 
       for (var key in predef) {
-        if (_.has(predef, key)) {
+        if (ext_lodash__.has(predef, key)) {
           declared[key] = directiveToken;
         }
       }
@@ -907,7 +872,7 @@ var JSHINT = (function() {
       next = state.tokens.next;
     }
 
-    if (next.id === "in" && context & prodParams.noin) {
+    if (next.id === "in" && context & prodparams_prodparamsjsjs.noin) {
       return true;
     }
     if (next.id === ";" || next.id === "}" || next.id === ":") {
@@ -947,10 +912,10 @@ var JSHINT = (function() {
    */
   function expression(context, rbp) {
     var left, isArray = false, isObject = false;
-    var initial = context & prodParams.initial;
+    var initial = context & prodparams_prodparamsjsjs.initial;
     var curr;
 
-    context &= ~prodParams.initial;
+    context &= ~prodparams_prodparamsjsjs.initial;
 
     state.nameStack.push();
 
@@ -1489,7 +1454,7 @@ var JSHINT = (function() {
     values = state.inES6() ? typeofValues.es6 : typeofValues.es3;
 
     if (right.type === "(identifier)" && right.value === "typeof" && left.type === "(string)")
-      return !_.includes(values, left.value);
+      return !ext_lodash__.includes(values, left.value);
 
     return false;
   }
@@ -1913,7 +1878,7 @@ var JSHINT = (function() {
   function statement(context) {
     var i = indent, r, t = state.tokens.next, hasOwnScope = false;
 
-    context |= prodParams.initial;
+    context |= prodparams_prodparamsjsjs.initial;
 
     if (t.id === ";") {
       advance(";");
@@ -2167,7 +2132,7 @@ var JSHINT = (function() {
 
         var expr = expression(context, 10);
 
-        if (state.option.noreturnawait && context & prodParams.async &&
+        if (state.option.noreturnawait && context & prodparams_prodparamsjsjs.async &&
             expr.identifier && expr.value === "await") {
           warning("W146", expr);
         }
@@ -2300,7 +2265,7 @@ var JSHINT = (function() {
     identifier: false,
     template: true,
   };
-  state.syntax["(template)"] = _.extend({
+  state.syntax["(template)"] = ext_lodash__.extend({
     lbp: 155,
     type: "(template)",
     nud: doTemplateLiteral,
@@ -2308,20 +2273,20 @@ var JSHINT = (function() {
     noSubst: false
   }, baseTemplateSyntax);
 
-  state.syntax["(template middle)"] = _.extend({
+  state.syntax["(template middle)"] = ext_lodash__.extend({
     lbp: 0,
     type: "(template middle)",
     noSubst: false
   }, baseTemplateSyntax);
 
-  state.syntax["(template tail)"] = _.extend({
+  state.syntax["(template tail)"] = ext_lodash__.extend({
     lbp: 0,
     type: "(template tail)",
     tail: true,
     noSubst: false
   }, baseTemplateSyntax);
 
-  state.syntax["(no subst template)"] = _.extend({
+  state.syntax["(no subst template)"] = ext_lodash__.extend({
     lbp: 155,
     type: "(template)",
     nud: doTemplateLiteral,
@@ -2424,7 +2389,7 @@ var JSHINT = (function() {
   infix("?", function(context, left, that) {
     increaseComplexityCount();
     that.left = left;
-    that.right = expression(context & ~prodParams.noin, 10);
+    that.right = expression(context & ~prodparams_prodparamsjsjs.noin, 10);
     advance(":");
     expression(context, 10);
     return that;
@@ -2714,7 +2679,7 @@ var JSHINT = (function() {
   // Class statement
   blockstmt("class", function(context) {
     var className, classNameToken;
-    var inexport = context & prodParams.export;
+    var inexport = context & prodparams_prodparamsjsjs.export;
 
     if (!state.inES6()) {
       warning("W104", state.tokens.curr, "class", "6");
@@ -2808,7 +2773,7 @@ var JSHINT = (function() {
     while (state.tokens.next.value !== "}") {
       isStatic = false;
       inGenerator = false;
-      context &= ~prodParams.preAsync;
+      context &= ~prodparams_prodparamsjsjs.preAsync;
 
       if (state.tokens.next.value === "static") {
         isStatic = true;
@@ -2817,7 +2782,7 @@ var JSHINT = (function() {
 
       if (state.tokens.next.value === "async") {
         if (!checkPunctuator(peek(), "(")) {
-          context |= prodParams.preAsync;
+          context |= prodparams_prodparamsjsjs.preAsync;
           advance();
 
           nolinebreak(state.tokens.curr);
@@ -2855,7 +2820,7 @@ var JSHINT = (function() {
             saveProperty(props, name, token, true, isStatic);
             doMethod(classToken, context, name, inGenerator);
           } else {
-            if (inGenerator || context & prodParams.preAsync) {
+            if (inGenerator || context & prodparams_prodparamsjsjs.preAsync) {
               error("E024", token, token.value);
             }
             if (hasConstructor) {
@@ -3216,7 +3181,7 @@ var JSHINT = (function() {
       warning("W014", state.tokens.curr, state.tokens.curr.id);
     }
 
-    e = expression(context & ~prodParams.noin, 10);
+    e = expression(context & ~prodparams_prodparamsjsjs.noin, 10);
 
     if (e && e.type === "(string)") {
       if (!state.option.evil && (e.value === "eval" || e.value === "execScript")) {
@@ -3283,7 +3248,7 @@ var JSHINT = (function() {
     advance("(");
     state.funct["(comparray)"].setState("define");
     res.left = expression(context, 130);
-    if (_.includes(["in", "of"], state.tokens.next.value)) {
+    if (ext_lodash__.includes(["in", "of"], state.tokens.next.value)) {
       advance();
     } else {
       error("E045", state.tokens.curr);
@@ -3464,7 +3429,7 @@ var JSHINT = (function() {
       // are added to the param scope
       var currentParams = [];
 
-      if (_.includes(["{", "["], state.tokens.next.id)) {
+      if (ext_lodash__.includes(["{", "["], state.tokens.next.id)) {
         hasDestructuring = true;
         tokens = destructuringPattern(context);
         for (t in tokens) {
@@ -3572,14 +3537,14 @@ var JSHINT = (function() {
     };
 
     if (token) {
-      _.extend(funct, {
+      ext_lodash__.extend(funct, {
         "(line)"     : token.line,
         "(character)": token.character,
         "(metrics)"  : createMetrics(token)
       });
     }
 
-    _.extend(funct, overwrites);
+    ext_lodash__.extend(funct, overwrites);
 
     if (funct["(context)"]) {
       funct["(scope)"] = funct["(context)"]["(scope)"];
@@ -3665,7 +3630,7 @@ var JSHINT = (function() {
       isMethod, ignoreLoopFunc;
     var oldOption = state.option;
     var oldIgnored = state.ignored;
-    var isAsync = context & prodParams.preAsync;
+    var isAsync = context & prodparams_prodparamsjsjs.preAsync;
 
     if (options) {
       name = options.name;
@@ -3677,15 +3642,15 @@ var JSHINT = (function() {
       ignoreLoopFunc = options.ignoreLoopFunc;
     }
 
-    context &= ~prodParams.noin;
-    context &= ~prodParams.tryClause;
+    context &= ~prodparams_prodparamsjsjs.noin;
+    context &= ~prodparams_prodparamsjsjs.tryClause;
 
     if (isAsync) {
-      context |= prodParams.async;
+      context |= prodparams_prodparamsjsjs.async;
     } else {
-      context &= ~prodParams.async;
+      context &= ~prodparams_prodparamsjsjs.async;
     }
-    context &= ~prodParams.preAsync;
+    context &= ~prodparams_prodparamsjsjs.preAsync;
 
     state.option = Object.create(state.option);
     state.ignored = Object.create(state.ignored);
@@ -3796,7 +3761,7 @@ var JSHINT = (function() {
       },
 
       verifyMaxParametersPerFunction: function() {
-        if (_.isNumber(state.option.maxparams) &&
+        if (ext_lodash__.isNumber(state.option.maxparams) &&
           this.arity > state.option.maxparams) {
           warning("W072", functionStartToken, this.arity);
         }
@@ -4015,7 +3980,7 @@ var JSHINT = (function() {
               warning("W104", state.tokens.curr, "concise methods", "6");
             }
 
-            doFunction(isAsyncMethod ? context | prodParams.preAsync : context, {
+            doFunction(isAsyncMethod ? context | prodparams_prodparamsjsjs.preAsync : context, {
               isMethod: true,
               type: isGeneratorMethod ? "generator" : null
             });
@@ -4059,7 +4024,7 @@ var JSHINT = (function() {
   function destructuringPattern(context, options) {
     var isAssignment = options && options.assignment;
 
-    context &= ~prodParams.noin;
+    context &= ~prodparams_prodparamsjsjs.noin;
 
     if (!state.inES6()) {
       warning("W104", state.tokens.curr,
@@ -4238,7 +4203,7 @@ var JSHINT = (function() {
     if (!first)
       return;
 
-    _.zip(tokens, Array.isArray(first) ? first : [ first ]).forEach(function(val) {
+    ext_lodash__.zip(tokens, Array.isArray(first) ? first : [ first ]).forEach(function(val) {
       var token = val[0];
       var value = val[1];
 
@@ -4252,8 +4217,8 @@ var JSHINT = (function() {
   function blockVariableStatement(type, statement, context) {
     // used for both let and const statements
 
-    var noin = context & prodParams.noin;
-    var inexport = context & prodParams.export;
+    var noin = context & prodparams_prodparamsjsjs.noin;
+    var inexport = context & prodparams_prodparamsjsjs.export;
     var isLet = type === "let";
     var isConst = type === "const";
     var tokens, lone, value, letblock;
@@ -4272,7 +4237,7 @@ var JSHINT = (function() {
     statement.first = [];
     for (;;) {
       var names = [];
-      if (_.includes(["{", "["], state.tokens.next.value)) {
+      if (ext_lodash__.includes(["{", "["], state.tokens.next.value)) {
         tokens = destructuringPattern(context);
         lone = false;
       } else {
@@ -4443,14 +4408,14 @@ var JSHINT = (function() {
   };
 
   var varstatement = stmt("var", function(context) {
-    var noin = context & prodParams.noin;
-    var inexport = context & prodParams.export;
+    var noin = context & prodparams_prodparamsjsjs.noin;
+    var inexport = context & prodparams_prodparamsjsjs.export;
     var tokens, lone, value, id;
 
     this.first = [];
     for (;;) {
       var names = [];
-      if (_.includes(["{", "["], state.tokens.next.value)) {
+      if (ext_lodash__.includes(["{", "["], state.tokens.next.value)) {
         tokens = destructuringPattern(context);
         lone = false;
       } else {
@@ -4533,9 +4498,9 @@ var JSHINT = (function() {
   varstatement.exps = true;
 
   blockstmt("function", function(context) {
-    var inexport = context & prodParams.export;
+    var inexport = context & prodparams_prodparamsjsjs.export;
     var generator = false;
-    var isAsync = context & prodParams.preAsync;
+    var isAsync = context & prodparams_prodparamsjsjs.preAsync;
     var labelType = "";
 
     if (isAsync) {
@@ -4603,7 +4568,7 @@ var JSHINT = (function() {
 
   prefix("function", function(context) {
     var generator = false;
-    var isAsync = context & prodParams.preAsync;
+    var isAsync = context & prodparams_prodparamsjsjs.preAsync;
 
     if (state.tokens.next.value === "*") {
       if (isAsync && !state.inES9()) {
@@ -4618,7 +4583,7 @@ var JSHINT = (function() {
 
     // This context modification restricts the use of `await` as the optional
     // BindingIdentifier in async function expressions.
-    var nameToken = optionalidentifier(isAsync ? context | prodParams.async : context) ?
+    var nameToken = optionalidentifier(isAsync ? context | prodparams_prodparamsjsjs.async : context) ?
       state.tokens.curr : null;
 
     var f = doFunction(context, {
@@ -4694,7 +4659,7 @@ var JSHINT = (function() {
 
       if (checkPunctuators(state.tokens.next, ["[", "{"])) {
         var tokens = destructuringPattern(context);
-        _.each(tokens, function(token) {
+        ext_lodash__.each(tokens, function(token) {
           if (token.id) {
             state.funct["(scope)"].addParam(token.id, token, "exception");
           }
@@ -4721,7 +4686,7 @@ var JSHINT = (function() {
       state.funct["(scope)"].unstack();
     }
 
-    block(context | prodParams.tryClause, true);
+    block(context | prodparams_prodparamsjsjs.tryClause, true);
 
     while (state.tokens.next.id === "catch") {
       increaseComplexityCount();
@@ -4946,7 +4911,7 @@ var JSHINT = (function() {
       advance("await");
       isAsync = true;
 
-      if (!(context & prodParams.async)) {
+      if (!(context & prodparams_prodparamsjsjs.async)) {
         error("E024", state.tokens.curr, "await");
       } else if (!state.inES9()) {
         warning("W119", state.tokens.curr, "asynchronous iteration", "9");
@@ -4966,7 +4931,7 @@ var JSHINT = (function() {
     var decl;
     var afterNext = peek();
 
-    var headContext = context | prodParams.noin;
+    var headContext = context | prodparams_prodparamsjsjs.noin;
 
     if (state.tokens.next.id === "var") {
       advance("var");
@@ -5046,7 +5011,7 @@ var JSHINT = (function() {
     }
 
     // if we're in a for (… in|of …) statement
-    if (_.includes(["in", "of"], nextop.value)) {
+    if (ext_lodash__.includes(["in", "of"], nextop.value)) {
       if (nextop.value === "of") {
         bindingPower = 20;
 
@@ -5229,8 +5194,8 @@ var JSHINT = (function() {
           warningAt("W093", this.first.line, this.first.character);
         }
 
-        if (state.option.noreturnawait && context & prodParams.async &&
-            !(context & prodParams.tryClause) &&
+        if (state.option.noreturnawait && context & prodparams_prodparamsjsjs.async &&
+            !(context & prodparams_prodparamsjsjs.tryClause) &&
             this.first.identifier && this.first.value === "await") {
           warning("W146", this.first);
         }
@@ -5248,7 +5213,7 @@ var JSHINT = (function() {
   }).exps = true;
 
   prefix("await", function(context) {
-    if (context & prodParams.async) {
+    if (context & prodparams_prodparamsjsjs.async) {
       // If the parameters of the current function scope have not been defined,
       // it is because the current expression is contained within the parameter
       // list.
@@ -5296,8 +5261,8 @@ var JSHINT = (function() {
       if (!state.inES8()) {
         warning("W119", this, "async functions", "8");
       }
-      context |= prodParams.preAsync;
-      context |= prodParams.initial;
+      context |= prodparams_prodparamsjsjs.preAsync;
+      context |= prodparams_prodparamsjsjs.initial;
       this.func = expression(context, 0);
       this.block = this.func.block;
       this.exps = this.func.exps;
@@ -5311,7 +5276,7 @@ var JSHINT = (function() {
         warning("W119", this, "async functions", "8");
       }
 
-      context |= prodParams.preAsync;
+      context |= prodparams_prodparamsjsjs.preAsync;
       this.func = expression(context, rbp);
       this.identifier = false;
       return this;
@@ -5539,7 +5504,7 @@ var JSHINT = (function() {
     var token;
     var identifier;
     var moduleSpecifier;
-    context = context | prodParams.export;
+    context = context | prodparams_prodparamsjsjs.export;
 
     if (!state.inES6()) {
       warning("W119", state.tokens.curr, "export", "6");
@@ -5579,7 +5544,7 @@ var JSHINT = (function() {
         this.block = true;
         advance("async");
         advance("function");
-        state.syntax["function"].fud(context | prodParams.preAsync);
+        state.syntax["function"].fud(context | prodparams_prodparamsjsjs.preAsync);
       } else if (exportType === "class") {
         this.block = true;
         advance("class");
@@ -5660,7 +5625,7 @@ var JSHINT = (function() {
       this.block = true;
       advance("async");
       advance("function");
-      state.syntax["function"].fud(context | prodParams.preAsync);
+      state.syntax["function"].fud(context | prodparams_prodparamsjsjs.preAsync);
     } else if (state.tokens.next.id === "class") {
       // ExportDeclaration :: export Declaration
       this.block = true;
@@ -5899,7 +5864,7 @@ var JSHINT = (function() {
     if (!state.inES6()) {
       warning("W119", state.tokens.curr, "computed property names", "6");
     }
-    var value = expression(context & ~prodParams.noin, 10);
+    var value = expression(context & ~prodparams_prodparamsjsjs.noin, 10);
     advance("]");
     return value;
   }
@@ -5917,7 +5882,7 @@ var JSHINT = (function() {
    */
   function checkPunctuators(token, values) {
     if (token.type === "(punctuator)") {
-      return _.includes(values, token.value);
+      return ext_lodash__.includes(values, token.value);
     }
     return false;
   }
@@ -6013,7 +5978,7 @@ var JSHINT = (function() {
           _current = _carrays[_carrays.length - 1];
         },
         setState: function(s) {
-          if (_.includes(["use", "define", "generate", "filter"], s))
+          if (ext_lodash__.includes(["use", "define", "generate", "filter"], s))
             _current.mode = s;
         },
         check: function(v) {
@@ -6184,7 +6149,7 @@ var JSHINT = (function() {
     var x, reIgnoreStr, reIgnore;
     var optionKeys, newOptionObj, newIgnoredObj;
 
-    o = _.clone(o);
+    o = ext_lodash__.clone(o);
     state.reset();
     newOptionObj = state.option;
     newIgnoredObj = state.ignored;
@@ -6259,7 +6224,7 @@ var JSHINT = (function() {
 
     indent = 1;
 
-    var scopeManagerInst = scopeManager(state, predefined, exported, declared);
+    var scopeManagerInst = scopemanager_scopeManagerjs(state, predefined, exported, declared);
     scopeManagerInst.on("warning", function(ev) {
       warning.apply(null, [ ev.code, ev.token].concat(ev.data));
     });
@@ -6372,13 +6337,13 @@ var JSHINT = (function() {
     // Check options
     var name;
     for (name in o) {
-      if (_.has(o, name)) {
+      if (ext_lodash__.has(o, name)) {
         checkOption(name, true, state.tokens.curr);
       }
     }
     if (o) {
       for (name in o.unstable) {
-        if (_.has(o.unstable, name)) {
+        if (ext_lodash__.has(o.unstable, name)) {
           checkOption(name, false, state.tokens.curr);
         }
       }
@@ -6446,7 +6411,7 @@ var JSHINT = (function() {
     extraModules.push(func);
   };
 
-  itself.addModule(style.register);
+  itself.addModule(style_registerjs);
 
   // Data summary.
   itself.data = function() {
@@ -6521,5 +6486,7 @@ var JSHINT = (function() {
 
 // Make JSHINT a Node module, if possible.
 if (typeof exports === "object" && exports) {
-  exports.JSHINT = JSHINT;
+  JSHINT_JSHINT = JSHINT;
 }
+var JSHINT_JSHINT;
+export { JSHINT_JSHINT as JSHINT };

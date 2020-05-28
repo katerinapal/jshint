@@ -20,3 +20,4 @@ module.exports = {
   asciiIdentifierStartTable: identifierStartTable,
   asciiIdentifierPartTable: identifierPartTable
 };
+export { asciiidentifierdatajs_asciiidentifierdatajs as asciiidentifierdatajs };

@@ -1,7 +1,10 @@
+import ext_path_path from "path";
 "use strict";
 
-var resolve = require("path").resolve;
+var resolve = ext_path_path.resolve;
 
-exports.readFileSync = function(path) {
+var readFileSync;
+
+readFileSync = function(path) {
   return window.JSHintTestFixtures[resolve(path)];
 };

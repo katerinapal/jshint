@@ -1,10 +1,12 @@
 "use strict";
 
+var unixjs;
+
 // Reporter that respects Unix output conventions
 // frequently employed by preprocessors and compilers.
 // The format is "FILENAME:LINE:COL: MESSAGE".
 
-module.exports = {
+unixjs = {
   reporter: function(results, data, opts) {
     var len = results.length;
     var str = "";
